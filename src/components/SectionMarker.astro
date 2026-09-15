@@ -1,0 +1,13 @@
+---
+interface Props {
+  num: string;
+  text: string;
+  id?: string;
+}
+const { num, text, id } = Astro.props;
+---
+
+<div class="marker" id={id}>
+  <span class="marker__num">{num}</span>
+  <span class="marker__text">{text}</span>
+</div>

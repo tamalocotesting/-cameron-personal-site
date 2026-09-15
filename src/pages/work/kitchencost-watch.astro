@@ -1,0 +1,166 @@
+---
+import CaseLayout from '../../layouts/CaseLayout.astro';
+---
+
+<CaseLayout slug="kitchencost-watch">
+  <section>
+    <h2><span class="n">01 / The problem</span>Food cost doesn&rsquo;t move in one event. It moves a line at a time.</h2>
+    <p>
+      A case of eggs goes up six dollars. A cream cheese pack size quietly changes from five pounds
+      to four. A vendor substitutes a product and keeps the description the same. None of it
+      announces itself.
+    </p>
+    <p>
+      Five weeks later the P&amp;L shows a margin two points off where it should be, and the honest
+      answer to &ldquo;what happened?&rdquo; is that nobody knows. The information was there the
+      whole time. It arrived every single week, in a stack, and nobody had an hour to read it.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">02 / Operational reality</span>Why nobody actually reviews invoices.</h2>
+    <p>
+      It isn&rsquo;t discipline. The work is genuinely hard in ways that aren&rsquo;t obvious until
+      you try to do it:
+    </p>
+    <ul class="bullets">
+      <li>Invoices arrive as PDFs, as photos taken in a walk-in, and as paper on a clipboard.</li>
+      <li>
+        Every vendor describes the same product differently. <em>CRM CHS PLN 3/5LB</em> and
+        <em>Cream Cheese, Plain 3&times;5#</em> are obviously the same thing to a person and nothing
+        alike to a computer.
+      </li>
+      <li>
+        Pack sizes and units are inconsistent, and a price per case means nothing if the case
+        changed size.
+      </li>
+      <li>The same product arrives under two vendor codes from two different suppliers.</li>
+      <li>The person capable of doing this analysis is currently closing the store.</li>
+    </ul>
+    <p>
+      Which is to say: it&rsquo;s large, repetitive, pattern-heavy reading work with a low tolerance
+      for error. That is a very specific shape &mdash; and it&rsquo;s the shape a model is good at,
+      as long as you build for the times it&rsquo;s wrong.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">03 / What I&rsquo;m building</span>Read the invoice. Match the line. Watch the number.</h2>
+    <p>
+      A system that takes invoices in whatever form they show up, turns them into structured lines,
+      matches each line to a real product in a normalised catalogue, converts everything to a
+      comparable unit, and then tracks what a thing actually costs over time &mdash; so a change
+      shows up the week it happens instead of at the end of the period.
+    </p>
+    <p>Costs roll up into recipes, so the question can also be asked from the other end: what does this plate cost now?</p>
+  </section>
+
+  <section>
+    <h2><span class="n">04 / How it works</span>The pieces, and where the difficulty actually sits.</h2>
+    <ul class="rows">
+      <li>
+        <b>Extraction</b>
+        A model reads the document into structured lines &mdash; product description, quantity, pack
+        size, unit price, extended price. Each field carries a confidence, not just a value.
+      </li>
+      <li>
+        <b>Product matching</b>
+        Line text gets matched against a normalised catalogue: fuzzy matching, vendor-specific
+        aliases, and the corrections an operator has already made. This is the hard part, not the
+        reading.
+      </li>
+      <li>
+        <b>Confidence and review</b>
+        High-confidence lines post automatically. Anything uncertain lands in a short review queue
+        where a human confirms it once &mdash; and the system remembers the answer so the same line
+        never has to be asked about twice.
+      </li>
+      <li>
+        <b>Unit normalisation</b>
+        Cost per case is not comparable to anything. Everything converts to a common unit so a
+        change in pack size shows up as what it is, rather than hiding inside a flat price.
+      </li>
+      <li>
+        <b>Cost history and flags</b>
+        Unit cost per product over time, with movement surfaced deliberately. The goal is a short
+        list of things that actually changed, not a dashboard that has to be interpreted.
+      </li>
+      <li>
+        <b>Background processing</b>
+        Upload and walk away. Nobody in a restaurant is going to sit and watch a progress bar.
+      </li>
+      <li>
+        <b>CSV in and out</b>
+        Not a fallback &mdash; the way the work really moves. Operators live in spreadsheets, and a
+        system that can&rsquo;t hand data back to one is a system they can&rsquo;t leave.
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="n">05 / The design principle</span>Assume the model is wrong sometimes.</h2>
+    <p>
+      The interesting engineering in a project like this isn&rsquo;t the extraction. Getting a model
+      to read an invoice is close to a solved problem, and it&rsquo;s the part everyone demos.
+    </p>
+    <p>The work is in everything around the times it gets it wrong:</p>
+    <ul class="bullets">
+      <li>What confidence does this field carry, and who decides where the threshold sits?</li>
+      <li>What goes in front of a human, and how fast can they clear the queue on a Tuesday?</li>
+      <li>When the human corrects something, does the system learn it or ask again next month?</li>
+      <li>
+        What happens to a number that was wrong for three weeks before anybody noticed &mdash; can
+        it be corrected without rewriting history?
+      </li>
+      <li>Can the operator always see where a number came from, right back to the document?</li>
+    </ul>
+    <p class="pull">
+      A wrong number that looks confident is worse than no number at all. An operator who gets
+      burned once stops trusting the entire system &mdash; including the parts that were right.
+    </p>
+    <p>
+      That&rsquo;s the whole reason the threshold, the review queue and the audit trail are the
+      product rather than the polish. The model is a component. The trust is the thing being built.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">06 / Status</span>Where this honestly stands.</h2>
+    <div class="note">
+      <p class="label">In development</p>
+      <p>
+        Extraction and matching are where most of my time has gone, because that&rsquo;s where the
+        accuracy problem lives. The costing and history layers are in progress. There is no signup,
+        no pricing, no waitlist and no customers &mdash; it&rsquo;s a working system I&rsquo;m
+        building because I had the problem, not a product anyone can buy.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">07 / What I&rsquo;ve learned</span>Mostly about where AI fits.</h2>
+    <ul class="rows">
+      <li>
+        <b>The data model is the product</b>
+        Everything else is a view over it. Get the catalogue, the units and the identity of a
+        product right and the features are almost easy. Get them wrong and no interface saves you.
+      </li>
+      <li>
+        <b>Confidence is a product decision</b>
+        The model gives you a number. Somebody still has to choose the threshold, and that choice
+        has a cost on both sides: too low and the queue is unusable, too high and bad data posts
+        silently.
+      </li>
+      <li>
+        <b>Operators don&rsquo;t want an AI feature</b>
+        They want to know what a case of eggs costs and whether it changed. The AI is how it gets
+        done, not what it is, and the interface should reflect that.
+      </li>
+      <li>
+        <b>Automate the reading, not the judgement</b>
+        Deciding that two products are the same thing, or that a price increase is worth calling the
+        vendor about, is operator work. The system should make that judgement cheap, not replace it.
+      </li>
+    </ul>
+  </section>
+</CaseLayout>

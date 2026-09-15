@@ -1,0 +1,186 @@
+---
+import { site, nav, activeProfiles, mailto } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="shell">
+    <div class="site-footer__grid">
+      <div class="site-footer__lead">
+        <p class="label">Get in touch</p>
+        <a class="site-footer__email" href={mailto('Hello')}>{site.email}</a>
+        <p class="site-footer__note">
+          {site.locationLong}. Open to roles and to project work.
+        </p>
+      </div>
+
+      <div class="site-footer__meta">
+        {
+          activeProfiles.length > 0 && (
+            <div class="site-footer__block">
+              <p class="label">Elsewhere</p>
+              <ul class="site-footer__links">
+                {activeProfiles.map((p) => (
+                  <li>
+                    <a href={p.url} class="site-footer__link" rel="me noopener" target="_blank">
+                      {p.label}
+                      <span aria-hidden="true">↗</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+
+        <div class="site-footer__block">
+          <p class="label">Pages</p>
+          <ul class="site-footer__links">
+            {
+              nav.map((item) => (
+                <li>
+                  <a href={item.href} class="site-footer__link">
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="site-footer__baseline">
+      <p class="site-footer__colophon">
+        © {year} {site.name}. Built as a static site — Archivo, Source Serif&nbsp;4, IBM&nbsp;Plex&nbsp;Mono.
+      </p>
+      <a class="site-footer__top" href="#top">
+        Back to top <span aria-hidden="true">↑</span>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--rule);
+    padding-block: var(--space-xl) var(--space-l);
+    margin-top: var(--space-xl);
+  }
+
+  .site-footer__grid {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  @media (min-width: 48em) {
+    .site-footer__grid {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: var(--space-2xl);
+    }
+  }
+
+  .site-footer__email {
+    display: inline-block;
+    margin-top: var(--space-xs);
+    font-size: var(--step-2);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-size: 100% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.3s var(--ease-out), color 0.2s var(--ease);
+    overflow-wrap: anywhere;
+  }
+
+  .site-footer__email:hover {
+    color: var(--accent-ink);
+  }
+
+  .site-footer__note {
+    margin-top: var(--space-s);
+    max-width: 38ch;
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    line-height: 1.6;
+  }
+
+  .site-footer__meta {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  @media (min-width: 30em) {
+    .site-footer__meta {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .site-footer__links {
+    display: grid;
+    gap: 0.1rem;
+    margin-top: var(--space-2xs);
+  }
+
+  .site-footer__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    min-height: 40px;
+    font-size: var(--step--1);
+    text-decoration: none;
+    color: var(--ink);
+    transition: color 0.18s var(--ease);
+  }
+
+  .site-footer__link:hover {
+    color: var(--accent-ink);
+  }
+
+  .site-footer__quiet {
+    margin-top: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    max-width: 24ch;
+  }
+
+  .site-footer__baseline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    margin-top: var(--space-xl);
+    padding-top: var(--space-s);
+    border-top: 1px solid var(--rule);
+  }
+
+  .site-footer__colophon {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    letter-spacing: 0.01em;
+  }
+
+  .site-footer__top {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    min-height: 40px;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+    transition: color 0.18s var(--ease);
+  }
+
+  .site-footer__top:hover {
+    color: var(--ink);
+  }
+</style>

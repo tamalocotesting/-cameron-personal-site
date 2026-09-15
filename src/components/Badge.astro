@@ -1,0 +1,13 @@
+---
+import { stageMeta, type Stage } from '../data/projects';
+
+interface Props {
+  stage: Stage;
+}
+const { stage } = Astro.props;
+const meta = stageMeta[stage];
+---
+
+<span class="badge" data-stage={meta.tone}>
+  <span class="visually-hidden">Project status: </span>{meta.label}
+</span>

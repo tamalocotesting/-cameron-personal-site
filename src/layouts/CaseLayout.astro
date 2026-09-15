@@ -1,0 +1,235 @@
+---
+import '../styles/prose.css';
+import Base from './Base.astro';
+import Badge from '../components/Badge.astro';
+import SpecList from '../components/SpecList.astro';
+import ProjectVisual from '../components/ProjectVisual.astro';
+import { projects, getProject } from '../data/projects';
+import { mailto } from '../data/site';
+
+interface Props {
+  slug: string;
+}
+const { slug } = Astro.props;
+const project = getProject(slug);
+
+const i = projects.findIndex((p) => p.slug === slug);
+const next = projects[(i + 1) % projects.length];
+---
+
+<Base title={project.seoTitle} description={project.seoDescription} ogType="article">
+  <article class="case">
+    <header class="case__header">
+      <div class="shell shell--narrow">
+        <a href="/#work" class="case__back">
+          <span aria-hidden="true">&larr;</span> Selected work
+        </a>
+
+        <div class="case__meta">
+          <span class="case__index">{project.index}</span>
+          <Badge stage={project.stage} />
+        </div>
+
+        <h1 class="case__title">{project.title}</h1>
+        <p class="case__deck">{project.tagline}</p>
+
+        <SpecList items={project.spec} class="case__spec" />
+      </div>
+    </header>
+
+    <div class="shell shell--narrow case__visual">
+      <ProjectVisual visual={project.visual} />
+    </div>
+
+    <div class="shell shell--narrow case__body rich">
+      <slot />
+    </div>
+  </article>
+
+  <nav class="case__next" aria-label="Next project">
+    <div class="shell shell--narrow">
+      <a href={next.href} class="case__next-link">
+        <span class="label">Next</span>
+        <span class="case__next-title">{next.title}</span>
+        <span class="case__next-tag">{next.tagline}</span>
+        <span class="case__next-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+
+      <div class="case__cta">
+        <p class="case__cta-text">
+          Building something where this kind of thinking is the hard part?
+        </p>
+        <a class="btn btn--primary" href={mailto(`About ${project.title}`)}>
+          Get in touch <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+</Base>
+
+<style>
+  .case__header {
+    padding-top: clamp(1.5rem, 0.5rem + 4vw, 3.5rem);
+    padding-bottom: var(--space-l);
+  }
+
+  .case__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    min-height: 44px;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+    transition: color 0.18s var(--ease);
+  }
+
+  .case__back:hover {
+    color: var(--accent-ink);
+  }
+
+  .case__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    margin-top: var(--space-m);
+    padding-bottom: var(--space-s);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .case__index {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+  }
+
+  .case__title {
+    margin-top: var(--space-m);
+    font-size: var(--step-4);
+    letter-spacing: -0.033em;
+    max-width: 16ch;
+  }
+
+  .case__deck {
+    margin-top: var(--space-s);
+    font-family: var(--font-prose);
+    font-size: var(--step-2);
+    line-height: 1.35;
+    letter-spacing: -0.012em;
+    color: var(--ink-2);
+    max-width: 38ch;
+    text-wrap: pretty;
+  }
+
+  .case__spec {
+    margin-top: var(--space-l);
+  }
+
+  .case__visual {
+    margin-bottom: var(--space-xl);
+  }
+
+  /* The sketches are diagrams, not hero images — a full 54rem of ruled paper
+     around a phone frame reads as an accident. */
+  .case__visual > :global(figure) {
+    max-width: 42rem;
+  }
+
+  .case__body {
+    padding-bottom: var(--space-2xl);
+  }
+
+  /* ---------------------------------------------------------- next --- */
+  .case__next {
+    border-top: 1px solid var(--rule);
+    padding-block: var(--space-xl);
+    background: color-mix(in srgb, var(--paper-sunken) 55%, transparent);
+  }
+
+  .case__next-link {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'label arrow'
+      'title arrow'
+      'tag   arrow';
+    align-items: center;
+    gap: 0.3rem var(--space-s);
+    padding: var(--space-m);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    background: var(--paper-raised);
+    text-decoration: none;
+    transition:
+      border-color 0.22s var(--ease),
+      box-shadow 0.28s var(--ease),
+      transform 0.28s var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .case__next-link:hover {
+      border-color: var(--rule-strong);
+      box-shadow: var(--shadow-card);
+      transform: translateY(-2px);
+    }
+  }
+
+  .case__next-link > :global(.label) {
+    grid-area: label;
+  }
+
+  .case__next-title {
+    grid-area: title;
+    font-size: var(--step-2);
+    font-weight: 620;
+    letter-spacing: -0.024em;
+    line-height: 1.1;
+  }
+
+  .case__next-tag {
+    grid-area: tag;
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    line-height: 1.45;
+    max-width: 44ch;
+  }
+
+  .case__next-arrow {
+    grid-area: arrow;
+    font-size: var(--step-2);
+    color: var(--accent-ink);
+    transition: transform 0.28s var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .case__next-link:hover .case__next-arrow {
+      transform: translateX(5px);
+    }
+  }
+
+  .case__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-m);
+    margin-top: var(--space-xl);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--rule);
+  }
+
+  .case__cta-text {
+    font-family: var(--font-prose);
+    font-size: var(--step-1);
+    color: var(--ink-2);
+    max-width: 34ch;
+    line-height: 1.4;
+  }
+</style>

@@ -1,0 +1,233 @@
+---
+/**
+ * Interface sketch: search-first operational lookup on a phone.
+ * Deliberately diagrammatic — it shows the interaction model, not pixels.
+ */
+---
+
+<div class="pv" role="img" aria-label="Sketch of a phone screen: a search box containing the word 'everything', three matching results — a build card, a prep procedure and an allergen note — and an open build card listing the steps for an everything bagel.">
+  <div class="pv__phone">
+    <div class="pv__bar">
+      <span class="pv__brand">B&rsquo;S BAGELS / OPS</span>
+      <span class="pv__dot" aria-hidden="true"></span>
+    </div>
+
+    <div class="pv__search">
+      <svg viewBox="0 0 16 16" aria-hidden="true" class="pv__icon">
+        <circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <path d="M10.4 10.4 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+      </svg>
+      <span class="pv__query">everything</span>
+      <span class="pv__caret" aria-hidden="true"></span>
+    </div>
+
+    <ul class="pv__results">
+      <li class="pv__result pv__result--active">
+        <span class="pv__kind">BUILD</span>
+        <span class="pv__title">Everything bagel &mdash; sandwich build</span>
+      </li>
+      <li class="pv__result">
+        <span class="pv__kind">PREP</span>
+        <span class="pv__title">Everything seasoning &mdash; batch</span>
+      </li>
+      <li class="pv__result">
+        <span class="pv__kind">ALLERGEN</span>
+        <span class="pv__title">Sesame &middot; poppy &middot; gluten</span>
+      </li>
+    </ul>
+
+    <div class="pv__card">
+      <div class="pv__card-head">
+        <span class="pv__card-title">Sandwich build</span>
+        <span class="pv__card-meta">4 steps</span>
+      </div>
+      <ol class="pv__steps">
+        <li><span class="pv__n">1</span><span class="pv__line" style="--w: 82%"></span></li>
+        <li><span class="pv__n">2</span><span class="pv__line" style="--w: 64%"></span></li>
+        <li><span class="pv__n">3</span><span class="pv__line" style="--w: 90%"></span></li>
+        <li><span class="pv__n">4</span><span class="pv__line" style="--w: 47%"></span></li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<style>
+  .pv {
+    display: flex;
+    justify-content: center;
+    padding: clamp(0.85rem, 0.4rem + 1.6vw, 2rem) var(--space-s);
+  }
+
+  .pv__phone {
+    width: 100%;
+    max-width: 18rem;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule-strong);
+    border-radius: 14px;
+    padding: 0.75rem 0.7rem 0.85rem;
+    box-shadow: var(--shadow-card);
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .pv__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .pv__brand {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+  }
+
+  .pv__dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .pv__search {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.42rem 0.55rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: 999px;
+    color: var(--ink-3);
+  }
+
+  .pv__icon {
+    width: 12px;
+    height: 12px;
+    flex: none;
+  }
+
+  .pv__query {
+    font-size: 0.75rem;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .pv__caret {
+    width: 1px;
+    height: 0.8rem;
+    background: var(--accent);
+    animation: pv-blink 1.15s steps(2, start) infinite;
+  }
+
+  @keyframes pv-blink {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pv__caret {
+      animation: none;
+    }
+  }
+
+  .pv__results {
+    display: grid;
+    gap: 1px;
+  }
+
+  .pv__result {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.42rem 0.4rem;
+    border-radius: var(--radius);
+  }
+
+  .pv__result--active {
+    background: var(--accent-wash);
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+
+  .pv__kind {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.11em;
+    color: var(--ink-3);
+    width: 3.4rem;
+    flex: none;
+  }
+
+  .pv__result--active .pv__kind {
+    color: var(--accent-ink);
+  }
+
+  .pv__title {
+    font-size: 0.6875rem;
+    color: var(--ink-2);
+    line-height: 1.3;
+  }
+
+  .pv__result--active .pv__title {
+    color: var(--ink);
+    font-weight: 560;
+  }
+
+  .pv__card {
+    margin-top: 0.15rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    padding: 0.55rem 0.6rem 0.65rem;
+    background: var(--paper);
+  }
+
+  .pv__card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .pv__card-title {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .pv__card-meta {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+  }
+
+  .pv__steps {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .pv__steps li {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .pv__n {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    color: var(--accent-ink);
+    width: 0.7rem;
+    flex: none;
+  }
+
+  .pv__line {
+    height: 4px;
+    width: var(--w);
+    border-radius: 2px;
+    background: var(--rule-strong);
+    opacity: 0.55;
+  }
+</style>

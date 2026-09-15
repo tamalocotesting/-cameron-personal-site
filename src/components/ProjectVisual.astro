@@ -1,0 +1,69 @@
+---
+import PortalVisual from './visuals/PortalVisual.astro';
+import CostVisual from './visuals/CostVisual.astro';
+import StandardVisual from './visuals/StandardVisual.astro';
+
+/**
+ * One swap point for every project image on the site.
+ *
+ * Today each project renders a hand-built CSS sketch of its interface. When a
+ * real screenshot exists, drop the file in `src/assets/` and pass `src` — the
+ * sketch steps aside and nothing else has to change.
+ */
+interface Props {
+  visual: 'portal' | 'cost' | 'standard';
+  /** Optional real screenshot. Overrides the sketch when present. */
+  src?: ImageMetadata;
+  alt?: string;
+  caption?: string;
+}
+
+const { visual, src, alt, caption } = Astro.props;
+
+const sketches = { portal: PortalVisual, cost: CostVisual, standard: StandardVisual };
+const Sketch = sketches[visual];
+const defaultCaption = 'Interface sketch, not a screenshot.';
+---
+
+<figure class="pvis">
+  <div class="pvis__frame">
+    {
+      src ? (
+        <img src={src.src} width={src.width} height={src.height} alt={alt ?? ''} loading="lazy" decoding="async" />
+      ) : (
+        <Sketch />
+      )
+    }
+  </div>
+  <figcaption class="pvis__cap">{caption ?? (src ? alt : defaultCaption)}</figcaption>
+</figure>
+
+<style>
+  .pvis {
+    margin: 0;
+  }
+
+  .pvis__frame {
+    position: relative;
+    background:
+      linear-gradient(var(--rule) 1px, transparent 1px) 0 0 / 100% 2rem,
+      var(--paper-sunken);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .pvis__frame > :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  .pvis__cap {
+    margin-top: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: 1.5;
+    color: var(--ink-3);
+    letter-spacing: 0.01em;
+  }
+</style>

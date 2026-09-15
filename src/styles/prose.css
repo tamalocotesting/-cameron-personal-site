@@ -1,0 +1,156 @@
+/* ==========================================================================
+ Long-form typography — shared by the case studies and the background page.
+ Pages write plain semantic HTML inside `.rich`; all the styling lives here
+ so every long-form page on the site reads identically.
+ ========================================================================== */
+
+.rich > section + section {
+  margin-top: var(--space-2xl);
+}
+
+.rich > section {
+  padding-top: var(--space-s);
+  border-top: 1px solid var(--rule-strong);
+}
+
+.rich h2 {
+  position: relative;
+  font-size: var(--step-2);
+  letter-spacing: -0.026em;
+  line-height: 1.12;
+  max-width: 24ch;
+}
+
+.rich h2 > .n {
+  display: block;
+  margin-bottom: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+
+.rich h3 {
+  margin-top: var(--space-l);
+  font-size: var(--step-0);
+  font-weight: 640;
+  letter-spacing: -0.01em;
+}
+
+.rich p {
+  margin-top: var(--space-s);
+  font-family: var(--font-prose);
+  font-size: var(--step-1);
+  line-height: 1.66;
+  color: var(--ink-2);
+  max-width: var(--measure);
+}
+
+.rich h3 + p {
+  margin-top: 0.4rem;
+  font-size: var(--step-0);
+}
+
+.rich strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.rich em {
+  font-style: italic;
+}
+
+/* Hairline list — the site's default way of showing a set of things. */
+.rich ul.rows {
+  margin-top: var(--space-m);
+  border-top: 1px solid var(--rule);
+}
+
+.rich ul.rows > li {
+  padding-block: var(--space-s);
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.rich ul.rows > li > b {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  font-weight: 620;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+}
+
+@media (min-width: 40em) {
+  .rich ul.rows > li {
+    display: grid;
+    grid-template-columns: minmax(0, 13rem) minmax(0, 1fr);
+    gap: var(--space-m);
+    align-items: baseline;
+  }
+
+  .rich ul.rows > li > b {
+    margin-bottom: 0;
+  }
+}
+
+/* Bulleted list for shorter runs. */
+.rich ul.bullets {
+  margin-top: var(--space-s);
+  display: grid;
+  gap: 0.5rem;
+  max-width: var(--measure);
+}
+
+.rich ul.bullets > li {
+  position: relative;
+  padding-left: 1.1rem;
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.rich ul.bullets > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.68em;
+  width: 6px;
+  height: 1px;
+  background: var(--accent);
+}
+
+/* A single strong idea, set apart. */
+.rich .pull {
+  margin-top: var(--space-l);
+  padding: var(--space-m) 0 var(--space-m) var(--space-m);
+  border-left: 2px solid var(--accent);
+  font-family: var(--font-prose);
+  font-size: var(--step-2);
+  line-height: 1.34;
+  letter-spacing: -0.014em;
+  color: var(--ink);
+  max-width: 30ch;
+  text-wrap: pretty;
+}
+
+/* Honest status note. */
+.rich .note {
+  margin-top: var(--space-l);
+  padding: var(--space-m);
+  border: 1px dashed var(--rule-strong);
+  border-radius: var(--radius);
+}
+
+.rich .note > p {
+  margin-top: 0.35rem;
+  font-family: var(--font-display);
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--ink-2);
+}

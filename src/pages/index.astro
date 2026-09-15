@@ -1,0 +1,799 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionMarker from '../components/SectionMarker.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Badge from '../components/Badge.astro';
+import { projects, explorations, stageMeta } from '../data/projects';
+import { site, mailto } from '../data/site';
+
+const path = [
+  {
+    n: '01',
+    title: 'Work the operation',
+    body: 'Prep, production, food cost, labour, training. You learn which things break, how often, and always at the worst possible moment.',
+  },
+  {
+    n: '02',
+    title: 'Write it down',
+    body: 'The recipe three people make three ways. The close nobody does twice the same. Documentation is the cheapest fix in the building, and almost nobody does it.',
+  },
+  {
+    n: '03',
+    title: 'Fix the process first',
+    body: 'Most problems people call software problems are sequencing problems. Change the order of the work before you build anything.',
+  },
+  {
+    n: '04',
+    title: 'Then build the tool',
+    body: 'When the process is right and it still doesn’t stick, the problem is access. Put it on the phone that is already in their pocket.',
+  },
+  {
+    n: '05',
+    title: 'Use AI where it earns it',
+    body: 'Reading invoices, matching products, drafting procedures. Then spend most of the effort on the part that matters: catching it when it’s wrong.',
+  },
+];
+
+const questions = [
+  'What does someone need to know at 7:15 on a Saturday, and how many taps until they have it?',
+  'What happens the week the person who knows everything is out?',
+  'Which step in this process reliably produces the same mistake?',
+  'What should the software decide on its own, and where does a human have to stay in it?',
+  'How do we find out the model got it wrong before it costs money?',
+];
+
+const opsSkills = [
+  'Process mapping and SOP writing',
+  'Recipes, menu builds and food cost',
+  'Prep and production systems',
+  'Training and new-hire onboarding',
+  'Multilingual floor documentation',
+  'Rollout, adoption and retraining',
+];
+
+const buildSkills = [
+  'Mobile-first internal tools',
+  'AI extraction and matching workflows',
+  'Confidence, review queues, human-in-the-loop',
+  'Data models for messy real-world records',
+  'Search and information architecture',
+  'Prototyping, then implementing for real users',
+];
+---
+
+<Base
+  title="Cameron Macek — operations, AI implementation, internal tools"
+  description={site.description}
+  suffix={false}
+>
+  <!-- ============================================================ HERO -->
+  <section class="hero">
+    <div class="shell">
+      <p class="hero__eyebrow">
+        <span class="label">Operations &middot; AI implementation</span>
+        <span class="hero__eyebrow-sep" aria-hidden="true"></span>
+        <span class="label">{site.location}</span>
+      </p>
+
+      <h1 class="hero__title">
+        I learned operations in a bagel kitchen.<br />
+        <span class="hero__title-2">Then I started building the software it was missing.</span>
+      </h1>
+
+      <div class="hero__grid">
+        <div>
+          <p class="hero__lede">
+            I map how the work actually gets done on a busy morning &mdash; then build the tools,
+            and the AI workflows behind them, that put the right answer in someone&rsquo;s hand in
+            seconds.
+          </p>
+
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#work">
+              See the work <span class="btn__arrow" aria-hidden="true">&darr;</span>
+            </a>
+            <a class="btn btn--ghost" href="/background">
+              Read the background <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+        <dl class="hero__spec">
+          <div class="hero__spec-row">
+            <dt class="spec__key">Focus</dt>
+            <dd class="spec__val">AI implementation &middot; operations &middot; internal tools</dd>
+          </div>
+          <div class="hero__spec-row">
+            <dt class="spec__key">Now</dt>
+            <dd class="spec__val">
+              Back-of-house operations at B&rsquo;s Bagels, Indiana &mdash; and building operations
+              software around it
+            </dd>
+          </div>
+          <div class="hero__spec-row">
+            <dt class="spec__key">Open to</dt>
+            <dd class="spec__val">
+              Implementation, solutions, product operations and ops-technology roles
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ PATH -->
+  <section class="section" id="approach">
+    <div class="shell">
+      <SectionMarker num="01" text="How I got here" />
+
+      <div class="path__head">
+        <h2 class="path__title">The unusual part is the useful part.</h2>
+        <p class="prose path__intro">
+          I didn&rsquo;t come from computer science. I came from the back of house &mdash; prep,
+          production, food cost, labour, training, and the ordinary mess of getting a kitchen
+          through a rush. The software came later, because the problems came first. That order
+          turns out to matter.
+        </p>
+      </div>
+
+      <ol class="path">
+        {
+          path.map((step, i) => (
+            <li class="path__step" data-reveal style={`--reveal-delay:${i * 55}ms`}>
+              <span class="path__n">{step.n}</span>
+              <h3 class="path__step-title">{step.title}</h3>
+              <p class="path__body">{step.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============================================================ WORK -->
+  <section class="section section--sunken" id="work">
+    <div class="shell">
+      <SectionMarker num="02" text="Selected work" />
+
+      <div class="work__head">
+        <h2 class="work__title">Three problems I couldn&rsquo;t stop looking at.</h2>
+        <div class="work__legend">
+          <p class="work__legend-intro">
+            Each one is labelled with where it honestly stands. I&rsquo;d rather be believable than
+            impressive.
+          </p>
+          <ul class="work__legend-list">
+            {
+              (Object.keys(stageMeta) as (keyof typeof stageMeta)[]).map((key) => (
+                <li class="work__legend-item">
+                  <Badge stage={key} />
+                  <span class="work__legend-note">{stageMeta[key].note}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      <div class="work__list">
+        {projects.map((project, i) => <ProjectCard project={project} flip={i % 2 === 1} />)}
+      </div>
+
+      <div class="work__also" data-reveal>
+        <h3 class="work__also-title label">Also on the bench</h3>
+        <ul class="work__also-list">
+          {
+            explorations.map((item) => (
+              <li class="work__also-item">
+                <div class="work__also-head">
+                  <h4 class="work__also-name">{item.title}</h4>
+                  <Badge stage={item.stage} />
+                </div>
+                <p class="work__also-body">{item.body}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================= QUESTIONS -->
+  <section class="section" id="questions">
+    <div class="shell">
+      <div class="q">
+        <SectionMarker num="03" text="How I think" />
+
+        <h2 class="q__title">Every system I build is an answer to one of these.</h2>
+        <p class="prose q__intro">
+          They are operational questions before they are technical ones. If you can&rsquo;t answer
+          them about a process, software will only make the confusion faster.
+        </p>
+
+        <ol class="q__list">
+          {
+            questions.map((question, i) => (
+              <li class="q__item" data-reveal style={`--reveal-delay:${i * 45}ms`}>
+                <span class="q__n">{String(i + 1).padStart(2, '0')}</span>
+                <p class="q__text">{question}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================== CAPABILITY -->
+  <section class="section section--sunken" id="capability">
+    <div class="shell">
+      <SectionMarker num="04" text="What I do" />
+
+      <h2 class="cap__title">Two halves of the same job.</h2>
+      <p class="prose cap__intro">
+        The useful thing isn&rsquo;t either column on its own. It&rsquo;s being able to sit in a
+        walk-in counting cases in the morning and design the data model for it that afternoon.
+      </p>
+
+      <div class="cap__grid">
+        <div class="cap__col" data-reveal>
+          <h3 class="cap__col-title">
+            <span class="cap__col-n">A</span> From the operations side
+          </h3>
+          <ul class="cap__list">
+            {opsSkills.map((skill) => <li class="cap__item">{skill}</li>)}
+          </ul>
+        </div>
+
+        <div class="cap__col" data-reveal style="--reveal-delay:80ms">
+          <h3 class="cap__col-title">
+            <span class="cap__col-n">B</span> From the building side
+          </h3>
+          <ul class="cap__list">
+            {buildSkills.map((skill) => <li class="cap__item">{skill}</li>)}
+          </ul>
+        </div>
+      </div>
+
+      <aside class="cap__honest" data-reveal>
+        <p class="label">Where I&rsquo;m not your person</p>
+        <p class="cap__honest-body">
+          Distributed systems, infrastructure, ML research, or anything that needs a career backend
+          engineer. I&rsquo;m not going to pretend otherwise. I work in the layer where the business
+          meets the software &mdash; understanding the operation, designing the workflow, building
+          the thing people actually touch, and getting it adopted.
+        </p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ========================================================= CONTACT -->
+  <section class="section contact" id="contact">
+    <div class="shell">
+      <SectionMarker num="05" text="What’s next" />
+
+      <div class="contact__grid">
+        <div>
+          <h2 class="contact__title">
+            I&rsquo;m looking for work where understanding the customer&rsquo;s business is the hard
+            part.
+          </h2>
+          <div class="prose contact__body">
+            <p>
+              AI implementation, solutions and implementation work, product operations, operations
+              technology. Restaurant and hospitality software especially &mdash; but the pattern
+              travels. Any business where the real process lives in people&rsquo;s heads and the
+              software has to meet it there.
+            </p>
+            <p>
+              If you&rsquo;re building something and the hard part is getting it to survive contact
+              with a real operation, that&rsquo;s the part I&rsquo;m good at. And if you run a
+              restaurant or a service business drowning in its own undocumented knowledge, that
+              conversation is open too.
+            </p>
+          </div>
+
+          <div class="contact__actions">
+            <a class="btn btn--primary" href={mailto('Hello Cameron')}>
+              Email me <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+            </a>
+            <a class="btn btn--ghost" href="/background">Full background</a>
+          </div>
+        </div>
+
+        <aside class="contact__aside">
+          <p class="label">Worth knowing</p>
+          <ul class="contact__facts">
+            <li>Based in Indiana. Comfortable remote, happy to travel for implementation work.</li>
+            <li>
+              I&rsquo;ll ask about your customers&rsquo; actual day before I ask about your stack.
+            </li>
+            <li>No agency, no team, no retainer. Just me, so far.</li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* =========================================================== HERO === */
+  .hero {
+    position: relative;
+    z-index: 1;
+    padding-top: clamp(2rem, 0.9rem + 5vw, 4.5rem);
+    padding-bottom: clamp(2.5rem, 1.2rem + 5vw, 5rem);
+  }
+
+  .hero__eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: clamp(1.1rem, 0.5rem + 2vw, 1.85rem);
+  }
+
+  .hero__eyebrow-sep {
+    width: 1.75rem;
+    height: 1px;
+    background: var(--rule-strong);
+  }
+
+  .hero__title {
+    max-width: 17ch;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .hero__title-2 {
+    display: block;
+    margin-top: 0.22em;
+    font-size: 0.62em;
+    line-height: 1.04;
+    letter-spacing: -0.028em;
+    color: var(--ink-3);
+    font-weight: 560;
+    max-width: 24ch;
+  }
+
+  .hero__grid {
+    display: grid;
+    gap: var(--space-l);
+    margin-top: clamp(1.4rem, 0.8rem + 2.2vw, 2.5rem);
+  }
+
+  @media (min-width: 58em) {
+    .hero__grid {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      gap: var(--space-2xl);
+      align-items: start;
+    }
+  }
+
+  .hero__lede {
+    max-width: 46ch;
+    font-family: var(--font-prose);
+    font-size: var(--step-1);
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: var(--space-m);
+  }
+
+  .hero__spec {
+    border-top: 1px solid var(--rule);
+  }
+
+  @media (min-width: 58em) {
+    .hero__spec {
+      margin-top: 0.4rem;
+    }
+  }
+
+  .hero__spec-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+    padding-block: 0.7rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  @media (min-width: 34em) {
+    .hero__spec-row {
+      grid-template-columns: 5.5rem 1fr;
+      gap: var(--space-s);
+      align-items: baseline;
+    }
+  }
+
+  /* =========================================================== PATH === */
+  .section--sunken {
+    background: color-mix(in srgb, var(--paper-sunken) 55%, transparent);
+    border-block: 1px solid var(--rule);
+  }
+
+  .path__head {
+    display: grid;
+    gap: var(--space-m);
+    margin-bottom: var(--space-xl);
+  }
+
+  @media (min-width: 52em) {
+    .path__head {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-2xl);
+      align-items: start;
+    }
+  }
+
+  .path__title {
+    font-size: var(--step-3);
+    max-width: 15ch;
+    letter-spacing: -0.03em;
+  }
+
+  .path__intro {
+    font-size: var(--step-0);
+  }
+
+  /* Same content column as the questions list, so the hairline grid always
+     ends where the writing does instead of running off into empty paper. */
+  .path {
+    max-width: 52rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .path__step {
+    display: grid;
+    grid-template-columns: 2.25rem 1fr;
+    grid-template-areas:
+      'n title'
+      '. body';
+    gap: 0.35rem 0.5rem;
+    padding-block: var(--space-m);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  @media (min-width: 46em) {
+    .path__step {
+      grid-template-columns: 3.5rem minmax(0, 14.5rem) minmax(0, 1fr);
+      grid-template-areas: 'n title body';
+      gap: var(--space-m);
+      align-items: baseline;
+    }
+  }
+
+  .path__n {
+    grid-area: n;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--accent-ink);
+  }
+
+  .path__step-title {
+    grid-area: title;
+    font-size: var(--step-1);
+    letter-spacing: -0.018em;
+    line-height: 1.2;
+  }
+
+  .path__body {
+    grid-area: body;
+    font-size: var(--step--1);
+    line-height: 1.62;
+    color: var(--ink-2);
+  }
+
+  /* =========================================================== WORK === */
+  .work__head {
+    display: grid;
+    gap: var(--space-l);
+    margin-bottom: var(--space-xl);
+  }
+
+  @media (min-width: 52em) {
+    .work__head {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-2xl);
+      align-items: start;
+    }
+  }
+
+  .work__title {
+    font-size: var(--step-3);
+    max-width: 16ch;
+    letter-spacing: -0.03em;
+  }
+
+  .work__legend-intro {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    max-width: 46ch;
+    margin-bottom: var(--space-s);
+  }
+
+  .work__legend-list {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 0.55rem 0.7rem;
+    align-items: start;
+  }
+
+  /* Rows dissolve into the parent grid so every badge shares one column. */
+  .work__legend-item {
+    display: contents;
+  }
+
+  /* Badges share a column for alignment but keep their own width. */
+  .work__legend-list :global(.badge) {
+    justify-self: start;
+  }
+
+  .work__legend-note {
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    line-height: 1.45;
+  }
+
+  .work__list {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  @media (min-width: 40em) {
+    .work__list {
+      gap: var(--space-l);
+    }
+  }
+
+  .work__also {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-l);
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  .work__also-title {
+    margin-bottom: var(--space-m);
+  }
+
+  .work__also-list {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  @media (min-width: 44em) {
+    .work__also-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-xl);
+    }
+  }
+
+  .work__also-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin-bottom: 0.5rem;
+  }
+
+  .work__also-name {
+    font-size: var(--step-1);
+    letter-spacing: -0.018em;
+  }
+
+  .work__also-body {
+    font-size: var(--step--1);
+    line-height: 1.62;
+    color: var(--ink-2);
+    max-width: 52ch;
+  }
+
+  /* ====================================================== QUESTIONS === */
+  /* Capped but flush left, so the page keeps a single left axis throughout. */
+  .q {
+    max-width: 50rem;
+  }
+
+  .q__title {
+    font-size: var(--step-3);
+    max-width: 20ch;
+    letter-spacing: -0.03em;
+  }
+
+  .q__intro {
+    margin-top: var(--space-s);
+    font-size: var(--step-0);
+    max-width: 58ch;
+  }
+
+  .q__list {
+    margin-top: var(--space-l);
+    border-top: 1px solid var(--rule);
+  }
+
+  .q__item {
+    display: grid;
+    grid-template-columns: 2.25rem 1fr;
+    gap: var(--space-2xs);
+    align-items: baseline;
+    padding-block: var(--space-m);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  @media (min-width: 46em) {
+    .q__item {
+      grid-template-columns: 3.5rem 1fr;
+      gap: var(--space-m);
+    }
+  }
+
+  .q__n {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    color: var(--ink-3);
+    letter-spacing: 0.08em;
+  }
+
+  .q__text {
+    font-family: var(--font-prose);
+    font-size: var(--step-2);
+    line-height: 1.3;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+    max-width: 42ch;
+    text-wrap: pretty;
+  }
+
+  /* ===================================================== CAPABILITY === */
+  .cap__title {
+    font-size: var(--step-3);
+    max-width: 16ch;
+    letter-spacing: -0.03em;
+  }
+
+  .cap__intro {
+    margin-top: var(--space-s);
+    font-size: var(--step-0);
+    max-width: 56ch;
+  }
+
+  .cap__grid {
+    display: grid;
+    gap: var(--space-l);
+    margin-top: var(--space-xl);
+  }
+
+  @media (min-width: 44em) {
+    .cap__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2xl);
+    }
+  }
+
+  .cap__col-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: var(--step-0);
+    font-weight: 620;
+    letter-spacing: -0.01em;
+    padding-bottom: var(--space-2xs);
+    border-bottom: 1px solid var(--rule-strong);
+  }
+
+  .cap__col-n {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--accent-ink);
+    font-weight: 500;
+  }
+
+  .cap__list {
+    margin-top: var(--space-2xs);
+  }
+
+  .cap__item {
+    padding-block: 0.6rem;
+    border-bottom: 1px solid var(--rule);
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+
+  .cap__honest {
+    display: grid;
+    gap: var(--space-2xs);
+    margin-top: var(--space-xl);
+    padding: var(--space-m);
+    border-left: 2px solid var(--accent);
+    background: var(--accent-wash);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+
+  /* Reads as another spec row: label on the left, the admission on the right. */
+  @media (min-width: 48em) {
+    .cap__honest {
+      grid-template-columns: 11rem minmax(0, 1fr);
+      gap: var(--space-m);
+      align-items: baseline;
+      padding: var(--space-m) var(--space-l);
+    }
+  }
+
+  .cap__honest-body {
+    font-size: var(--step--1);
+    line-height: 1.65;
+    color: var(--ink-2);
+    max-width: 70ch;
+  }
+
+  /* ======================================================== CONTACT === */
+  .contact__grid {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  @media (min-width: 52em) {
+    .contact__grid {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      gap: var(--space-2xl);
+      align-items: start;
+    }
+  }
+
+  .contact__title {
+    font-size: var(--step-3);
+    max-width: 22ch;
+    letter-spacing: -0.03em;
+  }
+
+  .contact__body {
+    margin-top: var(--space-m);
+    font-size: var(--step-0);
+  }
+
+  .contact__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: var(--space-l);
+  }
+
+  .contact__aside {
+    padding-top: var(--space-s);
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  .contact__facts {
+    margin-top: var(--space-s);
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .contact__facts li {
+    font-size: var(--step--1);
+    line-height: 1.55;
+    color: var(--ink-2);
+    padding-left: 1rem;
+    position: relative;
+  }
+
+  .contact__facts li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 5px;
+    height: 1px;
+    background: var(--accent);
+  }
+</style>

@@ -1,0 +1,155 @@
+---
+import CaseLayout from '../../layouts/CaseLayout.astro';
+---
+
+<CaseLayout slug="bs-bagels-operations-portal">
+  <section>
+    <h2><span class="n">01 / The problem</span>The knowledge exists. It just isn&rsquo;t anywhere.</h2>
+    <p>
+      A restaurant&rsquo;s operating knowledge is real and extremely detailed. Somebody knows how
+      much seasoning goes on the tray, which order the closing tasks have to happen in, what the
+      proofer does when the room is humid, and exactly what the sandwich is supposed to look like
+      when it leaves the window.
+    </p>
+    <p>
+      What that knowledge doesn&rsquo;t have is an address. It lives in a binder nobody opens, a PDF
+      someone emailed two years ago, a group chat, a label on a shelf, and mostly in the heads of
+      whoever has been there longest.
+    </p>
+    <p>
+      That arrangement works right up until the moment it doesn&rsquo;t. Saturday, 7:15. Line to the
+      door. New hire on the build station. The person who knows is off.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">02 / Operational reality</span>The failure has a shape, and it repeats.</h2>
+    <p>Watch it happen a few dozen times and it&rsquo;s always the same sequence:</p>
+    <ul class="bullets">
+      <li>Someone doesn&rsquo;t know, so they ask the nearest busy person.</li>
+      <li>That person answers from memory, at speed, and sometimes gets it wrong.</li>
+      <li>The build goes out wrong, or the prep gets made wrong, or the step gets skipped.</li>
+      <li>Nobody logs it. It costs product, time, and a little of the customer&rsquo;s patience.</li>
+      <li>The next new hire learns the same wrong answer from the same shortcut.</li>
+    </ul>
+    <p>
+      There are two knock-on effects that are easy to miss. The first is that training capacity is
+      capped by how many experienced people you can spare from the line &mdash; so training quality
+      is worst exactly when you&rsquo;re growing fastest. The second is language: kitchens are
+      multilingual and operational documentation usually isn&rsquo;t, which means the written
+      material that does exist is least reachable for some of the people who need it most.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">03 / What I built</span>A portal for someone standing up, with one hand free.</h2>
+    <p>
+      A mobile-first internal operations portal for the shop. Not a wiki and not a folder of PDFs
+      &mdash; something built for the physical situation it gets used in: on a phone, mid-shift, in
+      a hurry, often with gloves on.
+    </p>
+    <p>It holds the operation:</p>
+    <ul class="bullets">
+      <li>Recipes and menu builds, with visual build cards</li>
+      <li>Prep procedures and production steps</li>
+      <li>SOPs, opening and closing procedures</li>
+      <li>Cleaning procedures and standards</li>
+      <li>Equipment information and troubleshooting</li>
+      <li>Checklists, training material and new-hire onboarding</li>
+      <li>A separate manager layer, and content in more than one language</li>
+    </ul>
+    <p>
+      All of it searchable. The organising principle is that it&rsquo;s structured around the
+      questions people actually ask during a shift, not around how the business happens to be
+      organised on paper.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">04 / How it works</span>The decisions that made the difference.</h2>
+    <ul class="rows">
+      <li>
+        <b>Search is the front door</b>
+        People arrive with a question, not a location. Nobody wants to guess whether &ldquo;how long
+        do the onions go in for&rdquo; is filed under Prep, Recipes or Procedures.
+      </li>
+      <li>
+        <b>Show before you describe</b>
+        Builds are visual. You cannot read a paragraph with gloves on and a line forming. A picture
+        of the correct thing answers the question faster than any sentence about it.
+      </li>
+      <li>
+        <b>One screen, one task</b>
+        If a procedure needs scrolling and re-reading, it&rsquo;s written at the wrong length. Long
+        procedures get broken into steps that each fit on a phone.
+      </li>
+      <li>
+        <b>Written for the person doing it</b>
+        Not for the person who wrote the SOP, and not for a health inspector. Second person, short
+        sentences, present tense, no preamble.
+      </li>
+      <li>
+        <b>Multilingual by construction</b>
+        Content exists in more than one language from the start rather than getting translated once
+        and drifting out of date. If the kitchen is bilingual, the documentation has to be.
+      </li>
+      <li>
+        <b>Two audiences, two layers</b>
+        Crew get what they need to do the job in front of them. Managers get the layer above it
+        &mdash; standards, troubleshooting, the things they&rsquo;re accountable for &mdash; without
+        putting it in everyone&rsquo;s way.
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="n">05 / Why it matters</span>Knowledge stops being a person.</h2>
+    <p>
+      When the operation is written down and reachable, a few things change at once. Training gets
+      faster and more consistent because it stops depending on who happens to be scheduled. The
+      answer is the same every time, which is most of what consistency actually is. And turnover
+      stops resetting the business, because the thing that leaves with someone is their skill, not
+      the company&rsquo;s memory.
+    </p>
+    <p>
+      But the most valuable part wasn&rsquo;t the software at all. It was what writing it down
+      exposed.
+    </p>
+    <p class="pull">
+      Documenting the operation meant discovering that three people were doing the same task three
+      different ways &mdash; and then having to decide which one was right.
+    </p>
+    <p>
+      Nobody had been hiding anything. The disagreement had simply never been visible in one place
+      before. Half the operational improvement came from the conversations that caused, not from the
+      tool.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">06 / What I learned</span>Mostly about adoption.</h2>
+    <ul class="rows">
+      <li>
+        <b>Adoption is a design problem</b>
+        Not a rollout problem, and not a compliance problem. If the answer takes more than a few
+        taps, people ask a coworker instead &mdash; and at that point you&rsquo;ve lost, no matter
+        how good the content is.
+      </li>
+      <li>
+        <b>Complete is not the same as correct</b>
+        My first version of several procedures was too thorough to use. The right level of detail is
+        the level someone can act on while the timer is running, not everything I know about it.
+      </li>
+      <li>
+        <b>Writing it down is the intervention</b>
+        The software didn&rsquo;t fix the inconsistency. The act of writing it down forced the
+        decisions that fixed it.
+      </li>
+      <li>
+        <b>The hardest content is the obvious content</b>
+        Everything nobody thinks to explain because &ldquo;everyone knows that&rdquo; is exactly
+        what a new hire doesn&rsquo;t know, and it&rsquo;s the last thing anyone remembers to write.
+      </li>
+    </ul>
+  </section>
+</CaseLayout>

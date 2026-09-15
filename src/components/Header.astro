@@ -1,0 +1,236 @@
+---
+import { nav, mailto } from '../data/site';
+
+const { pathname } = Astro.url;
+---
+
+<div id="scroll-sentinel" aria-hidden="true"></div>
+
+<header class="site-header" data-header>
+  <div class="site-header__inner shell">
+    <a class="wordmark" href="/" aria-label="Cameron Macek — home">
+      <span class="wordmark__mark" aria-hidden="true"></span>
+      <span class="wordmark__name">Cameron Macek</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <ul class="site-nav__list">
+        {
+          nav.map((item) => (
+            <li class="site-nav__item">
+              <a
+                href={item.href}
+                class="site-nav__link"
+                aria-current={pathname === item.href ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+        <li class="site-nav__item site-nav__item--cta">
+          <a href={mailto('Hello')} class="site-nav__link site-nav__link--cta">Contact</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  #scroll-sentinel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color 0.25s var(--ease),
+      border-color 0.25s var(--ease);
+  }
+
+  .site-header.is-stuck {
+    background-color: color-mix(in srgb, var(--paper) 88%, transparent);
+    border-bottom-color: var(--rule);
+    backdrop-filter: saturate(150%) blur(10px);
+    -webkit-backdrop-filter: saturate(150%) blur(10px);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    min-height: 3.5rem;
+  }
+
+  @media (min-width: 48em) {
+    .site-header__inner {
+      min-height: 4.25rem;
+    }
+  }
+
+  /* Wordmark ------------------------------------------------------- */
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    text-decoration: none;
+    padding-block: 0.5rem;
+    flex: none;
+  }
+
+  .wordmark__mark {
+    width: 10px;
+    height: 10px;
+    flex: none;
+    background: var(--accent);
+    border-radius: 1px;
+    transform: rotate(45deg);
+    transition: transform 0.4s var(--ease-out);
+  }
+
+  .wordmark:hover .wordmark__mark {
+    transform: rotate(135deg);
+  }
+
+  .wordmark__name {
+    font-size: 0.9375rem;
+    font-weight: 620;
+    letter-spacing: -0.015em;
+    white-space: nowrap;
+  }
+
+  /* Below ~416px the wordmark and three nav items stop fitting side by side,
+     so both scale down rather than wrapping or hiding a real destination. */
+  @media (max-width: 25.99em) {
+    .site-header__inner {
+      gap: 0.6rem;
+    }
+
+    .wordmark {
+      gap: 0.45rem;
+    }
+
+    .wordmark__mark {
+      width: 9px;
+      height: 9px;
+    }
+
+    .wordmark__name {
+      font-size: 0.8125rem;
+      letter-spacing: -0.02em;
+    }
+
+    .site-nav__list {
+      gap: 0.45rem;
+    }
+
+    .site-nav__link {
+      font-size: 0.625rem;
+      letter-spacing: 0.07em;
+      padding-inline: 0;
+    }
+
+    .site-nav__link--cta {
+      padding-inline: 0.5rem;
+    }
+  }
+
+  /* Under ~352px the name no longer fits beside three links. The mark keeps
+     the link home (and its accessible name), navigation stays complete. */
+  @media (max-width: 22em) {
+    .wordmark__name {
+      display: none;
+    }
+
+    /* Without the name the mark still needs a thumb-sized hit area. */
+    .wordmark {
+      min-width: 44px;
+      min-height: 44px;
+      justify-content: flex-start;
+      margin-inline-start: -0.35rem;
+      padding-inline-start: 0.35rem;
+    }
+  }
+
+  /* Nav ------------------------------------------------------------ */
+  .site-nav__list {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 2.2vw, 1.4rem);
+  }
+
+  .site-nav__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 0.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+    transition: color 0.18s var(--ease);
+  }
+
+  .site-nav__link:hover,
+  .site-nav__link[aria-current='page'] {
+    color: var(--ink);
+  }
+
+  .site-nav__link--cta {
+    color: var(--ink);
+    padding-inline: 0.7rem;
+    min-height: 44px;
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius);
+    transition:
+      border-color 0.18s var(--ease),
+      background-color 0.18s var(--ease),
+      color 0.18s var(--ease);
+  }
+
+  .site-nav__link--cta:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  /* A mouse is precise enough for a compact button; a thumb is not. */
+  @media (hover: hover) and (pointer: fine) {
+    .site-nav__link--cta {
+      min-height: 34px;
+    }
+  }
+
+  /* On phones, drop the on-page anchors — people scroll instead, and the
+     two real destinations get comfortable tap targets. */
+  @media (max-width: 33.99em) {
+    /* "Approach" is a homepage anchor — on a phone people simply scroll,
+       so it gives up its space to bigger tap targets for the real pages. */
+    .site-nav__item:nth-child(2) {
+      display: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const header = document.querySelector('[data-header]');
+    const sentinel = document.getElementById('scroll-sentinel');
+    if (!header || !sentinel || !('IntersectionObserver' in window)) return;
+    new IntersectionObserver(
+      ([entry]) => header.classList.toggle('is-stuck', !entry.isIntersecting),
+      { threshold: 0 }
+    ).observe(sentinel);
+  })();
+</script>
