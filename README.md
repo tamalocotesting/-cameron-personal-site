@@ -25,6 +25,11 @@ npm run preview    # serve the built site
 | `npm run preview` | Serve `dist/` locally |
 | `npm run fonts` | Re-copy the Latin font files into `public/fonts` after a dependency bump |
 
+> `/fonts/*` is cached immutable for a year and the filenames are not
+> content-hashed. If a font file's contents ever change, rename it in
+> `scripts/sync-fonts.mjs` and in the `@font-face` rules in
+> `src/styles/global.css`, or returning visitors keep the stale copy.
+
 ## Deploying
 
 `netlify.toml` is committed and complete. Point Netlify at the repo and it will:

@@ -4,6 +4,11 @@
  * Fontsource publishes (Cyrillic, Greek, Vietnamese — none of which we set).
  *
  * Run after bumping a @fontsource dependency:  npm run fonts
+ *
+ * NOTE: netlify.toml caches /fonts/* as immutable for a year, and these names
+ * are not content-hashed. If a font file's *contents* ever change, rename it
+ * here and in the @font-face rules in src/styles/global.css — otherwise
+ * returning visitors keep the cached copy.
  */
 import { copyFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
