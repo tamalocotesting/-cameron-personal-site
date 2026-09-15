@@ -42,6 +42,18 @@ npm run preview    # serve the built site
 Nothing else needs configuring. There are no environment variables and no
 serverless functions.
 
+### Deploying by hand instead
+
+`netlify.toml` is only read when Netlify runs the build. For a drag-and-drop
+deploy (app.netlify.com/drop) you upload the already-built `dist/` folder, so
+`public/_headers` carries the same caching and security rules into the output.
+If you change headers, change them in **both** files.
+
+```bash
+npm run build:fast
+cd dist && zip -r ../site.zip .    # drop site.zip on app.netlify.com/drop
+```
+
 After the first deploy, set the real domain in **two** places so canonical URLs,
 the sitemap and the social card all point at it:
 
