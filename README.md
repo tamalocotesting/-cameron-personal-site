@@ -72,6 +72,15 @@ empty hides it, so the site can never ship a dead link.
 **`src/data/projects.ts`** — the project records shared by the homepage cards
 and the case-study pages, so a title or status only ever changes in one place.
 
+**`src/data/career.ts`** — the real work history: roles, employers, dates, and
+the résumé-only detail (bullets, skills, summary). It drives the homepage
+timeline, the `/resume` page and the generated PDF, so a job title is written
+once and appears correctly in all three.
+
+> **Not on the site by choice:** the phone number from the résumé, and the
+> education section. A phone number on a public page attracts spam, and I had
+> no reliable text for education. Both belong in `career.ts` if you want them.
+
 Case-study prose lives in its own page under `src/pages/work/`, written as plain
 semantic HTML. The typography comes from `src/styles/prose.css`, so the pages
 stay readable in source.
@@ -121,6 +130,20 @@ node scripts/make-og.mjs     # needs a local Chromium; not part of the build
 The script reads titles and taglines straight out of `src/data/projects.ts`, so
 the cards cannot drift from the pages — it throws rather than rendering
 something stale. Re-run it after changing a project's title, tagline or status.
+
+## The résumé
+
+`/resume` is a real page in the site's design system, built from `career.ts`.
+`public/resume.pdf` is rendered from that same page, so the two can never
+disagree — same dates, same titles, same honest project statuses.
+
+```bash
+npm run build:fast
+npx astro preview --port 4321 &
+node scripts/make-resume.mjs      # writes public/resume.pdf
+```
+
+Re-run it after any change to `career.ts` or the project statuses.
 
 ## Printing
 

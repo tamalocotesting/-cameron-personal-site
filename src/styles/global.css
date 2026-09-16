@@ -518,6 +518,33 @@ ol {
    5. Motion — opt-in reveal, disabled for reduced-motion users
    -------------------------------------------------------------------------- */
 
+/* Cross-document view transitions. Pure CSS: browsers that support it get a
+   soft cross-fade between pages, everything else navigates normally. No
+   client router, no JavaScript, no hydration. */
+@view-transition {
+  navigation: auto;
+}
+
+/* The header is the same object on every page, so it should not cross-fade
+   with the content. */
+.site-header {
+  view-transition-name: site-header;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.28s;
+  animation-timing-function: var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 /* The `.js` class is set by an inline script in <head> before first paint.
    Without it nothing is ever hidden, so a blocked or failed script can never
    leave the page blank. */

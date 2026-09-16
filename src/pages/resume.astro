@@ -1,0 +1,338 @@
+---
+import Base from '../layouts/Base.astro';
+import Badge from '../components/Badge.astro';
+import { site, mailto } from '../data/site';
+import { roles, resume } from '../data/career';
+import { projects } from '../data/projects';
+
+const key = roles.filter((r) => r.key);
+const other = roles.filter((r) => !r.key);
+const years = (r: { from: string; to: string }) => (r.from === r.to ? r.from : `${r.from}–${r.to}`);
+---
+
+<Base
+  title="Résumé"
+  description="Cameron Macek — customer onboarding, implementation, operations and training. Ten years across hospitality and customer-facing retail, now building internal tools and AI workflows."
+  ogImage="/og-resume.png"
+>
+  <article class="cv">
+    <div class="shell shell--narrow">
+      <div class="cv__bar">
+        <a class="cv__back" href="/"><span aria-hidden="true">&larr;</span> Back to the site</a>
+        <a class="btn btn--ghost cv__dl" href="/resume.pdf" download>
+          Download PDF <span class="btn__arrow" aria-hidden="true">&darr;</span>
+        </a>
+      </div>
+
+      <header class="cv__head">
+        <h1 class="cv__name">{site.name}</h1>
+        <p class="cv__target">{resume.target}</p>
+        <p class="cv__contact">
+          <span>{site.location}</span>
+          <a href={mailto('Hello Cameron')}>{site.email}</a>
+          <span>{site.url.replace('https://', '')}</span>
+        </p>
+      </header>
+
+      <p class="cv__summary">{resume.summary}</p>
+
+      <section class="cv__section">
+        <h2 class="cv__h2">Experience</h2>
+        {
+          key.map((role) => (
+            <div class="cv__role">
+              <div class="cv__role-head">
+                <h3 class="cv__role-title">{role.title}</h3>
+                <span class="cv__role-when">{years(role)}</span>
+              </div>
+              <p class="cv__role-org">
+                {role.org}
+                {role.where && <span class="cv__role-where">{role.where}</span>}
+              </p>
+              <ul class="cv__bullets">
+                {(resume.bullets[role.org] ?? []).map((b) => (
+                  <li>{b}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </section>
+
+      <section class="cv__section">
+        <h2 class="cv__h2">Earlier</h2>
+        <ul class="cv__earlier">
+          {
+            other.map((role) => (
+              <li>
+                <span class="cv__earlier-when">{years(role)}</span>
+                <span class="cv__earlier-what">
+                  <b>{role.title}</b>
+                  {role.org}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="cv__section">
+        <h2 class="cv__h2">Projects</h2>
+        <p class="cv__note">
+          Each is labelled with where it honestly stands. Full write-ups at {
+            site.url.replace('https://', '')
+          }/work.
+        </p>
+        {
+          projects.map((project) => (
+            <div class="cv__project">
+              <div class="cv__project-head">
+                <h3 class="cv__role-title">{project.title}</h3>
+                <Badge stage={project.stage} />
+              </div>
+              <p class="cv__project-body">{project.summary}</p>
+            </div>
+          ))
+        }
+      </section>
+
+      <section class="cv__section">
+        <h2 class="cv__h2">Skills</h2>
+        <ul class="cv__skills">
+          {resume.skills.map((s) => <li>{s}</li>)}
+        </ul>
+      </section>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .cv {
+    padding-block: clamp(1.5rem, 0.5rem + 4vw, 3rem) var(--space-2xl);
+  }
+
+  .cv__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    margin-bottom: var(--space-l);
+  }
+
+  .cv__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    min-height: 44px;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+    transition: color 0.18s var(--ease);
+  }
+
+  .cv__back:hover {
+    color: var(--accent-ink);
+  }
+
+  /* ------------------------------------------------------------ head --- */
+  .cv__head {
+    padding-bottom: var(--space-s);
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .cv__name {
+    font-size: var(--step-4);
+    letter-spacing: -0.035em;
+    line-height: 1;
+  }
+
+  .cv__target {
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+  }
+
+  .cv__contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.1rem;
+    margin-top: 0.7rem;
+    font-size: var(--step--1);
+    color: var(--ink-3);
+  }
+
+  .cv__contact a {
+    color: var(--ink-2);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule-strong);
+  }
+
+  .cv__summary {
+    margin-top: var(--space-m);
+    font-family: var(--font-prose);
+    font-size: var(--step-1);
+    line-height: 1.55;
+    color: var(--ink-2);
+    max-width: 62ch;
+  }
+
+  /* --------------------------------------------------------- sections --- */
+  .cv__section {
+    margin-top: var(--space-xl);
+  }
+
+  .cv__h2 {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid var(--rule-strong);
+  }
+
+  .cv__role,
+  .cv__project {
+    margin-top: var(--space-m);
+  }
+
+  .cv__role-head,
+  .cv__project-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.35rem var(--space-s);
+  }
+
+  .cv__role-title {
+    font-size: var(--step-1);
+    font-weight: 640;
+    letter-spacing: -0.018em;
+    line-height: 1.2;
+  }
+
+  .cv__role-when {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--accent-ink);
+    white-space: nowrap;
+  }
+
+  .cv__role-org {
+    margin-top: 0.15rem;
+    font-size: var(--step--1);
+    color: var(--ink-3);
+  }
+
+  .cv__role-where::before {
+    content: ' · ';
+  }
+
+  .cv__bullets {
+    margin-top: 0.6rem;
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .cv__bullets li {
+    position: relative;
+    padding-left: 1.05rem;
+    font-size: var(--step--1);
+    line-height: 1.55;
+    color: var(--ink-2);
+    max-width: 68ch;
+  }
+
+  .cv__bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.68em;
+    width: 6px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  /* --------------------------------------------------------- earlier --- */
+  .cv__earlier {
+    margin-top: var(--space-s);
+    display: grid;
+    gap: 0;
+  }
+
+  .cv__earlier li {
+    display: grid;
+    grid-template-columns: 6rem minmax(0, 1fr);
+    gap: 0.9rem;
+    align-items: baseline;
+    padding-block: 0.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .cv__earlier-when {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+
+  .cv__earlier-what {
+    font-size: var(--step--1);
+    color: var(--ink-3);
+  }
+
+  .cv__earlier-what b {
+    font-weight: 620;
+    color: var(--ink-2);
+  }
+
+  .cv__earlier-what b::after {
+    content: ' · ';
+    font-weight: 400;
+    color: var(--ink-3);
+  }
+
+  /* -------------------------------------------------------- projects --- */
+  .cv__note {
+    margin-top: 0.6rem;
+    font-size: var(--step--1);
+    color: var(--ink-3);
+  }
+
+  .cv__project-body {
+    margin-top: 0.35rem;
+    font-size: var(--step--1);
+    line-height: 1.55;
+    color: var(--ink-2);
+    max-width: 68ch;
+  }
+
+  /* ---------------------------------------------------------- skills --- */
+  .cv__skills {
+    margin-top: var(--space-s);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .cv__skills li {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    padding: 0.28rem 0.6rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: 999px;
+  }
+</style>

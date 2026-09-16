@@ -3,9 +3,7 @@
  *
  * ── EDIT ME ────────────────────────────────────────────────────────────────
  * Everything a future you needs to change lives in this one file.
- *  • `email`     — the address the contact buttons open. Swap for a dedicated
- *                  professional address (e.g. hello@cameronmacek.com) before
- *                  the site goes public if you'd rather not publish this one.
+ *  • `email`     — the address the contact buttons open.
  *  • `profiles`  — add a URL to make the link appear in the header/footer.
  *                  Leave a URL empty and the link is simply not rendered, so
  *                  the site never ships a dead link.
@@ -19,17 +17,17 @@ export const site = {
   shortName: 'Cameron Macek',
   url: 'https://cameronmacek.com',
   locale: 'en_US',
-  location: 'Indiana',
-  locationLong: 'Indiana — open to remote',
+  location: 'Carmel, Indiana',
+  locationLong: 'Carmel, Indiana — open to remote',
 
   /** Used in <title> suffixes and the header wordmark. */
-  role: 'Operations & AI Implementation',
+  role: 'Implementation, Operations & Training',
 
   /** The one-line description used for SEO + social cards. */
   description:
-    'Cameron Macek builds operations software. Restaurant back-of-house background, now designing internal tools and AI workflows that make the right answer easy to find.',
+    'Cameron Macek has spent ten years getting teams to standard — new-location openings, back-of-house management, customer-facing retail — and now builds the internal tools and AI workflows that do the same job.',
 
-  email: 'yng08ifade@gmail.com',
+  email: 'cmacek91@gmail.com',
 
   /** Add a URL to switch a link on. Empty string = hidden everywhere. */
   profiles: [

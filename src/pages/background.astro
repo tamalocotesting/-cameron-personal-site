@@ -5,10 +5,11 @@ import SpecList from '../components/SpecList.astro';
 import { site, mailto } from '../data/site';
 
 const shortVersion = [
-  { key: 'Started', val: 'Back of house — production, prep, food cost, labour, training' },
-  { key: 'Now', val: "Operations at B’s Bagels, Indiana, and building software around it" },
-  { key: 'Built', val: 'An internal operations portal. An AI invoice system, in progress.' },
-  { key: 'Want', val: 'AI implementation, solutions, product operations, ops technology' },
+  { key: 'Now', val: "Back-of-House Manager at B’s Bagels — Westfield, Indiana" },
+  { key: 'Before', val: "New-location opening trainer at Cooper’s Hawk; retail sales at AT&T" },
+  { key: 'Span', val: '10+ years across hospitality and customer-facing retail' },
+  { key: 'Building', val: 'An internal operations portal. An AI invoice system, in progress.' },
+  { key: 'Want', val: 'Customer onboarding, implementation, solutions, product operations' },
   { key: 'Not', val: 'A career software engineer — and not claiming to be one' },
 ];
 
@@ -38,7 +39,7 @@ const working = [
 
 <Base
   title="Background"
-  description="How Cameron Macek got from back-of-house restaurant operations to building internal tools and AI workflows — and what he’s looking for next."
+  description="Ten years of getting teams to standard — new-location openings, back-of-house management, customer-facing retail — and how it turned into building internal tools and AI workflows."
   ogImage="/og-background.png"
 >
   <article class="bg">
@@ -56,10 +57,16 @@ const working = [
       <section>
         <h2><span class="n">01 / Operations</span>An unglamorous education, and a fast one.</h2>
         <p>
-          Most of what I know I learned in the back of house at B&rsquo;s Bagels in Indiana.
-          Production and prep. Food cost and recipes. Labour. Training new people. Inventory.
-          Cleaning standards. The ordinary work of keeping a kitchen consistent when almost none of
-          the inputs are &mdash; not the people, not the volume, not the product, not the weather.
+          Ten years of it. Johnny Rockets as a supervisor at twenty-one. Two years at AT&amp;T
+          explaining phones and plans to people who did not care how any of it worked. Kitchens
+          after that &mdash; line cook, kitchen supervisor, and then two years at Cooper&rsquo;s
+          Hawk going into new restaurants to train teams who had never done the job.
+        </p>
+        <p>
+          Now I run the back of house at B&rsquo;s Bagels in Westfield. Production and prep. Food
+          cost and recipes. Labour. Training. Inventory. The ordinary work of keeping a kitchen
+          consistent when almost none of the inputs are &mdash; not the people, not the volume, not
+          the product, not the weather.
         </p>
         <p>
           It teaches you quickly which problems are real, because the real ones charge you the same
@@ -70,6 +77,13 @@ const working = [
 
       <section>
         <h2><span class="n">02 / The turn</span>It was never a knowledge problem.</h2>
+        <p>
+          Opening restaurants is where this got obvious. You walk into a building that
+          isn&rsquo;t running, with people who have never done the job, and an opening date that
+          does not move. Everything that makes it work &mdash; the order of the prep, what
+          &ldquo;right&rdquo; looks like on the plate, which step people always get wrong &mdash;
+          has to get out of a few experienced heads and into everyone else&rsquo;s hands, fast.
+        </p>
         <p>
           The thing I kept running into wasn&rsquo;t that nobody knew how to do the work. People
           knew. It was a <strong>distribution</strong> problem: the correct answer existed, but not
@@ -142,7 +156,10 @@ const working = [
         <p>
           What I bring is the translation layer. I can sit with an operator and understand their
           week, and I can sit with the product and understand what it can actually do. Companies
-          building for operators usually have plenty of the second and not much of the first.
+          building for operators usually have plenty of the second and not much of the first. And
+          the part most people find hardest about implementation &mdash; walking into a room of
+          people who did not ask for this and getting them to standard anyway &mdash; is the part
+          I have been doing since 2022.
         </p>
       </section>
 
@@ -157,7 +174,9 @@ const working = [
           <a class="btn btn--primary" href={mailto('Hello Cameron')}>
             {site.email} <span class="btn__arrow" aria-hidden="true">&rarr;</span>
           </a>
-          <a class="btn btn--ghost" href="/#work">See the work</a>
+          <a class="btn btn--ghost" href="/resume">
+            Résumé <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+          </a>
         </div>
       </section>
     </div>

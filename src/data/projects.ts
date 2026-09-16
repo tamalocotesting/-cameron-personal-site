@@ -15,7 +15,7 @@ export const stageMeta: Record<Stage, { label: string; tone: 'live' | 'building'
   built: {
     label: 'Built',
     tone: 'live',
-    note: 'Working software I designed and built.',
+    note: 'Working software I designed and built, now being tested with the crew it was made for.',
   },
   'in-progress': {
     label: 'In progress',

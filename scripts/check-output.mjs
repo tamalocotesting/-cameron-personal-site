@@ -18,12 +18,26 @@ if (files.length === 0) {
   process.exit(1);
 }
 
-// Text content only: strip scripts, styles, tags and JSON-LD.
+// Text content only: strip scripts, styles, tags and JSON-LD, then decode the
+// entities Astro emits — otherwise a straight quote hides behind &#39; and the
+// straight-quote check below silently passes.
+const decode = (t) =>
+  t
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCharCode(parseInt(n, 16)))
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
+
 const textOf = (html) =>
-  html
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .replace(/<[^>]+>/g, ' ');
+  decode(
+    html
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[\s\S]*?<\/style>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+  );
 
 const problems = [];
 

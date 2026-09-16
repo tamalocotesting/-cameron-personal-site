@@ -44,13 +44,13 @@ if (projects.length !== 3) {
 const cards = [
   {
     file: 'og.png',
-    eyebrow: 'Operations · AI implementation · Indiana',
-    title: 'I learned operations in a bagel kitchen.',
-    sub: 'Then I started building the software it was missing.',
+    eyebrow: 'Implementation · operations · training',
+    title: 'Before it was called implementation,',
+    sub: 'it was called opening a restaurant.',
     rail: [
-      ['Focus', 'Operations &middot; AI implementation'],
-      ['Builds', 'Internal tools that get used'],
-      ['Based', 'Indiana'],
+      ['Now', 'Back-of-House Manager, B&rsquo;s Bagels'],
+      ['Before', 'New-location opening trainer'],
+      ['Based', 'Carmel, Indiana'],
     ],
   },
   {
@@ -59,9 +59,20 @@ const cards = [
     title: 'I didn’t set out to build software.',
     sub: 'I set out to stop losing the same twenty minutes every morning.',
     rail: [
-      ['Started', 'Back of house'],
-      ['Now', 'Operations, and building around it'],
-      ['Wants', 'AI implementation · solutions'],
+      ['Span', '10+ years, hospitality and retail'],
+      ['Now', 'Back of house, and building around it'],
+      ['Wants', 'Onboarding · implementation'],
+    ],
+  },
+  {
+    file: 'og-resume.png',
+    eyebrow: 'Résumé',
+    title: 'Cameron Macek',
+    sub: 'Customer onboarding · implementation · operations & training.',
+    rail: [
+      ['Span', '10+ years'],
+      ['Now', 'Back-of-House Manager'],
+      ['Based', 'Carmel, Indiana'],
     ],
   },
   ...projects.map((p) => ({

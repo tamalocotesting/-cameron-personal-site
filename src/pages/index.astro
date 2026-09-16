@@ -5,6 +5,7 @@ import ProjectCard from '../components/ProjectCard.astro';
 import Badge from '../components/Badge.astro';
 import { projects, exploration, stageMeta } from '../data/projects';
 import { site, mailto } from '../data/site';
+import Timeline from '../components/Timeline.astro';
 
 const path = [
   {
@@ -70,50 +71,51 @@ const buildSkills = [
   <section class="hero">
     <div class="shell">
       <p class="hero__eyebrow">
-        <span class="label">Operations &middot; AI implementation</span>
+        <span class="label">Implementation &middot; operations &middot; training</span>
         <span class="hero__eyebrow-sep" aria-hidden="true"></span>
         <span class="label">{site.location}</span>
       </p>
 
       <h1 class="hero__title">
-        I learned operations in a bagel kitchen.<br />
-        <span class="hero__title-2">Then I started building the software it was missing.</span>
+        Before it was called implementation,<br />
+        <span class="hero__title-2">it was called opening a restaurant.</span>
       </h1>
 
       <div class="hero__grid">
         <div>
           <p class="hero__lede">
-            I map how the work actually gets done on a busy morning &mdash; then build the tools,
-            and the AI workflows behind them, that put the right answer in someone&rsquo;s hand in
-            seconds.
+            Ten years getting teams to standard &mdash; new-location openings, back of house,
+            customer-facing retail. Now I build the internal tools and AI workflows that do the same
+            job, and I still work the floor they&rsquo;re built for.
           </p>
 
           <div class="hero__actions">
             <a class="btn btn--primary" href="#work">
               See the work <span class="btn__arrow" aria-hidden="true">&darr;</span>
             </a>
-            <a class="btn btn--ghost" href="/background">
-              Read the background <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+            <a class="btn btn--ghost" href="/resume.pdf" download>
+              Résumé <span class="btn__arrow" aria-hidden="true">&darr;</span>
             </a>
           </div>
         </div>
 
         <dl class="hero__spec">
           <div class="hero__spec-row">
-            <dt class="spec__key">Focus</dt>
-            <dd class="spec__val">AI implementation &middot; operations &middot; internal tools</dd>
-          </div>
-          <div class="hero__spec-row">
             <dt class="spec__key">Now</dt>
             <dd class="spec__val">
-              Back-of-house operations at B&rsquo;s Bagels, Indiana &mdash; and building operations
-              software around it
+              Back-of-House Manager, B&rsquo;s Bagels &mdash; Westfield, Indiana
+            </dd>
+          </div>
+          <div class="hero__spec-row">
+            <dt class="spec__key">Before</dt>
+            <dd class="spec__val">
+              New-location opening trainer at Cooper&rsquo;s Hawk &middot; retail sales at AT&amp;T
             </dd>
           </div>
           <div class="hero__spec-row">
             <dt class="spec__key">Open to</dt>
             <dd class="spec__val">
-              Implementation, solutions, product operations and ops-technology roles
+              Implementation, customer onboarding, solutions and product-operations roles
             </dd>
           </div>
         </dl>
@@ -124,15 +126,32 @@ const buildSkills = [
   <!-- ============================================================ PATH -->
   <section class="section" id="approach">
     <div class="shell">
-      <SectionMarker num="01" text="How I got here" />
+      <SectionMarker num="01" text="Track record" />
 
       <div class="path__head">
-        <h2 class="path__title">The unusual part is the useful part.</h2>
-        <p class="prose path__intro">
-          I didn&rsquo;t come from computer science. I came from the back of house &mdash; prep,
-          production, food cost, labour, training, and the ordinary mess of getting a kitchen
-          through a rush. The software came later, because the problems came first. That order
-          turns out to matter.
+        <h2 class="path__title">Implementation, before it had that name.</h2>
+        <div class="prose path__intro">
+          <p>
+            Opening a restaurant is an implementation project. You arrive somewhere that
+            isn&rsquo;t running, with a team that has never done the job, against a date that
+            doesn&rsquo;t move. You set up the stations, train the people, get them to standard, and
+            leave it working without you.
+          </p>
+          <p>
+            I did that for two years at Cooper&rsquo;s Hawk before I wrote a line of software. Two
+            years before that I was at AT&amp;T explaining technology to people who didn&rsquo;t
+            care how it worked, only whether it solved their problem. Ten years
+            of it, and none of it was called implementation.
+          </p>
+        </div>
+      </div>
+
+      <Timeline />
+
+      <div class="path__lead">
+        <h3 class="path__lead-title">Doing that long enough gives you a method.</h3>
+        <p class="path__lead-body">
+          Not a philosophy &mdash; an order of operations. It is the same one I use on software now.
         </p>
       </div>
 
@@ -434,6 +453,29 @@ const buildSkills = [
 
   .path__intro {
     font-size: var(--step-0);
+  }
+
+  .path__intro p + p {
+    margin-top: 0.9em;
+  }
+
+  .path__lead {
+    margin-top: var(--space-2xl);
+    margin-bottom: var(--space-m);
+    max-width: 52rem;
+  }
+
+  .path__lead-title {
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+  }
+
+  .path__lead-body {
+    margin-top: 0.4rem;
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    line-height: 1.6;
+    max-width: 52ch;
   }
 
   /* Same content column as the questions list, so the hairline grid always

@@ -53,7 +53,14 @@
   .contact__actions,
   .bg__actions,
   .card__cta,
+  .cv__bar,
   .btn {
+    display: none !important;
+  }
+
+  /* The résumé already carries its own masthead. */
+  .cv .print-masthead,
+  body:has(.cv) .print-masthead {
     display: none !important;
   }
 
@@ -103,6 +110,21 @@
     padding-inline: 0 !important;
     display: block !important;
     grid-template-columns: none !important;
+  }
+
+  .cv {
+    padding-block: 0 !important;
+  }
+
+  .cv__section {
+    break-inside: auto;
+  }
+
+  .cv__role,
+  .cv__project,
+  .cv__earlier li {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .section,
