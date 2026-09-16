@@ -98,6 +98,29 @@ each one means:
 
 Keep these honest. The legend is the reason the rest of the site is credible.
 
+## The interactive demos
+
+Two of the three project visuals are real, not pictures of real:
+
+- **`PortalSearch`** — a working search over `src/data/portal-demo.ts`. Type a
+  question ("proofer", "closing", "sesame") and the answer appears. It makes the
+  case study's claim — the right answer in a few taps — something a visitor can
+  test instead of take on faith. The content is a written slice that shows the
+  retrieval model, not B's Bagels' real manual, and the component says so.
+- **`CostThreshold`** — the confidence gate as a slider. Drag it and invoice
+  lines move between posting automatically and being held for review, with the
+  consequence spelled out at both ends. The case study argues the threshold is a
+  product decision with a cost on each side; this lets you feel it.
+
+Both render a correct default state on the server and are only enhanced by
+script, so they work before the JS runs and degrade to a static panel without
+it. Both cost well under a kilobyte.
+
+> **A rule worth remembering:** Astro scopes component CSS with a generated
+> attribute, so elements created in script get *none* of it. Both demos render
+> fixed slots server-side and only mutate their text and classes. Never build
+> result rows with `createElement` in a scoped component.
+
 ## Diagrams
 
 Each case study carries a drawn diagram as well as prose, because for this

@@ -1,6 +1,6 @@
 ---
-import PortalVisual from './visuals/PortalVisual.astro';
-import CostVisual from './visuals/CostVisual.astro';
+import PortalSearch from './visuals/PortalSearch.astro';
+import CostThreshold from './visuals/CostThreshold.astro';
 import StandardVisual from './visuals/StandardVisual.astro';
 
 /**
@@ -20,9 +20,10 @@ interface Props {
 
 const { visual, src, alt, caption } = Astro.props;
 
-const sketches = { portal: PortalVisual, cost: CostVisual, standard: StandardVisual };
+const sketches = { portal: PortalSearch, cost: CostThreshold, standard: StandardVisual };
 const Sketch = sketches[visual];
 const defaultCaption = 'Interface sketch, not a screenshot.';
+const interactive = visual === 'portal' || visual === 'cost';
 ---
 
 <figure class="pvis">
@@ -35,7 +36,13 @@ const defaultCaption = 'Interface sketch, not a screenshot.';
       )
     }
   </div>
-  <figcaption class="pvis__cap">{caption ?? (src ? alt : defaultCaption)}</figcaption>
+  <figcaption class="pvis__cap">
+    {caption ?? (src ? alt : interactive
+        ? visual === 'portal'
+          ? 'Try it — the search really works.'
+          : 'Drag the threshold. The trade-off is the point.'
+        : defaultCaption)}
+  </figcaption>
 </figure>
 
 <style>

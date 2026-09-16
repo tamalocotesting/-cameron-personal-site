@@ -202,7 +202,11 @@ const { project, flip = false } = Astro.props;
     }
   }
 
+  /* The card is one big link, but the visual column can hold a real input —
+     so it sits above the stretched hit area and stays usable. */
   .card__visual {
+    position: relative;
+    z-index: 1;
     min-width: 0;
   }
 </style>

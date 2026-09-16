@@ -331,6 +331,46 @@ const buildSkills = [
 
 <style>
   /* =========================================================== HERO === */
+
+  /* The hero arrives in one short beat rather than sitting there. CSS only,
+     so it runs without JavaScript and never blocks the content. */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__eyebrow,
+    .hero__title,
+    .hero__title-2,
+    .hero__lede,
+    .hero__actions,
+    .hero__spec {
+      animation: hero-rise 0.62s var(--ease-out) both;
+    }
+
+    .hero__eyebrow {
+      animation-delay: 0.04s;
+    }
+    .hero__title {
+      animation-delay: 0.1s;
+    }
+    .hero__title-2 {
+      animation-delay: 0.19s;
+    }
+    .hero__lede {
+      animation-delay: 0.26s;
+    }
+    .hero__actions {
+      animation-delay: 0.32s;
+    }
+    .hero__spec {
+      animation-delay: 0.36s;
+    }
+  }
+
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+
   .hero {
     position: relative;
     z-index: 1;

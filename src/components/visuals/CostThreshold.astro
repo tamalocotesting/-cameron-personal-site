@@ -1,0 +1,371 @@
+---
+/**
+ * The confidence threshold, as a control you can move.
+ *
+ * The case study argues that the threshold is a product decision with a cost
+ * on both sides. Rather than assert that, this lets you drag it and watch what
+ * happens: too low and bad matches post silently, too high and a person is
+ * clearing a queue by hand after every delivery.
+ *
+ * Rows are rendered server-side and only ever mutated — Astro scopes these
+ * styles with an attribute that script-created nodes would not carry.
+ */
+const lines = [
+  { raw: 'EGG LRG GR-A 15DZ', match: 'Eggs, large, Grade A — 15 doz', score: 99 },
+  { raw: 'CRM CHS PLN 3/5LB', match: 'Cream cheese, plain — 3 × 5 lb', score: 97 },
+  { raw: 'FLOUR HG BREAD 50#', match: 'Flour, high-gluten — 50 lb', score: 96 },
+  { raw: 'SALMON ATL SMKD 1LB', match: 'Salmon, Atlantic, smoked — 1 lb', score: 93 },
+  { raw: 'ONION RED JMB 25#', match: 'Onion, red, jumbo — 25 lb', score: 88 },
+  { raw: 'SESAME SD NAT BULK', match: 'Sesame seed, natural — bulk?', score: 74 },
+  { raw: 'CHS SPRD VEG 2/5', match: 'Cream cheese, vegetable — 2 × 5 lb?', score: 66 },
+  { raw: 'MALT SYP DIA 5GAL', match: 'Malt syrup, diastatic — 5 gal?', score: 58 },
+];
+const DEFAULT = 90;
+---
+
+<div class="ct" data-threshold-demo data-default={DEFAULT}>
+  <div class="ct__panel">
+    <div class="ct__head">
+      <span class="ct__doc">INVOICE 44182</span>
+      <span class="ct__sep" aria-hidden="true"></span>
+      <span class="ct__doc ct__doc--dim">{lines.length} LINES READ</span>
+    </div>
+
+    <div class="ct__control">
+      <label class="ct__label" for="ct-threshold">
+        Post automatically at or above
+        <output class="ct__value" data-threshold-value>{DEFAULT}%</output>
+      </label>
+      <input
+        id="ct-threshold"
+        class="ct__slider"
+        type="range"
+        min="50"
+        max="99"
+        step="1"
+        value={DEFAULT}
+        data-threshold-input
+      />
+    </div>
+
+    <ul class="ct__rows">
+      {
+        lines.map((l) => (
+          <li
+            class:list={['ct__row', { 'ct__row--review': l.score < DEFAULT }]}
+            data-score={l.score}
+          >
+            <span class="ct__raw">{l.raw}</span>
+            <span class="ct__arrow" aria-hidden="true">
+              &rarr;
+            </span>
+            <span class="ct__match">{l.match}</span>
+            <span class="ct__pct">{l.score}%</span>
+            <span class="ct__flag" data-row-flag>
+              {l.score < DEFAULT ? 'Review' : 'Auto'}
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="ct__foot">
+      <p class="ct__tally" data-threshold-tally aria-live="polite">
+        {lines.filter((l) => l.score >= DEFAULT).length} post automatically &middot;{' '}
+        {lines.filter((l) => l.score < DEFAULT).length} held for a human
+      </p>
+      <p class="ct__cost" data-threshold-cost>
+        The balance most operators want: the obvious ones post, the doubtful ones get looked at.
+      </p>
+    </div>
+  </div>
+
+  <p class="ct__note">
+    Drag it. Illustrative lines and scores &mdash; the trade-off is the real part.
+  </p>
+</div>
+
+<style>
+  .ct {
+    padding: clamp(0.75rem, 0.4rem + 1.2vw, 1.5rem) var(--space-s);
+  }
+
+  .ct__panel {
+    background: var(--paper-raised);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .ct__head {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .ct__doc {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.13em;
+    color: var(--ink-2);
+  }
+
+  .ct__doc--dim {
+    color: var(--ink-3);
+  }
+
+  .ct__sep {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--ink-3);
+    opacity: 0.6;
+  }
+
+  /* --- the control --------------------------------------------------- */
+  .ct__control {
+    padding: 0.7rem 0.75rem 0.85rem;
+    border-bottom: 1px solid var(--rule);
+    background: var(--paper-sunken);
+  }
+
+  .ct__label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .ct__value {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--accent-ink);
+  }
+
+  .ct__slider {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    margin-top: 0.35rem;
+    height: 22px;
+    background: none;
+    cursor: ew-resize;
+  }
+
+  /* A thumb is not a mouse pointer — give it a full-height hit area on touch. */
+  @media (hover: none) {
+    .ct__slider {
+      height: 44px;
+      margin-top: 0.1rem;
+      margin-bottom: -0.35rem;
+    }
+  }
+
+  .ct__slider::-webkit-slider-runnable-track {
+    height: 3px;
+    border-radius: 2px;
+    background: var(--rule-strong);
+  }
+
+  .ct__slider::-moz-range-track {
+    height: 3px;
+    border-radius: 2px;
+    background: var(--rule-strong);
+  }
+
+  .ct__slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    margin-top: -7.5px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--paper-raised);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+  }
+
+  .ct__slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--paper-raised);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+  }
+
+  .ct__slider:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  /* --- rows ---------------------------------------------------------- */
+  .ct__row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'raw   pct'
+      'match flag';
+    gap: 0.25rem 0.55rem;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--rule);
+    transition: background-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  }
+
+  .ct__rows > li:last-child {
+    border-bottom: 0;
+  }
+
+  .ct__row--review {
+    background: var(--accent-wash);
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+
+  .ct__raw {
+    grid-area: raw;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ct__arrow {
+    display: none;
+    color: var(--ink-3);
+    font-size: 0.7rem;
+  }
+
+  .ct__match {
+    grid-area: match;
+    font-size: 0.6875rem;
+    line-height: 1.3;
+    color: var(--ink);
+    min-width: 0;
+  }
+
+  .ct__pct {
+    grid-area: pct;
+    justify-self: end;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    color: var(--ink-3);
+  }
+
+  .ct__flag {
+    grid-area: flag;
+    justify-self: end;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.16rem 0.32rem;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    line-height: 1;
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+
+  .ct__row--review .ct__flag {
+    color: var(--accent-ink);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+  }
+
+  @media (min-width: 27em) {
+    .ct__row {
+      grid-template-columns: minmax(0, 8.5rem) auto minmax(0, 1fr) auto auto;
+      grid-template-areas: 'raw arrow match pct flag';
+      gap: 0.55rem;
+    }
+
+    .ct__arrow {
+      display: block;
+      grid-area: arrow;
+    }
+  }
+
+  /* --- consequence --------------------------------------------------- */
+  .ct__foot {
+    padding: 0.6rem 0.75rem 0.7rem;
+    border-top: 1px solid var(--rule-strong);
+    background: var(--paper-sunken);
+  }
+
+  .ct__tally {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  .ct__cost {
+    margin-top: 0.3rem;
+    font-size: 0.6875rem;
+    line-height: 1.45;
+    color: var(--ink-3);
+    min-height: 2.6em;
+  }
+
+  .ct__note {
+    margin-top: 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.02em;
+    color: var(--ink-3);
+    text-align: center;
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    document.querySelectorAll('[data-threshold-demo]').forEach((root) => {
+      const slider = root.querySelector('[data-threshold-input]');
+      const value = root.querySelector('[data-threshold-value]');
+      const tally = root.querySelector('[data-threshold-tally]');
+      const cost = root.querySelector('[data-threshold-cost]');
+      const rows = [...root.querySelectorAll('[data-score]')];
+      if (!slider || !value || !tally || !cost || !rows.length) return;
+
+      const consequence = (t, held) => {
+        if (t <= 70)
+          return 'Almost everything posts. Nobody is checking — and a wrong match sits in the cost history until someone notices the margin.';
+        if (t >= 95)
+          return `Nothing bad gets through. Somebody now clears ${held} lines by hand after every delivery, and a queue that long stops getting cleared.`;
+        return 'The balance most operators want: the obvious ones post, the doubtful ones get looked at.';
+      };
+
+      const render = () => {
+        const t = Number(slider.value);
+        value.textContent = t + '%';
+        let auto = 0;
+        rows.forEach((row) => {
+          const review = Number(row.dataset.score) < t;
+          row.classList.toggle('ct__row--review', review);
+          row.querySelector('[data-row-flag]').textContent = review ? 'Review' : 'Auto';
+          if (!review) auto++;
+        });
+        const held = rows.length - auto;
+        tally.textContent = `${auto} post automatically · ${held} held for a human`;
+        cost.textContent = consequence(t, held);
+      };
+
+      slider.addEventListener('input', render);
+      render();
+    });
+  })();
+</script>

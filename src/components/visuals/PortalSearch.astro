@@ -1,0 +1,408 @@
+---
+import { entries, find, suggestions } from '../../data/portal-demo';
+
+/**
+ * A working version of the portal's search, on the page.
+ *
+ * The claim the case study makes is "the right answer in a few taps". This
+ * lets a visitor test it rather than take it on faith. Server-rendered with a
+ * default result set, so it reads correctly before the script runs and without
+ * JavaScript at all.
+ */
+interface Props {
+  /** Unique per instance — the homepage card and the case study both use one. */
+  id?: string;
+}
+const { id = 'portal' } = Astro.props;
+const initial = find('', 4);
+---
+
+<div class="ps" data-portal-search data-total={entries.length}>
+  <div class="ps__phone">
+    <div class="ps__bar">
+      <span class="ps__brand">B&rsquo;S BAGELS / OPS</span>
+      <span class="ps__live">
+        <span class="ps__dot" aria-hidden="true"></span>Live
+      </span>
+    </div>
+
+    <div class="ps__field">
+      <svg viewBox="0 0 16 16" aria-hidden="true" class="ps__icon">
+        <circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
+        <path d="M10.4 10.4 14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+        ></path>
+      </svg>
+      <label class="visually-hidden" for={`${id}-q`}>Search the operations portal demo</label>
+      <input
+        id={`${id}-q`}
+        class="ps__input"
+        type="search"
+        placeholder="Ask it something…"
+        autocomplete="off"
+        spellcheck="false"
+        data-portal-input
+      />
+    </div>
+
+    <ul class="ps__chips" data-portal-chips>
+      {
+        suggestions.map((s) => (
+          <li>
+            <button type="button" class="ps__chip" data-portal-chip={s}>
+              {s}
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="ps__count" data-portal-count aria-live="polite">
+      {entries.length} answers &middot; start typing
+    </p>
+
+    <ul class="ps__results" data-portal-results>
+      {
+        /* Four fixed slots. The script fills them rather than creating nodes,
+           because Astro scopes these styles with an attribute that
+           script-created elements would not carry. */
+        [0, 1, 2, 3].map((i) => {
+          const e = initial[i];
+          return (
+            <li
+              class:list={['ps__hit', { 'ps__hit--open': i === 0 }]}
+              data-portal-slot={i}
+              hidden={!e}
+            >
+              <span class="ps__kind" data-slot-kind>
+                {e?.kind}
+              </span>
+              <span class="ps__body">
+                <span class="ps__title" data-slot-title>
+                  {e?.title}
+                </span>
+                <span class="ps__answer" data-slot-answer>
+                  {e?.answer}
+                </span>
+              </span>
+            </li>
+          );
+        })
+      }
+    </ul>
+
+    <p class="ps__empty" data-portal-empty hidden>
+      Nothing matches. In the real thing that is a gap in the documentation, and it gets written.
+    </p>
+  </div>
+
+  <p class="ps__note">
+    Working demo, real search &mdash; a small slice of content written to show the retrieval model,
+    not B&rsquo;s Bagels&rsquo; actual operating manual.
+  </p>
+</div>
+
+<style>
+  .ps {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: clamp(0.85rem, 0.4rem + 1.6vw, 1.75rem) var(--space-s);
+  }
+
+  .ps__phone {
+    width: 100%;
+    max-width: 20rem;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule-strong);
+    border-radius: 16px;
+    padding: 0.8rem 0.75rem 0.85rem;
+    box-shadow: var(--shadow-card);
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  /* --- chrome ------------------------------------------------------- */
+  .ps__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .ps__brand,
+  .ps__live {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.13em;
+    color: var(--ink-3);
+  }
+
+  .ps__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+  }
+
+  .ps__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* --- field -------------------------------------------------------- */
+  .ps__field {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.1rem 0.7rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: 999px;
+    color: var(--ink-3);
+    transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease);
+  }
+
+  .ps__field:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-wash);
+  }
+
+  .ps__icon {
+    width: 13px;
+    height: 13px;
+    flex: none;
+  }
+
+  .ps__input {
+    flex: 1;
+    min-width: 0;
+    min-height: 40px;
+    border: 0;
+    background: none;
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .ps__input:focus {
+    outline: none;
+  }
+
+  .ps__input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
+
+  /* --- suggestion chips --------------------------------------------- */
+  .ps__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.28rem;
+  }
+
+  .ps__chip {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.07em;
+    padding: 0.32rem 0.45rem;
+    border: 1px dashed var(--rule-strong);
+    border-radius: 999px;
+    background: none;
+    color: var(--ink-3);
+    cursor: pointer;
+    transition: color 0.16s var(--ease), border-color 0.16s var(--ease);
+  }
+
+  .ps__chip:hover,
+  .ps__chip:focus-visible {
+    color: var(--accent-ink);
+    border-color: var(--accent);
+    border-style: solid;
+  }
+
+  .ps__count {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  /* --- results ------------------------------------------------------ */
+  .ps__results {
+    display: grid;
+    gap: 2px;
+    min-height: 9.5rem;
+    align-content: start;
+  }
+
+  .ps__hit[hidden] {
+    display: none;
+  }
+
+  .ps__hit {
+    display: grid;
+    grid-template-columns: 3.6rem minmax(0, 1fr);
+    gap: 0.4rem;
+    padding: 0.42rem 0.4rem;
+    border-radius: var(--radius);
+    animation: ps-in 0.24s var(--ease-out) both;
+  }
+
+  @keyframes ps-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ps__hit {
+      animation: none;
+    }
+  }
+
+  .ps__hit--open {
+    background: var(--accent-wash);
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+
+  .ps__kind {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding-top: 0.12em;
+  }
+
+  .ps__hit--open .ps__kind {
+    color: var(--accent-ink);
+  }
+
+  .ps__body {
+    min-width: 0;
+  }
+
+  .ps__title {
+    display: block;
+    font-size: 0.75rem;
+    line-height: 1.28;
+    color: var(--ink-2);
+    letter-spacing: -0.008em;
+  }
+
+  .ps__hit--open .ps__title {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* The answer itself only shows on the top hit — the point of the thing. */
+  .ps__answer {
+    display: none;
+  }
+
+  .ps__hit--open .ps__answer {
+    display: block;
+    margin-top: 0.28rem;
+    font-size: 0.6875rem;
+    line-height: 1.45;
+    color: var(--ink-2);
+  }
+
+  .ps__empty {
+    font-size: 0.6875rem;
+    line-height: 1.45;
+    color: var(--ink-3);
+    padding: 0.4rem;
+  }
+
+  .ps__note {
+    margin-top: 0.7rem;
+    max-width: 24rem;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    line-height: 1.55;
+    letter-spacing: 0.02em;
+    color: var(--ink-3);
+    text-align: center;
+  }
+</style>
+
+<script is:inline define:vars={{ ENTRIES: entries }}>
+  // Progressive enhancement: the markup above already renders a valid result
+  // set, so this only ever makes it better.
+  (() => {
+    const norm = (s) => s.trim().toLowerCase();
+
+    const find = (query, limit) => {
+      const q = norm(query);
+      if (!q) return ENTRIES.slice(0, limit);
+      const terms = q.split(/\s+/);
+      return ENTRIES.map((e) => {
+        const hay = [e.title, e.kind, e.answer, ...(e.also || [])].join(' ').toLowerCase();
+        const title = e.title.toLowerCase();
+        let score = 0;
+        for (const t of terms) {
+          if (!hay.includes(t)) return { e, score: -1 };
+          score += title.includes(t) ? 3 : 1;
+          if (title.startsWith(t)) score += 2;
+        }
+        return { e, score };
+      })
+        .filter((r) => r.score >= 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, limit)
+        .map((r) => r.e);
+    };
+
+    document.querySelectorAll('[data-portal-search]').forEach((root) => {
+      const input = root.querySelector('[data-portal-input]');
+      const list = root.querySelector('[data-portal-results]');
+      const count = root.querySelector('[data-portal-count]');
+      const empty = root.querySelector('[data-portal-empty]');
+      const total = Number(root.dataset.total || ENTRIES.length);
+      if (!input || !list || !count || !empty) return;
+
+      const slots = [...root.querySelectorAll('[data-portal-slot]')];
+
+      const render = (q) => {
+        const hits = find(q, slots.length);
+        slots.forEach((li, i) => {
+          const e = hits[i];
+          li.hidden = !e;
+          li.classList.toggle('ps__hit--open', i === 0 && !!e);
+          if (!e) return;
+          li.querySelector('[data-slot-kind]').textContent = e.kind;
+          li.querySelector('[data-slot-title]').textContent = e.title;
+          li.querySelector('[data-slot-answer]').textContent = e.answer;
+        });
+
+        empty.hidden = hits.length > 0;
+        const query = norm(q);
+        count.textContent = !query
+          ? `${total} answers · start typing`
+          : hits.length === 0
+            ? 'No match'
+            : `${hits.length} of ${total} · top answer shown`;
+      };
+
+      let frame = 0;
+      input.addEventListener('input', () => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => render(input.value));
+      });
+
+      root.querySelectorAll('[data-portal-chip]').forEach((chip) => {
+        chip.addEventListener('click', () => {
+          input.value = chip.dataset.portalChip;
+          render(input.value);
+          input.focus();
+        });
+      });
+    });
+  })();
+</script>
