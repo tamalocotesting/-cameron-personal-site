@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import '../styles/print.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { site } from '../data/site';
@@ -10,13 +11,15 @@ interface Props {
   /** Pass false on the homepage so the title isn't "Cameron Macek — Cameron Macek". */
   suffix?: boolean;
   ogType?: 'website' | 'article';
+  /** Per-page social card in public/. Falls back to the site-wide one. */
+  ogImage?: string;
 }
 
-const { title, description, suffix = true, ogType = 'website' } = Astro.props;
+const { title, description, suffix = true, ogType = 'website', ogImage = '/og.png' } = Astro.props;
 
 const pageTitle = suffix ? `${title} — ${site.name}` : title;
 const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', site.url).href;
-const ogImage = new URL('/og.png', site.url).href;
+const ogImageUrl = new URL(ogImage, site.url).href;
 
 const personSchema = {
   '@context': 'https://schema.org',
@@ -86,7 +89,7 @@ const personSchema = {
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={`${site.name} — operations and AI implementation`} />
@@ -95,17 +98,29 @@ const personSchema = {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image" content={ogImageUrl} />
 
     <script type="application/ld+json" is:inline set:html={JSON.stringify(personSchema)} />
   </head>
 
   <body id="top">
     <a class="skip-link" href="#main">Skip to content</a>
+
+    <!-- Only ever seen on paper: gives a printed or PDF'd page a masthead
+         with the contact details, since the site chrome is stripped. -->
+    <header class="print-masthead" aria-hidden="true">
+      <div class="print-masthead__name">{site.name}</div>
+      <div class="print-masthead__meta">
+        <span>Operations &amp; AI implementation</span><span>{site.location}</span><span
+          >{site.email}</span
+        ><span>{site.url.replace('https://', '')}</span>
+      </div>
+    </header>
     <Header />
     <main id="main" tabindex="-1">
       <slot />
     </main>
+    <p class="print-source" aria-hidden="true">{canonical}</p>
     <Footer />
 
     <script is:inline>

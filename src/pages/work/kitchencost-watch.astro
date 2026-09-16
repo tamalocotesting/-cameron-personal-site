@@ -1,9 +1,21 @@
 ---
 import CaseLayout from '../../layouts/CaseLayout.astro';
+import Diagram from '../../components/Diagram.astro';
+import PipelineDiagram from '../../components/visuals/PipelineDiagram.astro';
+
+const sections = [
+  { id: 'problem', label: 'The problem' },
+  { id: 'reality', label: 'Operational reality' },
+  { id: 'building', label: 'What I’m building' },
+  { id: 'how', label: 'How it works' },
+  { id: 'principle', label: 'Design principle' },
+  { id: 'status', label: 'Status' },
+  { id: 'learned', label: 'What I’ve learned' },
+];
 ---
 
-<CaseLayout slug="kitchencost-watch">
-  <section>
+<CaseLayout slug="kitchencost-watch" sections={sections}>
+  <section id="problem">
     <h2><span class="n">01 / The problem</span>Food cost doesn&rsquo;t move in one event. It moves a line at a time.</h2>
     <p>
       A case of eggs goes up six dollars. A cream cheese pack size quietly changes from five pounds
@@ -17,7 +29,7 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     </p>
   </section>
 
-  <section>
+  <section id="reality">
     <h2><span class="n">02 / Operational reality</span>Why nobody actually reviews invoices.</h2>
     <p>
       It isn&rsquo;t discipline. The work is genuinely hard in ways that aren&rsquo;t obvious until
@@ -44,7 +56,7 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     </p>
   </section>
 
-  <section>
+  <section id="building">
     <h2><span class="n">03 / What I&rsquo;m building</span>Read the invoice. Match the line. Watch the number.</h2>
     <p>
       A system that takes invoices in whatever form they show up, turns them into structured lines,
@@ -55,8 +67,16 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     <p>Costs roll up into recipes, so the question can also be asked from the other end: what does this plate cost now?</p>
   </section>
 
-  <section>
+  <section id="how">
     <h2><span class="n">04 / How it works</span>The pieces, and where the difficulty actually sits.</h2>
+
+    <Diagram
+      wide
+      caption="The whole system in one picture. The gate and the loop are the design; the extraction is the easy part."
+    >
+      <PipelineDiagram />
+    </Diagram>
+
     <ul class="rows">
       <li>
         <b>Extraction</b>
@@ -97,7 +117,7 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     </ul>
   </section>
 
-  <section>
+  <section id="principle">
     <h2><span class="n">05 / The design principle</span>Assume the model is wrong sometimes.</h2>
     <p>
       The interesting engineering in a project like this isn&rsquo;t the extraction. Getting a model
@@ -124,7 +144,7 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     </p>
   </section>
 
-  <section>
+  <section id="status">
     <h2><span class="n">06 / Status</span>Where this honestly stands.</h2>
     <div class="note">
       <p class="label">In development</p>
@@ -137,7 +157,7 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     </div>
   </section>
 
-  <section>
+  <section id="learned">
     <h2><span class="n">07 / What I&rsquo;ve learned</span>Mostly about where AI fits.</h2>
     <ul class="rows">
       <li>

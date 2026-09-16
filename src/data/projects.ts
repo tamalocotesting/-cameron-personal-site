@@ -113,16 +113,13 @@ export const getProject = (slug: string): Project => {
   return found;
 };
 
-/** Smaller explorations — listed for honesty, deliberately not given case studies. */
-export const explorations = [
-  {
-    title: 'RecruiterOS',
-    stage: 'concept' as Stage,
-    body: 'A missed-call recovery concept: treat every unanswered call as a lead with a state, not a voicemail nobody returns. Designed the follow-up workflow; kept it as a concept because the operations work was the better use of my time.',
-  },
-  {
-    title: 'Bilingual floor content',
-    stage: 'built' as Stage,
-    body: 'Kitchens are multilingual and most operational documentation is not. Building procedures in more than one language from the start — rather than translating them later — changed who could actually use the portal.',
-  },
-];
+/**
+ * One thing that was genuinely explored and genuinely set down. Listed because
+ * leaving it out would be tidier than it is honest — not padded out with
+ * features of the portal dressed up as separate projects.
+ */
+export const exploration = {
+  title: 'RecruiterOS',
+  stage: 'concept' as Stage,
+  body: 'A missed-call recovery concept: treat every unanswered call as a lead with a state, not a voicemail nobody returns. I designed the follow-up workflow, then stopped \u2014 the operations work was the better use of the same hours, and saying so is more useful than keeping a third project on the shelf.',
+};

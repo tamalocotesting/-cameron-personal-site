@@ -1,0 +1,206 @@
+/* ==========================================================================
+   Print / save-as-PDF.
+
+   People forward candidates as PDFs. This makes that artefact worth reading:
+   a clean white document with a masthead carrying the contact details, the
+   navigation and calls-to-action stripped, and page breaks that don't orphan
+   a heading at the foot of a page.
+   ========================================================================== */
+
+@media print {
+  @page {
+    margin: 16mm 15mm 18mm;
+  }
+
+  :root {
+    /* White stock, black ink. The accent survives so status badges and
+       section markers still read as deliberate rather than as artefacts. */
+    --paper: #fff;
+    --paper-raised: #fff;
+    --paper-sunken: #fff;
+    --ink: #000;
+    --ink-2: #1c1a17;
+    --ink-3: #46413a;
+    --rule: rgb(0 0 0 / 0.22);
+    --rule-strong: rgb(0 0 0 / 0.42);
+    --accent-wash: transparent;
+    --shadow-card: none;
+    --shadow-lift: none;
+  }
+
+  html {
+    font-size: 10.5pt;
+  }
+
+  body {
+    background: #fff;
+    overflow-x: visible;
+  }
+
+  /* The paper grain is a screen affectation. */
+  body::before {
+    display: none !important;
+  }
+
+  /* ---------------------------------------------------- what to drop --- */
+  .site-header,
+  .site-footer,
+  .skip-link,
+  .toc,
+  .case__next,
+  .case__back,
+  .hero__actions,
+  .contact__actions,
+  .bg__actions,
+  .card__cta,
+  .btn {
+    display: none !important;
+  }
+
+  /* ------------------------------------------------- print-only chrome --- */
+  .print-masthead {
+    display: block !important;
+    margin-bottom: 8mm;
+    padding-bottom: 3mm;
+    border-bottom: 1.5pt solid #000;
+  }
+
+  .print-masthead__name {
+    font-family: var(--font-display);
+    font-size: 15pt;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .print-masthead__meta {
+    margin-top: 1.5mm;
+    font-family: var(--font-mono);
+    font-size: 8pt;
+    letter-spacing: 0.04em;
+    color: #46413a;
+  }
+
+  .print-masthead__meta span + span::before {
+    content: '  ·  ';
+  }
+
+  .print-source {
+    display: block !important;
+    margin-top: 8mm;
+    padding-top: 2.5mm;
+    border-top: 0.5pt solid rgb(0 0 0 / 0.3);
+    font-family: var(--font-mono);
+    font-size: 7.5pt;
+    color: #46413a;
+  }
+
+  /* ------------------------------------------------------- the layout --- */
+  .shell,
+  .shell--narrow,
+  .case__main {
+    max-width: none !important;
+    width: auto !important;
+    padding-inline: 0 !important;
+    display: block !important;
+    grid-template-columns: none !important;
+  }
+
+  .section,
+  .hero,
+  .case__header,
+  .bg__header {
+    /* padding-block takes at most two values — a third silently voids it. */
+    padding-block: 0 6mm !important;
+  }
+
+  .section--sunken {
+    border: 0;
+    background: none;
+  }
+
+  /* Diagrams and interface sketches are evidence — keep them, and keep the
+     fills that make them legible. */
+  .dg__frame,
+  .pvis__frame {
+    border: 0.5pt solid rgb(0 0 0 / 0.3);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .badge,
+  .pd__out,
+  .pd__loop,
+  .rd__pin,
+  .rd__note-n,
+  .md__dot,
+  .marker__num,
+  .cap__honest {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .cap__honest {
+    border: 0.5pt solid rgb(0 0 0 / 0.35);
+    border-left-width: 2pt;
+  }
+
+  /* --------------------------------------------------- page breaking --- */
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .rich > section,
+  .card,
+  .dg,
+  .pvis,
+  figure,
+  .spec__row,
+  .q__item,
+  .path__step,
+  .rich > section > ul.rows > li {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .rich > section + section {
+    margin-top: 7mm;
+  }
+
+  p,
+  li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* ----------------------------------------------------------- links --- */
+  a {
+    text-decoration: none;
+    color: #000;
+  }
+
+  /* Spell out destinations that aren't obvious on paper. */
+  .rich a[href^='http']::after,
+  .prose a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-family: var(--font-mono);
+    font-size: 0.82em;
+    color: #46413a;
+    word-break: break-all;
+  }
+
+  /* Reveal animations must never leave a printed page blank. */
+  .js [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Print-only elements stay out of the way on screen. */
+.print-masthead,
+.print-source {
+  display: none;
+}

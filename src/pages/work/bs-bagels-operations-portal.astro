@@ -1,9 +1,20 @@
 ---
 import CaseLayout from '../../layouts/CaseLayout.astro';
+import Diagram from '../../components/Diagram.astro';
+import RecordDiagram from '../../components/visuals/RecordDiagram.astro';
+
+const sections = [
+  { id: 'problem', label: 'The problem' },
+  { id: 'reality', label: 'Operational reality' },
+  { id: 'built', label: 'What I built' },
+  { id: 'how', label: 'How it works' },
+  { id: 'why', label: 'Why it matters' },
+  { id: 'learned', label: 'What I learned' },
+];
 ---
 
-<CaseLayout slug="bs-bagels-operations-portal">
-  <section>
+<CaseLayout slug="bs-bagels-operations-portal" sections={sections}>
+  <section id="problem">
     <h2><span class="n">01 / The problem</span>The knowledge exists. It just isn&rsquo;t anywhere.</h2>
     <p>
       A restaurant&rsquo;s operating knowledge is real and extremely detailed. Somebody knows how
@@ -22,7 +33,7 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     </p>
   </section>
 
-  <section>
+  <section id="reality">
     <h2><span class="n">02 / Operational reality</span>The failure has a shape, and it repeats.</h2>
     <p>Watch it happen a few dozen times and it&rsquo;s always the same sequence:</p>
     <ul class="bullets">
@@ -41,7 +52,7 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     </p>
   </section>
 
-  <section>
+  <section id="built">
     <h2><span class="n">03 / What I built</span>A portal for someone standing up, with one hand free.</h2>
     <p>
       A mobile-first internal operations portal for the shop. Not a wiki and not a folder of PDFs
@@ -63,9 +74,16 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
       questions people actually ask during a shift, not around how the business happens to be
       organised on paper.
     </p>
+
+    <Diagram
+      wide
+      caption="One record, and the five decisions inside it. Most of the work is at this scale."
+    >
+      <RecordDiagram />
+    </Diagram>
   </section>
 
-  <section>
+  <section id="how">
     <h2><span class="n">04 / How it works</span>The decisions that made the difference.</h2>
     <ul class="rows">
       <li>
@@ -102,7 +120,7 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     </ul>
   </section>
 
-  <section>
+  <section id="why">
     <h2><span class="n">05 / Why it matters</span>Knowledge stops being a person.</h2>
     <p>
       When the operation is written down and reachable, a few things change at once. Training gets
@@ -126,7 +144,7 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     </p>
   </section>
 
-  <section>
+  <section id="learned">
     <h2><span class="n">06 / What I learned</span>Mostly about adoption.</h2>
     <ul class="rows">
       <li>

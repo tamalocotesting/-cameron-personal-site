@@ -1,9 +1,20 @@
 ---
 import CaseLayout from '../../layouts/CaseLayout.astro';
+import Diagram from '../../components/Diagram.astro';
+import MethodDiagram from '../../components/visuals/MethodDiagram.astro';
+
+const sections = [
+  { id: 'thesis', label: 'The thesis' },
+  { id: 'why-now', label: 'Why now' },
+  { id: 'what', label: 'What it is' },
+  { id: 'method', label: 'The method' },
+  { id: 'status', label: 'Status' },
+  { id: 'questions', label: 'Open questions' },
+];
 ---
 
-<CaseLayout slug="service-and-standard">
-  <section>
+<CaseLayout slug="service-and-standard" sections={sections}>
+  <section id="thesis">
     <h2><span class="n">01 / The thesis</span>The business knows more than it has written down.</h2>
     <p>
       Not the mission statement. The operating knowledge: the order the close has to happen in,
@@ -21,7 +32,7 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     </p>
   </section>
 
-  <section>
+  <section id="why-now">
     <h2><span class="n">02 / Why now</span>The capture was always the expensive part.</h2>
     <p>
       &ldquo;Write it all down&rdquo; has always been the right answer. It was just never
@@ -43,7 +54,7 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     </p>
   </section>
 
-  <section>
+  <section id="what">
     <h2><span class="n">03 / What it is</span>One operations system, built for one business.</h2>
     <p>
       The same shape as the portal I built for the shop I work in, made repeatable: SOPs, recipes and
@@ -57,8 +68,13 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     </p>
   </section>
 
-  <section>
+  <section id="method">
     <h2><span class="n">04 / The method</span>Shadow, capture, structure, build, hand over.</h2>
+
+    <Diagram caption="Five stages, and the thing each one has to leave behind.">
+      <MethodDiagram />
+    </Diagram>
+
     <ul class="rows">
       <li>
         <b>Shadow</b>
@@ -92,7 +108,7 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     </ul>
   </section>
 
-  <section>
+  <section id="status">
     <h2><span class="n">05 / Status</span>An idea with one working proof.</h2>
     <div class="note">
       <p class="label">Concept</p>
@@ -106,7 +122,7 @@ import CaseLayout from '../../layouts/CaseLayout.astro';
     </div>
   </section>
 
-  <section>
+  <section id="questions">
     <h2><span class="n">06 / Open questions</span>What I&rsquo;d want to find out first.</h2>
     <p>
       I&rsquo;d rather write down the things I don&rsquo;t know than pretend the model is finished.

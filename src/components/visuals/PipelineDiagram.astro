@@ -1,0 +1,294 @@
+---
+/**
+ * The KitchenCost Watch pipeline, drawn.
+ *
+ * The point of the drawing is the gate and the loop: high-confidence lines
+ * post themselves, uncertain ones stop for a human, and that human's answer
+ * feeds back into matching so the same line is never asked about twice.
+ */
+const stages = [
+  {
+    key: 'In',
+    title: 'The invoice arrives',
+    body: 'A PDF, a photo taken in a walk-in, or paper off a clipboard.',
+  },
+  {
+    key: '01',
+    title: 'Extract',
+    body: 'A model reads the document into structured lines. Every field carries a confidence, not just a value.',
+  },
+  {
+    key: '02',
+    title: 'Match',
+    body: 'Line text is matched to a product in a normalised catalogue — vendor aliases, pack sizes, and every correction made before now.',
+  },
+];
+
+const outcomes = [
+  {
+    flag: 'Auto',
+    tone: 'auto',
+    title: 'Posts on its own',
+    body: 'Straight through to unit-cost history. The operator never sees it.',
+  },
+  {
+    flag: 'Review',
+    tone: 'review',
+    title: 'Stops for a human',
+    body: 'Lands in a short queue. One decision, then it is done for good.',
+  },
+];
+---
+
+<div
+  class="pd"
+  role="img"
+  aria-label="Diagram of the invoice pipeline. An invoice arrives as a PDF, photo or paper. Step one, extract: a model reads it into structured lines, each field carrying a confidence score. Step two, match: line text is matched to a product in a normalised catalogue using vendor aliases, pack sizes and previous corrections. A decision gate then asks whether the match is confident enough. If yes, the line posts on its own into unit-cost history. If no, it stops in a short human review queue. The human's answer is stored as a learned alias and fed back into the matching step, so the same line is never asked about twice. Everything that posts flows into unit-cost history, which surfaces real price movement rather than noise."
+>
+  <ol class="pd__spine">
+    {
+      stages.map((s) => (
+        <li class="pd__stage">
+          <span class="pd__key">{s.key}</span>
+          <div class="pd__node">
+            <p class="pd__title">{s.title}</p>
+            <p class="pd__body">{s.body}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+
+  <div class="pd__gate">
+    <span class="pd__gate-mark" aria-hidden="true"></span>
+    <p class="pd__gate-q">Confident enough to post?</p>
+  </div>
+
+  <div class="pd__branch">
+    {
+      outcomes.map((o) => (
+        <div class:list={['pd__out', `pd__out--${o.tone}`]}>
+          <span class="pd__flag">{o.flag}</span>
+          <p class="pd__title">{o.title}</p>
+          <p class="pd__body">{o.body}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  <p class="pd__loop">
+    <span class="pd__loop-arrow" aria-hidden="true">&#8624;</span>
+    <span>
+      The correction is kept as a learned alias and fed back into
+      <strong>Match</strong> &mdash; so the same line never gets asked about twice.
+    </span>
+  </p>
+
+  <div class="pd__end">
+    <span class="pd__key pd__key--end">Out</span>
+    <div class="pd__node">
+      <p class="pd__title">Unit-cost history</p>
+      <p class="pd__body">
+        What a comparable unit actually costs, over time &mdash; surfacing the handful of things
+        that really moved instead of a dashboard to interpret.
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .pd {
+    padding: clamp(1rem, 0.6rem + 1.4vw, 1.75rem) var(--space-s);
+  }
+
+  /* --- spine ------------------------------------------------------- */
+  .pd__spine {
+    display: grid;
+    gap: 0;
+  }
+
+  .pd__stage,
+  .pd__end {
+    position: relative;
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: 0.75rem;
+    padding-bottom: 1.4rem;
+  }
+
+  /* The vertical run between nodes, in its own gutter at the far left. */
+  .pd__stage::before,
+  .pd__gate::before {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 1.5rem;
+    bottom: 0;
+    width: 1px;
+    background: var(--rule-strong);
+  }
+
+  .pd__key {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    padding-top: 0.28rem;
+    padding-left: 1rem;
+    position: relative;
+  }
+
+  /* The node marker, centred on the spine. */
+  .pd__key::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.42rem;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--paper-raised);
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+  }
+
+  .pd__key--end::after {
+    background: var(--accent);
+    box-shadow: none;
+  }
+
+  .pd__title {
+    font-size: 0.8125rem;
+    font-weight: 640;
+    letter-spacing: -0.012em;
+    line-height: 1.25;
+  }
+
+  .pd__body {
+    margin-top: 0.22rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--ink-2);
+    max-width: 60ch;
+  }
+
+  /* --- gate -------------------------------------------------------- */
+  .pd__gate {
+    position: relative;
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: center;
+    padding-bottom: 1.1rem;
+  }
+
+  .pd__gate-mark {
+    width: 11px;
+    height: 11px;
+    justify-self: start;
+    margin-left: -2px;
+    background: var(--accent);
+    transform: rotate(45deg);
+    border-radius: 1px;
+  }
+
+  .pd__gate-q {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  /* --- branch ------------------------------------------------------ */
+  .pd__branch {
+    display: grid;
+    gap: 0.6rem;
+    margin-left: 0;
+  }
+
+  @media (min-width: 30em) {
+    .pd__branch {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-left: 4.25rem;
+    }
+  }
+
+  .pd__out {
+    padding: 0.7rem 0.8rem 0.8rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-lg);
+    background: var(--paper-raised);
+  }
+
+  .pd__out--review {
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    background: var(--accent-wash);
+  }
+
+  .pd__flag {
+    display: inline-block;
+    margin-bottom: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.16rem 0.34rem;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    line-height: 1;
+    color: var(--ink-3);
+  }
+
+  .pd__out--review .pd__flag {
+    color: var(--accent-ink);
+  }
+
+  .pd__out .pd__body {
+    max-width: none;
+  }
+
+  /* --- feedback loop ----------------------------------------------- */
+  .pd__loop {
+    display: grid;
+    grid-template-columns: 1.1rem minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: start;
+    margin-top: 0.7rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px dashed color-mix(in srgb, var(--accent) 55%, transparent);
+    border-radius: var(--radius);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+
+  @media (min-width: 30em) {
+    .pd__loop {
+      margin-left: 4.25rem;
+    }
+  }
+
+  .pd__loop-arrow {
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--accent);
+    transform: scaleX(-1);
+  }
+
+  .pd__loop strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* --- terminal ----------------------------------------------------- */
+  .pd__end {
+    margin-top: 1.4rem;
+    padding-bottom: 0;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--rule);
+  }
+</style>

@@ -245,9 +245,6 @@ ol {
   border-radius: 2px;
 }
 
-:target {
-  scroll-margin-top: 6rem;
-}
 
 /* --------------------------------------------------------------------------
    3. Layout primitives

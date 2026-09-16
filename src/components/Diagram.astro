@@ -1,0 +1,50 @@
+---
+/**
+ * Frame + caption for a diagram inside a case study. The diagram itself is
+ * passed as a child so each one can bring its own layout; this only supplies
+ * the ruled paper, the border and the caption line.
+ */
+interface Props {
+  caption: string;
+  /** Lets a wide diagram break the reading measure on large screens. */
+  wide?: boolean;
+}
+const { caption, wide = false } = Astro.props;
+---
+
+<figure class:list={['dg', { 'dg--wide': wide }]}>
+  <div class="dg__frame">
+    <slot />
+  </div>
+  <figcaption class="dg__cap">{caption}</figcaption>
+</figure>
+
+<style>
+  .dg {
+    margin: var(--space-l) 0 0;
+  }
+
+  .dg__frame {
+    background: var(--paper-raised);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .dg__cap {
+    margin-top: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: 1.5;
+    color: var(--ink-3);
+    letter-spacing: 0.01em;
+  }
+
+  /* Diagrams read better a little wider than the prose measure allows. */
+  @media (min-width: 64em) {
+    .dg--wide {
+      width: calc(100% + 6rem);
+      margin-left: -3rem;
+    }
+  }
+</style>

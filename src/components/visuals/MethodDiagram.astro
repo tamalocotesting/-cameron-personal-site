@@ -1,0 +1,155 @@
+---
+/**
+ * The Service & Standard method as a left-to-right process. Deliberately not
+ * another hairline list — the prose below already reads that way, and a
+ * process should look like one.
+ */
+const stages = [
+  { n: '01', name: 'Shadow', out: 'The real process' },
+  { n: '02', name: 'Capture', out: 'Every existing scrap' },
+  { n: '03', name: 'Structure', out: 'The conflicts resolved' },
+  { n: '04', name: 'Build', out: 'Answers in a few taps' },
+  { n: '05', name: 'Hand over', out: 'An owner on the inside' },
+];
+---
+
+<div
+  class="md"
+  role="img"
+  aria-label="A five-stage process running left to right. One, shadow, leaves behind the real process. Two, capture, leaves behind every existing scrap. Three, structure, leaves behind the conflicts resolved. Four, build, leaves behind answers in a few taps. Five, hand over, leaves behind an owner on the inside."
+>
+  <ol class="md__track">
+    {
+      stages.map((s) => (
+        <li class="md__stage">
+          <span class="md__dot" aria-hidden="true" />
+          <span class="md__n">{s.n}</span>
+          <span class="md__name">{s.name}</span>
+          <span class="md__out">{s.out}</span>
+        </li>
+      ))
+    }
+  </ol>
+  <p class="md__foot">
+    Each stage has to leave something behind. If it doesn&rsquo;t, it didn&rsquo;t happen.
+  </p>
+</div>
+
+<style>
+  .md {
+    padding: clamp(1.1rem, 0.7rem + 1.4vw, 1.9rem) var(--space-s);
+  }
+
+  .md__track {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .md__stage {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.4rem minmax(0, 4.5rem) minmax(0, 1fr);
+    align-items: baseline;
+    gap: 0.5rem;
+    padding-left: 0.1rem;
+  }
+
+  .md__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--paper-raised);
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+    align-self: center;
+  }
+
+  .md__n {
+    display: none;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--accent-ink);
+  }
+
+  .md__name {
+    font-size: 0.8125rem;
+    font-weight: 640;
+    letter-spacing: -0.014em;
+  }
+
+  .md__out {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--ink-2);
+  }
+
+  /* --- the band ------------------------------------------------------
+     Wide enough for five stages side by side: a rail runs behind them and
+     each stage sits on it, so it reads as a process rather than a list. */
+  @media (min-width: 46em) {
+    .md__track {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0;
+      position: relative;
+    }
+
+    /* The rail, inset so it starts and ends at the first and last dot. */
+    .md__track::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: var(--rule-strong);
+    }
+
+    .md__stage {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        'dot'
+        'n'
+        'name'
+        'out';
+      justify-items: center;
+      text-align: center;
+      gap: 0;
+      padding: 0 0.5rem;
+    }
+
+    .md__dot {
+      grid-area: dot;
+      position: relative;
+      z-index: 1;
+    }
+
+    .md__n {
+      grid-area: n;
+      display: block;
+      margin-top: 0.55rem;
+    }
+
+    .md__name {
+      grid-area: name;
+      margin-top: 0.2rem;
+    }
+
+    .md__out {
+      grid-area: out;
+      margin-top: 0.3rem;
+      max-width: 15ch;
+    }
+  }
+
+  .md__foot {
+    margin-top: 1.1rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--rule);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.05em;
+    color: var(--ink-3);
+    line-height: 1.5;
+  }
+</style>

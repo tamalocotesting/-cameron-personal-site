@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import SectionMarker from '../components/SectionMarker.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import Badge from '../components/Badge.astro';
-import { projects, explorations, stageMeta } from '../data/projects';
+import { projects, exploration, stageMeta } from '../data/projects';
 import { site, mailto } from '../data/site';
 
 const path = [
@@ -180,20 +180,14 @@ const buildSkills = [
       </div>
 
       <div class="work__also" data-reveal>
-        <h3 class="work__also-title label">Also on the bench</h3>
-        <ul class="work__also-list">
-          {
-            explorations.map((item) => (
-              <li class="work__also-item">
-                <div class="work__also-head">
-                  <h4 class="work__also-name">{item.title}</h4>
-                  <Badge stage={item.stage} />
-                </div>
-                <p class="work__also-body">{item.body}</p>
-              </li>
-            ))
-          }
-        </ul>
+        <h3 class="work__also-title label">Also explored</h3>
+        <div class="work__also-item">
+          <div class="work__also-head">
+            <h4 class="work__also-name">{exploration.title}</h4>
+            <Badge stage={exploration.stage} />
+          </div>
+          <p class="work__also-body">{exploration.body}</p>
+        </div>
       </div>
     </div>
   </section>
@@ -555,25 +549,23 @@ const buildSkills = [
   }
 
   .work__also {
+    display: grid;
+    gap: var(--space-s);
     margin-top: var(--space-2xl);
     padding-top: var(--space-l);
     border-top: 1px solid var(--rule-strong);
   }
 
-  .work__also-title {
-    margin-bottom: var(--space-m);
-  }
-
-  .work__also-list {
-    display: grid;
-    gap: var(--space-l);
-  }
-
   @media (min-width: 44em) {
-    .work__also-list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--space-xl);
+    .work__also {
+      grid-template-columns: 11rem minmax(0, 1fr);
+      gap: var(--space-l);
+      align-items: baseline;
     }
+  }
+
+  .work__also-title {
+    margin: 0;
   }
 
   .work__also-head {

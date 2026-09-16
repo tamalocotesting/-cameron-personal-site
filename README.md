@@ -24,6 +24,7 @@ npm run preview    # serve the built site
 | `npm run build:fast` | Production build without the type-check — what Netlify runs |
 | `npm run preview` | Serve `dist/` locally |
 | `npm run fonts` | Re-copy the Latin font files into `public/fonts` after a dependency bump |
+| `npm run check:output` | Post-build HTML checks (runs automatically in `build`) |
 
 > `/fonts/*` is cached immutable for a year and the filenames are not
 > content-hashed. If a font file's contents ever change, rename it in
@@ -88,6 +89,46 @@ each one means:
 
 Keep these honest. The legend is the reason the rest of the site is credible.
 
+## Diagrams
+
+Each case study carries a drawn diagram as well as prose, because for this
+audience a mechanism shown beats a mechanism described:
+
+- `PipelineDiagram` — KitchenCost Watch's extract → match → confidence gate,
+  including the branch to human review and the correction feeding back into
+  matching.
+- `RecordDiagram` — one record from the portal with its five design decisions
+  pinned to it.
+- `MethodDiagram` — Service & Standard's five stages and what each leaves behind.
+
+They are HTML and CSS, not images: they reflow on a phone, follow the colour
+tokens into dark mode, and stay sharp at any zoom. Each is wrapped in
+`Diagram.astro` for the frame and caption, and carries a `role="img"` with an
+`aria-label` describing the whole thing in prose.
+
+Text inside a diagram is a graphic label, never a heading — headings there
+would skip levels in the document outline.
+
+## Social cards
+
+Every page has its own card, so a case-study link pasted into a hiring thread
+previews that case study, status badge included.
+
+```bash
+node scripts/make-og.mjs     # needs a local Chromium; not part of the build
+```
+
+The script reads titles and taglines straight out of `src/data/projects.ts`, so
+the cards cannot drift from the pages — it throws rather than rendering
+something stale. Re-run it after changing a project's title, tagline or status.
+
+## Printing
+
+`src/styles/print.css` makes Cmd-P worth using. Navigation, the contents rail
+and every call-to-action drop away; a masthead with the contact details and the
+page's URL are added; diagrams keep their fills; and page breaks avoid orphaning
+a heading. `/background` prints as a clean summary someone can forward.
+
 ## Swapping in real screenshots
 
 Every project image on the site goes through one component,
@@ -146,3 +187,7 @@ Checked with a headless browser against the built output, not assumed:
 - `prefers-reduced-motion` disables every transition and the blinking caret
 - Keyboard order starts at the skip link and every control shows a focus ring
 - No console errors or failed requests on any page
+- `check-output.mjs` fails the build on two mistakes that are invisible in
+  source review: an HTML entity written inside a prop or data file (Astro
+  escapes it, so `&rsquo;` ships as literal text), and straight quotes in
+  rendered copy

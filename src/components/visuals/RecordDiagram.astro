@@ -1,0 +1,240 @@
+---
+/**
+ * One record from the portal, with the design decisions called out.
+ * Shows the content model rather than another screenshot of the shell.
+ */
+const notes = [
+  { n: '1', text: 'Named the way someone would ask for it, not the way the menu files it.' },
+  { n: '2', text: 'The picture is the spec. Faster than any sentence when your hands are full.' },
+  { n: '3', text: 'Steps are scoped to fit a phone. Long procedures get split, not scrolled.' },
+  { n: '4', text: 'Allergens sit on the record itself, so nobody has to know to go looking.' },
+  { n: '5', text: 'Both languages are the content, not a translation bolted on afterwards.' },
+];
+---
+
+<div
+  class="rd"
+  role="img"
+  aria-label="An annotated breakdown of one record in the portal — a sandwich build card. Five design decisions are called out: it is named the way someone would ask for it rather than the way the menu files it; the picture is the specification because it is faster than a sentence when hands are full; steps are scoped to fit a phone, so long procedures are split rather than scrolled; allergens sit on the record itself so nobody has to know to go looking; and both languages are the content rather than a translation added afterwards."
+>
+  <div class="rd__card">
+    <div class="rd__row">
+      <span class="rd__pin">1</span>
+      <span class="rd__name">Everything bagel &mdash; sandwich build</span>
+    </div>
+
+    <div class="rd__row rd__row--media">
+      <span class="rd__pin">2</span>
+      <div class="rd__shot" aria-hidden="true">
+        <span class="rd__shot-label">BUILD PHOTO</span>
+      </div>
+    </div>
+
+    <div class="rd__row">
+      <span class="rd__pin rd__pin--top">3</span>
+      <ol class="rd__steps">
+        <li><i>1</i><span style="--w:78%"></span></li>
+        <li><i>2</i><span style="--w:58%"></span></li>
+        <li><i>3</i><span style="--w:88%"></span></li>
+      </ol>
+    </div>
+
+    <div class="rd__row">
+      <span class="rd__pin">4</span>
+      <span class="rd__tags">
+        <em>Sesame</em><em>Poppy</em><em>Gluten</em>
+      </span>
+    </div>
+
+    <div class="rd__row">
+      <span class="rd__pin">5</span>
+      <span class="rd__lang">EN &middot; ES</span>
+    </div>
+  </div>
+
+  <ol class="rd__notes">
+    {
+      notes.map((note) => (
+        <li class="rd__note">
+          <span class="rd__note-n">{note.n}</span>
+          <span class="rd__note-t">{note.text}</span>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<style>
+  .rd {
+    display: grid;
+    gap: var(--space-m);
+    padding: clamp(1rem, 0.6rem + 1.4vw, 1.75rem) var(--space-s);
+  }
+
+  @media (min-width: 42em) {
+    .rd {
+      grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+      gap: var(--space-l);
+      align-items: start;
+    }
+  }
+
+  /* --- the record --------------------------------------------------- */
+  .rd__card {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.8rem;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+  }
+
+  .rd__row {
+    display: grid;
+    grid-template-columns: 1.15rem minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .rd__pin {
+    width: 1.15rem;
+    height: 1.15rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .rd__name {
+    font-size: 0.75rem;
+    font-weight: 620;
+    letter-spacing: -0.012em;
+    line-height: 1.25;
+  }
+
+  .rd__row--media {
+    align-items: start;
+  }
+
+  /* A pin that labels a multi-line group aligns to its first line. */
+  .rd__pin--top {
+    align-self: start;
+  }
+
+  .rd__shot {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius);
+    border: 1px solid var(--rule);
+    background:
+      repeating-linear-gradient(
+        -45deg,
+        transparent 0 6px,
+        color-mix(in srgb, var(--ink-3) 14%, transparent) 6px 7px
+      ),
+      var(--paper-sunken);
+  }
+
+  .rd__shot-label {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+    background: var(--paper-raised);
+    padding: 0.14rem 0.35rem;
+    border-radius: 2px;
+  }
+
+  .rd__steps {
+    display: grid;
+    gap: 0.32rem;
+  }
+
+  .rd__steps li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .rd__steps i {
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: 0.5625rem;
+    color: var(--ink-3);
+  }
+
+  .rd__steps span {
+    height: 4px;
+    width: var(--w);
+    border-radius: 2px;
+    background: var(--rule-strong);
+    opacity: 0.55;
+  }
+
+  .rd__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .rd__tags em {
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.08em;
+    padding: 0.16rem 0.32rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: 2px;
+    color: var(--ink-2);
+  }
+
+  .rd__lang {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+  }
+
+  /* --- the callouts ------------------------------------------------- */
+  .rd__notes {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .rd__note {
+    display: grid;
+    grid-template-columns: 1.15rem minmax(0, 1fr);
+    gap: 0.55rem;
+    align-items: start;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .rd__note-n {
+    width: 1.15rem;
+    height: 1.15rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    color: var(--accent-ink);
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .rd__note-t {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+</style>

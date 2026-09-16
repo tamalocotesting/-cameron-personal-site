@@ -3,15 +3,16 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
-  "description": "Personal site for Cameron Macek — operations, AI implementation, and internal tools.",
+  "description": "Personal site for Cameron Macek \u2014 operations, AI implementation, and internal tools.",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build",
-    "build:fast": "astro build",
+    "build": "astro check && astro build && node scripts/check-output.mjs",
+    "build:fast": "astro build && node scripts/check-output.mjs",
     "preview": "astro preview",
     "fonts": "node scripts/sync-fonts.mjs",
-    "astro": "astro"
+    "astro": "astro",
+    "check:output": "node scripts/check-output.mjs"
   },
   "dependencies": {
     "astro": "^7.3.2",
