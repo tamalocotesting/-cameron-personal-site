@@ -15,12 +15,14 @@ import type { Project } from '../../data/projects';
  *               overlapping the frame so it breaks the rectangle.
  *   tool      — the interactive panel leads at full width and the writing
  *               follows it in a strip. The thing itself is the headline.
+ *   document  — the artefact leads from the left, mirroring `lead` so a fourth
+ *               entry has its own rhythm rather than repeating the first.
  *   statement — type-led and quiet. A concept has no product to show, so the
  *               idea is set at display scale and given room.
  */
 interface Props {
   project: Project;
-  layout: 'lead' | 'tool' | 'statement';
+  layout: 'lead' | 'tool' | 'statement' | 'document';
 }
 const { project, layout } = Astro.props;
 ---
@@ -229,6 +231,37 @@ const { project, layout } = Astro.props;
 
     .we--tool .we__tagline {
       font-size: var(--step-1);
+    }
+  }
+
+  /* ======================================================================
+     DOCUMENT — the artefact on the left, the reading on the right.
+     ====================================================================== */
+  @media (min-width: 62em) {
+    .we--document {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+      grid-template-areas:
+        'visual head'
+        'visual title'
+        'visual detail';
+      grid-template-rows: auto auto 1fr;
+      column-gap: var(--space-2xl);
+      row-gap: var(--space-m);
+      align-items: start;
+    }
+
+    .we--document .we__head {
+      grid-area: head;
+    }
+    .we--document .we__title-block {
+      grid-area: title;
+    }
+    .we--document .we__detail {
+      grid-area: detail;
+    }
+    .we--document .we__visual {
+      grid-area: visual;
+      margin-top: calc(var(--space-l) * -1 - 1px);
     }
   }
 

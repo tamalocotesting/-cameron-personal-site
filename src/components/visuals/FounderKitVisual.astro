@@ -1,0 +1,172 @@
+---
+/**
+ * A page from the TamaLOCO founder kit. The rules are verbatim from the
+ * document — Spanish leading, English underneath — because the point of the
+ * project is whose language it is written in.
+ */
+const rules = [
+  { n: '1', es: 'Nada se decide sin ti.', en: 'Nothing gets locked without you.' },
+  {
+    n: '2',
+    es: 'No tienes que ser la cara pública si no quieres.',
+    en: 'You do not have to be the public face unless you want to.',
+  },
+  {
+    n: '3',
+    es: 'El negocio debe caber en tu vida, no comerse tu vida.',
+    en: 'The business must fit your life, not swallow your life.',
+  },
+];
+---
+
+<div
+  class="fk"
+  role="img"
+  aria-label="A page from the founder kit, written in Spanish with English underneath. Rule one: nothing gets locked without you. Rule two: you do not have to be the public face unless you want to. Rule three: the business must fit your life, not swallow your life. A separate box headed Regla para Cam — rule for Cam — reads: Cam can bring ideas and examples, but he should listen first. If it does not feel like Nadia, it changes."
+>
+  <div class="fk__sheet">
+    <div class="fk__head">
+      <span class="fk__kit">TAMALOCO / FOUNDER VISION KIT</span>
+      <span class="fk__lang">ES &middot; EN</span>
+    </div>
+
+    <ol class="fk__rules">
+      {
+        rules.map((r) => (
+          <li class="fk__rule">
+            <span class="fk__n">{r.n}</span>
+            <span class="fk__text">
+              <b lang="es">{r.es}</b>
+              <i lang="en">{r.en}</i>
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="fk__note">
+      <p class="fk__note-title" lang="es">Regla para Cam</p>
+      <p class="fk__note-es" lang="es">
+        Cam puede traer ideas, ejemplos y opciones, pero primero debe escuchar. Si Nadia dice que
+        algo no se siente como ella, se cambia.
+      </p>
+      <p class="fk__note-en" lang="en">
+        Cam can bring ideas and examples, but he should listen first. If it does not feel like
+        Nadia, it changes.
+      </p>
+    </div>
+
+    <p class="fk__foot">Nadia decides the heart. Cam supports the build.</p>
+  </div>
+</div>
+
+<style>
+  .fk {
+    padding: clamp(0.85rem, 0.4rem + 1.6vw, 1.75rem) var(--space-s);
+  }
+
+  .fk__sheet {
+    background: var(--paper-raised);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+
+  .fk__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .fk__kit,
+  .fk__lang {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+  }
+
+  .fk__lang {
+    color: var(--accent-ink);
+  }
+
+  .fk__rules {
+    display: grid;
+  }
+
+  .fk__rule {
+    display: grid;
+    grid-template-columns: 1.4rem minmax(0, 1fr);
+    gap: 0.65rem;
+    padding: 0.7rem 0.85rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .fk__n {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--accent-ink);
+    line-height: 1.3;
+  }
+
+  /* Spanish sets the line; English is the annotation under it. */
+  .fk__text b {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 620;
+    letter-spacing: -0.012em;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+
+  .fk__text i {
+    display: block;
+    margin-top: 0.15rem;
+    font-style: normal;
+    font-size: 0.6875rem;
+    line-height: 1.35;
+    color: var(--ink-3);
+  }
+
+  .fk__note {
+    padding: 0.75rem 0.85rem;
+    background: var(--accent-wash);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .fk__note-title {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    margin-bottom: 0.35rem;
+  }
+
+  .fk__note-es {
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+
+  .fk__note-en {
+    margin-top: 0.3rem;
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    color: var(--ink-3);
+  }
+
+  .fk__foot {
+    padding: 0.6rem 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    text-align: center;
+  }
+</style>

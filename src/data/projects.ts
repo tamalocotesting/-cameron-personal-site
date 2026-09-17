@@ -44,7 +44,7 @@ export interface Project {
   /** Case-study page <title> + meta description. */
   seoTitle: string;
   seoDescription: string;
-  visual: 'portal' | 'cost' | 'standard';
+  visual: 'portal' | 'cost' | 'standard' | 'founder';
   /** Short notes pinned beside the interface on the case-study page. */
   notes?: { k: string; v: string }[];
 }
@@ -80,13 +80,13 @@ export const projects: Project[] = [
     title: 'KitchenCost Watch',
     tagline: 'Food cost changes one invoice line at a time. Nobody has time to read them.',
     summary:
-      'An AI-assisted invoice system: read the invoice, match each line to a real product, normalise the units, and track what a case actually costs over time. The engineering that matters is not the extraction — it is everything built for the times the model is wrong.',
+      'An AI-assisted invoice system, now on V5. Products keep a stable identity across suppliers who reword their catalogues, prices are compared against a median rather than last week, and an increase only interrupts anyone once it clears a materiality bar. The extraction was never the hard part.',
     stage: 'in-progress',
     href: '/work/kitchencost-watch',
     spec: [
       { key: 'Problem', val: 'Costs move weeks before the P&L shows it' },
       { key: 'Role', val: 'Concept, data model, AI workflow, operator UI' },
-      { key: 'AI role', val: 'Extraction and matching — with a human review path' },
+      { key: 'AI role', val: 'Extraction and matching — fuzzy is a suggestion, never a merge' },
     ],
     seoTitle: 'KitchenCost Watch',
     seoDescription:
@@ -94,13 +94,37 @@ export const projects: Project[] = [
     visual: 'cost',
     notes: [
       { k: 'Every field scored', v: 'The model returns a confidence, not just a value.' },
-      { k: 'The gate is a choice', v: 'Somebody sets the threshold. It costs something either way.' },
-      { k: 'Corrections stick', v: 'A human answers once; the match is remembered after that.' },
+      { k: 'Material or nothing', v: 'An increase clears a percentage and a dollar bar, or it stays quiet.' },
+      { k: 'Identity is earned', v: 'Confirmed SKU reconnects. A similar name only ever suggests.' },
     ],
   },
   {
-    slug: 'service-and-standard',
+    slug: 'tamaloco',
     index: '03',
+    title: 'TamaLOCO',
+    tagline: 'The founder decides the heart. I support the build.',
+    summary:
+      'A bilingual founder-vision kit for a tamales business — Spanish first, English underneath. It captures what the owner wants the food to feel like, what she will and won\u2019t be public about, and, in plain language, exactly which decisions I am allowed to make without asking her.',
+    stage: 'built',
+    href: '/work/tamaloco',
+    spec: [
+      { key: 'Context', val: 'TamaLOCO \u2014 a tamales business, founder-led' },
+      { key: 'Role', val: 'Discovery, decision rights, the kit itself' },
+      { key: 'Language', val: 'Spanish primary, English beneath every line' },
+    ],
+    notes: [
+      { k: 'Her language first', v: 'Spanish leads every question. English sits underneath it, smaller.' },
+      { k: 'Answer any way', v: 'Write a little, send audio, show photos, or say \u201cI don\u2019t like that\u201d.' },
+      { k: 'Decision rights, written down', v: 'Question 10 asks what I may decide without checking first.' },
+    ],
+    seoTitle: 'TamaLOCO',
+    seoDescription:
+      'A bilingual founder-vision interview kit for a tamales business: discovery, decision rights and scope, written in the founder\u2019s own language.',
+    visual: 'founder',
+  },
+  {
+    slug: 'service-and-standard',
+    index: '04',
     title: 'Service & Standard',
     tagline: 'Most of what a business knows has never been written down.',
     summary:

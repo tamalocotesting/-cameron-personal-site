@@ -1,0 +1,153 @@
+---
+import CaseLayout from '../../layouts/CaseLayout.astro';
+
+const sections = [
+  { id: 'problem', label: 'The problem' },
+  { id: 'reality', label: 'What was in the way' },
+  { id: 'built', label: 'What I built' },
+  { id: 'rights', label: 'Decision rights' },
+  { id: 'why', label: 'Why it matters' },
+  { id: 'learned', label: 'What I learned' },
+];
+---
+
+<CaseLayout slug="tamaloco" sections={sections}>
+  <section id="problem">
+    <h2><span class="n">01 / The problem</span>The recipe was never the missing piece.</h2>
+    <p>
+      Nadia can already make the food. What a business needed from her was everything around it: a
+      name, a look, a story, prices, a public face, a position on how big this should get. All of it
+      in a second language, on top of a life that was already full.
+    </p>
+    <p>
+      The usual failure here is well meant. Somebody helpful arrives, builds a brand, hands it over,
+      and it turns out to be their taste with her food attached. She doesn&rsquo;t recognise it, so
+      she doesn&rsquo;t defend it, and the whole thing quietly stops.
+    </p>
+  </section>
+
+  <section id="reality">
+    <h2><span class="n">02 / What was in the way</span>Three things, none of them the tamales.</h2>
+    <ul class="rows">
+      <li>
+        <b>Language</b>
+        Every brand worksheet I could find was in English. Asking somebody to describe how they want
+        their food to feel, in their second language, gets you a shorter and flatter answer than the
+        one they actually have.
+      </li>
+      <li>
+        <b>The blank page</b>
+        &ldquo;What&rsquo;s your brand?&rdquo; is an unanswerable question. It asks for a finished
+        opinion before anyone has had a chance to form one.
+      </li>
+      <li>
+        <b>Nobody had said who decides</b>
+        Without that written down, one of two things happens: I stall on every small choice, or I
+        start making them and she stops feeling like it&rsquo;s hers.
+      </li>
+    </ul>
+  </section>
+
+  <section id="built">
+    <h2><span class="n">03 / What I built</span>A founder-vision kit, in her language.</h2>
+    <p>
+      A bilingual interview kit she can answer at her own pace. Spanish sets every line; English sits
+      underneath it, smaller, for anyone else who has to read it later.
+    </p>
+    <p>It opens with three rules, and they are the whole design:</p>
+    <ul class="bullets">
+      <li lang="es"><strong>Nada se decide sin ti.</strong> Nothing gets locked without you.</li>
+      <li lang="es">
+        <strong>No tienes que ser la cara pública si no quieres.</strong> You do not have to be the
+        public face unless you want to.
+      </li>
+      <li lang="es">
+        <strong>El negocio debe caber en tu vida, no comerse tu vida.</strong> The business must fit
+        your life, not swallow your life.
+      </li>
+    </ul>
+    <p>
+      Then sections of real questions &mdash; heart and purpose, what someone should feel eating the
+      food, how big this should ever get, how she feels about a loan. And a standing instruction
+      that she can answer any way she wants: write a little, send an audio message, show a photo,
+      pick from options, or just say <em>eso no me gusta</em> &mdash; I don&rsquo;t like that.
+    </p>
+  </section>
+
+  <section id="rights">
+    <h2><span class="n">04 / Decision rights</span>Question 10 is the one that matters.</h2>
+    <p>
+      <strong lang="es">Cam puede decidir estas cosas sin preguntarme cada vez&hellip;</strong>
+      &mdash; <em>Cam may decide these things without asking every time.</em> An open line she fills
+      in herself.
+    </p>
+    <p>
+      It is the most boring-looking question in the kit and the one that makes the rest of it work.
+      Every implementation I have ever seen go wrong went wrong in the gap between what the person
+      thought they had approved and what got built. Writing the boundary down, in her words, in her
+      language, before anything is made, costs one line and removes that entire category of argument.
+    </p>
+    <p class="pull">
+      Nadia decides the heart. I support the build. That sentence is printed on the bottom of every
+      page of the kit, because it is the deal.
+    </p>
+    <p>
+      The kit also carries a rule for me:
+      <em lang="es">Cam puede traer ideas, ejemplos y opciones, pero primero debe escuchar.</em> I can
+      bring ideas, examples and options &mdash; but I listen first, and if it doesn&rsquo;t feel like
+      her, it changes.
+    </p>
+  </section>
+
+  <section id="why">
+    <h2><span class="n">05 / Why it matters</span>This is the job, with the software removed.</h2>
+    <p>
+      Strip out the code and an implementation is this: understand what the customer actually wants,
+      in their language, at a pace they can manage; agree what you are allowed to decide; then build
+      only what they recognise as theirs.
+    </p>
+    <ul class="rows">
+      <li>
+        <b>Discovery that gets real answers</b>
+        Structured questions, native language, and permission to answer badly. The output is usable
+        input rather than a polite shrug.
+      </li>
+      <li>
+        <b>Scope agreed up front</b>
+        A written boundary on what proceeds without a check-in. That is a RACI chart written for a
+        human being.
+      </li>
+      <li>
+        <b>Adoption by construction</b>
+        She owns the answers, so she recognises what gets built. Nobody has to be sold on their own
+        business.
+      </li>
+    </ul>
+  </section>
+
+  <section id="learned">
+    <h2><span class="n">06 / What I learned</span>Mostly about who holds the pen.</h2>
+    <ul class="rows">
+      <li>
+        <b>Translate the form, not just the words</b>
+        A translated English worksheet is still an English worksheet. Leading in Spanish and
+        annotating in English changes who the document is for.
+      </li>
+      <li>
+        <b>Lower the cost of answering</b>
+        Audio, photos, a shrug, and multiple choice are all valid inputs. Insisting on written
+        paragraphs filters for confidence in a second language, not for good answers.
+      </li>
+      <li>
+        <b>Write the boundary before the build</b>
+        Decision rights are cheap to agree while nothing exists yet, and expensive to argue about
+        once something does.
+      </li>
+      <li>
+        <b>Helping is not the same as taking over</b>
+        The most useful thing I did on this project was design a way to stay out of the decisions
+        that were never mine.
+      </li>
+    </ul>
+  </section>
+</CaseLayout>

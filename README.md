@@ -85,6 +85,24 @@ Case-study prose lives in its own page under `src/pages/work/`, written as plain
 semantic HTML. The typography comes from `src/styles/prose.css`, so the pages
 stay readable in source.
 
+### Where the project content comes from
+
+Two projects are written from source material rather than from memory, and the
+detail is load-bearing — keep it accurate if you edit it:
+
+- **KitchenCost Watch** — the case study describes the real V5 build: the
+  matching ladder (explicit ID → confirmed SKU → exact description with
+  corroborating evidence → fuzzy, which only ever *suggests*), the
+  median-of-five baseline, and the four materiality rules that decide whether a
+  price rise is allowed to interrupt anyone. The three test names quoted in the
+  Status section are the real ones.
+- **TamaLOCO** — the three rules and the *Regla para Cam* in the visual are
+  verbatim from the founder kit, Spanish leading and English beneath, as in the
+  document.
+
+Nothing from those sources that is operational — workspace passwords, API keys,
+deploy targets — appears anywhere on the site, and none of it should.
+
 ### Project status labels
 
 Each project carries a `stage`, and the homepage prints a legend defining what

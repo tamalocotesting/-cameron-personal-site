@@ -81,7 +81,8 @@ const DEFAULT = 90;
   </div>
 
   <p class="ct__note">
-    Drag it. Illustrative lines and scores &mdash; the trade-off is the real part.
+    Drag it. One axis, to make the trade-off visible &mdash; the built system gates on percentage
+    <em>and</em> dollar impact together.
   </p>
 </div>
 
@@ -319,6 +320,11 @@ const DEFAULT = 90;
     line-height: 1.45;
     color: var(--ink-3);
     min-height: 2.6em;
+  }
+
+  .ct__note em {
+    font-style: normal;
+    color: var(--accent-ink);
   }
 
   .ct__note {

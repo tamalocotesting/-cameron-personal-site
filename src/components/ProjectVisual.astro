@@ -2,6 +2,7 @@
 import PortalSearch from './visuals/PortalSearch.astro';
 import CostThreshold from './visuals/CostThreshold.astro';
 import StandardVisual from './visuals/StandardVisual.astro';
+import FounderKitVisual from './visuals/FounderKitVisual.astro';
 
 /**
  * One swap point for every project image on the site.
@@ -11,7 +12,7 @@ import StandardVisual from './visuals/StandardVisual.astro';
  * sketch steps aside and nothing else has to change.
  */
 interface Props {
-  visual: 'portal' | 'cost' | 'standard';
+  visual: 'portal' | 'cost' | 'standard' | 'founder';
   /** Optional real screenshot. Overrides the sketch when present. */
   src?: ImageMetadata;
   alt?: string;
@@ -20,9 +21,17 @@ interface Props {
 
 const { visual, src, alt, caption } = Astro.props;
 
-const sketches = { portal: PortalSearch, cost: CostThreshold, standard: StandardVisual };
+const sketches = {
+  portal: PortalSearch,
+  cost: CostThreshold,
+  standard: StandardVisual,
+  founder: FounderKitVisual,
+};
 const Sketch = sketches[visual];
-const defaultCaption = 'Interface sketch, not a screenshot.';
+const defaultCaption =
+  visual === 'founder'
+    ? 'From the kit itself — the rules, verbatim.'
+    : 'Interface sketch, not a screenshot.';
 const interactive = visual === 'portal' || visual === 'cost';
 ---
 

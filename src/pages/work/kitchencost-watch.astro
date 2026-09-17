@@ -77,44 +77,73 @@ const sections = [
       <PipelineDiagram />
     </Diagram>
 
+    <p>
+      Reading the invoice is the part everyone demos. Everything below it is the part that decides
+      whether an operator can trust the number a month later.
+    </p>
+
+    <h3>Matching is a ladder, and the bottom rung never auto-merges</h3>
+    <p>
+      A supplier can call the same case four different things across a year, and two suppliers can
+      call two different things the same thing. So a line only reconnects to an existing tracked
+      product on evidence, in this order:
+    </p>
     <ul class="rows">
       <li>
-        <b>Extraction</b>
-        A model reads the document into structured lines &mdash; product description, quantity, pack
-        size, unit price, extended price. Each field carries a confidence, not just a value.
+        <b>Explicit product ID</b>
+        Stays linked, as long as the physical unit is still compatible.
       </li>
       <li>
-        <b>Product matching</b>
-        Line text gets matched against a normalised catalogue: fuzzy matching, vendor-specific
-        aliases, and the corrections an operator has already made. This is the hard part, not the
-        reading.
+        <b>Same supplier, confirmed SKU</b>
+        Reconnects automatically. A SKU somebody already confirmed is real evidence.
       </li>
       <li>
-        <b>Confidence and review</b>
-        High-confidence lines post automatically. Anything uncertain lands in a short review queue
-        where a human confirms it once &mdash; and the system remembers the answer so the same line
-        never has to be asked about twice.
+        <b>Same supplier, exact confirmed description</b>
+        Reconnects only with corroborating pack-size or brand evidence.
       </li>
       <li>
-        <b>Unit normalisation</b>
-        Cost per case is not comparable to anything. Everything converts to a common unit so a
-        change in pack size shows up as what it is, rather than hiding inside a flat price.
-      </li>
-      <li>
-        <b>Cost history and flags</b>
-        Unit cost per product over time, with movement surfaced deliberately. The goal is a short
-        list of things that actually changed, not a dashboard that has to be interpreted.
-      </li>
-      <li>
-        <b>Background processing</b>
-        Upload and walk away. Nobody in a restaurant is going to sit and watch a progress bar.
-      </li>
-      <li>
-        <b>CSV in and out</b>
-        Not a fallback &mdash; the way the work really moves. Operators live in spreadsheets, and a
-        system that can&rsquo;t hand data back to one is a system they can&rsquo;t leave.
+        <b>Name or fuzzy similarity</b>
+        Suggestion only. It surfaces as <em>possible existing product</em> and waits for a human. It
+        never silently merges invoice history, and a new supplier never auto-merges just because the
+        model produced the same readable name.
       </li>
     </ul>
+    <p class="pull">
+      Fuzzy matching is a suggestion, never a merge. Silently joining two products&rsquo; histories
+      is the one mistake you cannot see and cannot undo.
+    </p>
+
+    <h3>Compare against normal, not against last week</h3>
+    <p>
+      A single prior invoice is a terrible baseline — one odd delivery and everything looks like a
+      crisis. Current normalised unit cost is compared with the <strong>median of up to five prior
+      purchases of the same tracked product from the same supplier</strong>, with pack sizes
+      converted to a base physical unit first, so a case going from 5&nbsp;lb to 4&nbsp;lb shows up
+      as what it is instead of hiding inside a flat price.
+    </p>
+
+    <h3>An alert has to earn the interruption</h3>
+    <p>
+      Most price movement is noise. A rise only becomes a dashboard alert if it clears one of these:
+    </p>
+    <ul class="rows">
+      <li><b>≥ 15%</b>and at least $0.10 per normalised unit</li>
+      <li><b>≥ 8%</b>and at least $10 of added purchase cost in the period</li>
+      <li><b>≥ 5%</b>and at least $25 of added purchase cost</li>
+      <li><b>≥ 3%</b>and at least $50 of added purchase cost</li>
+    </ul>
+    <p>
+      Percentage alone cries wolf on cheap items; dollars alone miss a small line bought constantly.
+      Everything below the bar stays in price history — it just doesn&rsquo;t interrupt anybody. And
+      cross-supplier comparisons only appear once two rows share a confirmed product identity;
+      similar names are not enough to put two prices side by side.
+    </p>
+
+    <h3>Recipes attach to identities, not to words</h3>
+    <p>
+      Recipe ingredients point at tracked product IDs, so a supplier rewording their catalogue
+      doesn&rsquo;t quietly break a plate&rsquo;s cost history.
+    </p>
   </section>
 
   <section id="principle">
@@ -147,12 +176,22 @@ const sections = [
   <section id="status">
     <h2><span class="n">06 / Status</span>Where this honestly stands.</h2>
     <div class="note">
-      <p class="label">In development</p>
+      <p class="label">In development — V5, version 1.2.0</p>
       <p>
-        Extraction and matching are where most of my time has gone, because that&rsquo;s where the
-        accuracy problem lives. The costing and history layers are in progress. There is no signup,
-        no pricing, no waitlist and no customers &mdash; it&rsquo;s a working system I&rsquo;m
-        building because I had the problem, not a product anyone can buy.
+        V4 read invoices and reconciled them. V5 changes what happens <em>after</em> the read:
+        products keep a stable identity, confirmed supplier aliases are remembered, recipes attach
+        to those identities, and price changes are filtered for materiality instead of every
+        increase being treated as news. There is a migration for existing V4 workspaces.
+      </p>
+      <p>
+        Three tests carry the rules that matter:
+        <em>product identity auto-links only deterministic supplier evidence</em>,
+        <em>signal engine suppresses noise and stale changes but surfaces material increases</em>,
+        and <em>recipes stay connected to canonical product IDs</em>.
+      </p>
+      <p>
+        It runs, it is deployed for one kitchen, and it is not a product anyone can buy. No signup,
+        no pricing, no waitlist.
       </p>
     </div>
   </section>

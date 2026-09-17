@@ -36,8 +36,8 @@ const projects = blocks
   }))
   .filter((p) => p.slug && p.title && p.tagline && stageLabels[p.stage]);
 
-if (projects.length !== 3) {
-  throw new Error(`Expected 3 projects from projects.ts, parsed ${projects.length}. Check the file's shape.`);
+if (projects.length < 3) {
+  throw new Error(`Parsed only ${projects.length} projects from projects.ts. Check the file's shape.`);
 }
 
 // ---- cards to render --------------------------------------------------------
