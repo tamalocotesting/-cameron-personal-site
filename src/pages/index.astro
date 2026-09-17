@@ -903,17 +903,17 @@ const buildSkills = [
 
   .cap__title {
     margin-top: var(--space-s);
-    font-size: var(--step-3);
-    max-width: 12ch;
-    letter-spacing: -0.03em;
+    font-size: var(--step-2);
+    max-width: 14ch;
+    letter-spacing: -0.026em;
   }
 
   .cap__intro {
     font-family: var(--font-prose);
-    font-size: var(--step-1);
-    line-height: 1.5;
+    font-size: var(--step-0);
+    line-height: 1.55;
     color: var(--ink-2);
-    max-width: 44ch;
+    max-width: 48ch;
   }
 
   .cap__grid {
@@ -950,12 +950,31 @@ const buildSkills = [
     margin-top: var(--space-2xs);
   }
 
+  /* Deliberately dense: a spec list, not a feature grid. It is the quiet
+     section between the work and the sign-off. */
   .cap__item {
-    padding-block: 0.6rem;
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: baseline;
+    padding-block: 0.45rem;
     border-bottom: 1px solid var(--rule);
     font-size: var(--step--1);
     color: var(--ink-2);
-    line-height: 1.5;
+    line-height: 1.45;
+    counter-increment: cap;
+  }
+
+  .cap__item::before {
+    content: counter(cap, decimal-leading-zero);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    opacity: 0.7;
+  }
+
+  .cap__list {
+    counter-reset: cap;
   }
 
   .cap__honest {

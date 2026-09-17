@@ -45,6 +45,8 @@ export interface Project {
   seoTitle: string;
   seoDescription: string;
   visual: 'portal' | 'cost' | 'standard';
+  /** Short notes pinned beside the interface on the case-study page. */
+  notes?: { k: string; v: string }[];
 }
 
 export const projects: Project[] = [
@@ -66,6 +68,11 @@ export const projects: Project[] = [
     seoDescription:
       "A mobile-first internal operations portal for a working bagel shop: recipes, builds, prep, SOPs, cleaning, equipment and training, searchable in seconds from the floor.",
     visual: 'portal',
+    notes: [
+      { k: 'Search first', v: 'People arrive with a question, not a location in a menu tree.' },
+      { k: 'One answer open', v: 'The top hit expands. Reading a list is not getting an answer.' },
+      { k: 'Built for a thumb', v: 'One hand free, gloves on, a line forming behind them.' },
+    ],
   },
   {
     slug: 'kitchencost-watch',
@@ -85,6 +92,11 @@ export const projects: Project[] = [
     seoDescription:
       'An AI-assisted restaurant invoice system: extraction, product matching, confidence handling and unit-cost history — designed around what happens when the model gets it wrong.',
     visual: 'cost',
+    notes: [
+      { k: 'Every field scored', v: 'The model returns a confidence, not just a value.' },
+      { k: 'The gate is a choice', v: 'Somebody sets the threshold. It costs something either way.' },
+      { k: 'Corrections stick', v: 'A human answers once; the match is remembered after that.' },
+    ],
   },
   {
     slug: 'service-and-standard',
@@ -104,6 +116,11 @@ export const projects: Project[] = [
     seoDescription:
       'A method for turning the undocumented knowledge inside a service business into a searchable operations system people can use from a phone.',
     visual: 'standard',
+    notes: [
+      { k: 'Before', v: 'A binder, a group chat, and whoever has been there longest.' },
+      { k: 'After', v: 'Versioned, visual, searchable, and in more than one language.' },
+      { k: 'The hard part', v: 'Deciding which of three versions of a process is correct.' },
+    ],
   },
 ];
 

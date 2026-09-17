@@ -141,6 +141,23 @@ one section layout six times:
   so the page reads as one surface.
 - **Contact** — the sign-off set as large as the opening line, to close the loop.
 
+The same language carries through the rest of the site:
+
+- **Case studies** open with a full-width title card — the project number tucked
+  behind the title's shoulder, then a **run sheet**: the metadata as a
+  production band between two rows of measurement ticks. The interface follows
+  as an **exhibit**, with numbered process notes pinned beside it.
+- **Each case study has one moment**: the sentence the page exists to deliver,
+  set on ink and pushed wider than the reading column so it lands as an event
+  rather than a blockquote.
+- **Background** opens with the same run sheet.
+- **404** is `86'd` — kitchen shorthand for *we're out of it, stop selling it*.
+- **Navigation** carries a progress hairline that appears once you're scrolling
+  (transform-only, rAF-throttled, off for reduced motion).
+- **Capability** is deliberately the dense, quiet section: a numbered spec list
+  rather than a feature grid, sitting between the work and the sign-off.
+- **Footer** closes on `— END OF SHIFT —`.
+
 Primitives live at the bottom of `global.css`: `.band`, `.ticks`, `.numeral`,
 `.kicker`, `.leader`, `.bleed`.
 

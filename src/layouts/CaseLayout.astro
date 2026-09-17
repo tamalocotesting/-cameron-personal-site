@@ -2,7 +2,6 @@
 import '../styles/prose.css';
 import Base from './Base.astro';
 import Badge from '../components/Badge.astro';
-import SpecList from '../components/SpecList.astro';
 import ProjectVisual from '../components/ProjectVisual.astro';
 import { projects, getProject } from '../data/projects';
 import { mailto } from '../data/site';
@@ -27,25 +26,65 @@ const next = projects[(i + 1) % projects.length];
 >
   <article class="case">
     <header class="case__header">
-      <div class="shell shell--narrow">
-        <a href="/#work" class="case__back">
-          <span aria-hidden="true">&larr;</span> Selected work
-        </a>
-
-        <div class="case__meta">
-          <span class="case__index">{project.index}</span>
+      <div class="shell">
+        <div class="case__bar">
+          <a href="/#work" class="case__back">
+            <span aria-hidden="true">&larr;</span> Selected work
+          </a>
           <Badge stage={project.stage} />
         </div>
 
-        <h1 class="case__title">{project.title}</h1>
-        <p class="case__deck">{project.tagline}</p>
+        <div class="case__title-block">
+          <span class="numeral case__index" aria-hidden="true">{project.index}</span>
+          <h1 class="case__title">{project.title}</h1>
+        </div>
 
-        <SpecList items={project.spec} class="case__spec" />
+        <p class="case__deck">{project.tagline}</p>
+      </div>
+
+      <!-- Run sheet: the metadata as a production band rather than a list. -->
+      <div class="case__runsheet">
+        <div class="shell">
+          <div class="ticks" aria-hidden="true"></div>
+          <dl class="run">
+            {
+              project.spec.map((item) => (
+                <div class="run__cell">
+                  <dt>{item.key}</dt>
+                  <dd>{item.val}</dd>
+                </div>
+              ))
+            }
+          </dl>
+          <div class="ticks ticks--flip" aria-hidden="true"></div>
+        </div>
       </div>
     </header>
 
-    <div class="shell shell--narrow case__visual">
-      <ProjectVisual visual={project.visual} />
+    <div class="shell case__visual">
+      <div class="exhibit">
+        <div class="exhibit__object">
+          <ProjectVisual visual={project.visual} />
+        </div>
+
+        {
+          project.notes && (
+            <ol class="exhibit__notes">
+              {project.notes.map((note, i) => (
+                <li class="exhibit__note">
+                  <span class="exhibit__pin" aria-hidden="true">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span class="exhibit__body">
+                    <b>{note.k}</b>
+                    {note.v}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          )
+        }
+      </div>
     </div>
 
     <div class="case__main shell shell--narrow">
@@ -138,8 +177,99 @@ const next = projects[(i + 1) % projects.length];
 
 <style>
   .case__header {
-    padding-top: clamp(1.5rem, 0.5rem + 4vw, 3.5rem);
-    padding-bottom: var(--space-l);
+    padding-top: clamp(1.25rem, 0.5rem + 3vw, 2.75rem);
+  }
+
+  .case__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+  }
+
+  .case__title-block {
+    margin-top: clamp(1rem, 0.4rem + 2.4vw, 2.5rem);
+  }
+
+  .case__index {
+    display: block;
+    font-size: var(--step-6);
+    margin-bottom: 0.1em;
+  }
+
+  @media (min-width: 62em) {
+    /* The number sits behind the title's shoulder rather than above it. */
+    .case__title-block {
+      display: grid;
+      grid-template-columns: minmax(0, 10rem) minmax(0, 1fr);
+      gap: var(--space-l);
+      align-items: start;
+    }
+
+    .case__index {
+      font-size: var(--step-7);
+      margin: -0.06em 0 0 -0.06em;
+    }
+  }
+
+  /* --- run sheet ----------------------------------------------------- */
+  .case__runsheet {
+    margin-top: clamp(1.75rem, 1rem + 3vw, 3.25rem);
+  }
+
+  .ticks--flip {
+    transform: scaleY(-1);
+  }
+
+  .run {
+    display: grid;
+    gap: 0;
+    padding-block: var(--space-s);
+  }
+
+  .run__cell {
+    padding-block: 0.65rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .run__cell:last-child {
+    border-bottom: 0;
+  }
+
+  .run__cell dt {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+  }
+
+  .run__cell dd {
+    margin-top: 0.3rem;
+    font-size: var(--step--1);
+    line-height: 1.45;
+    color: var(--ink);
+  }
+
+  @media (min-width: 46em) {
+    .run {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-l);
+      padding-block: var(--space-m);
+    }
+
+    .run__cell {
+      padding-block: 0;
+      border-bottom: 0;
+      border-left: 1px solid var(--rule);
+      padding-left: var(--space-m);
+    }
+
+    .run__cell:first-child {
+      border-left: 0;
+      padding-left: 0;
+    }
   }
 
   .case__back {
@@ -161,53 +291,96 @@ const next = projects[(i + 1) % projects.length];
     color: var(--accent-ink);
   }
 
-  .case__meta {
-    display: flex;
-    align-items: center;
-    gap: var(--space-s);
-    margin-top: var(--space-m);
-    padding-bottom: var(--space-s);
-    border-bottom: 1px solid var(--rule);
-  }
-
-  .case__index {
-    font-family: var(--font-mono);
-    font-size: var(--step--2);
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    color: var(--ink-3);
-  }
-
   .case__title {
-    margin-top: var(--space-m);
-    font-size: var(--step-4);
-    letter-spacing: -0.033em;
-    max-width: 16ch;
+    font-size: var(--step-6);
+    letter-spacing: -0.04em;
+    line-height: 0.93;
+    max-width: 13ch;
+    hyphens: auto;
+    overflow-wrap: break-word;
   }
 
   .case__deck {
-    margin-top: var(--space-s);
+    margin-top: var(--space-m);
     font-family: var(--font-prose);
-    font-size: var(--step-2);
-    line-height: 1.35;
-    letter-spacing: -0.012em;
+    font-size: var(--step-3);
+    line-height: 1.2;
+    letter-spacing: -0.018em;
     color: var(--ink-2);
-    max-width: 38ch;
+    max-width: 24ch;
     text-wrap: pretty;
   }
 
-  .case__spec {
-    margin-top: var(--space-l);
+  @media (min-width: 62em) {
+    .case__deck {
+      margin-left: calc(10rem + var(--space-l));
+      max-width: 30ch;
+    }
   }
 
   .case__visual {
-    margin-bottom: var(--space-xl);
+    margin-block: var(--space-xl);
   }
 
-  /* The sketches are diagrams, not hero images — a full 54rem of ruled paper
-     around a phone frame reads as an accident. */
-  .case__visual > :global(figure) {
-    max-width: 42rem;
+  /* --- exhibit: the interface, with the thinking pinned beside it ----- */
+  .exhibit {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  @media (min-width: 62em) {
+    .exhibit {
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+      gap: var(--space-2xl);
+      align-items: start;
+    }
+  }
+
+  .exhibit__object {
+    min-width: 0;
+  }
+
+  .exhibit__notes {
+    display: grid;
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  @media (min-width: 62em) {
+    .exhibit__notes {
+      margin-top: var(--space-l);
+    }
+  }
+
+  .exhibit__note {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: baseline;
+    padding-block: var(--space-s);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .exhibit__pin {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--accent-ink);
+  }
+
+  .exhibit__body b {
+    display: block;
+    font-size: var(--step-0);
+    font-weight: 620;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+    margin-bottom: 0.15rem;
+  }
+
+  .exhibit__body {
+    font-size: var(--step--1);
+    line-height: 1.55;
+    color: var(--ink-2);
   }
 
   .case__body {

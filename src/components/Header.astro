@@ -34,6 +34,9 @@ const { pathname } = Astro.url;
       </ul>
     </nav>
   </div>
+
+  <!-- Reads like a service bar: how far through the page you are. -->
+  <div class="site-header__progress" aria-hidden="true"><span data-progress></span></div>
 </header>
 
 <style>
@@ -53,6 +56,30 @@ const { pathname } = Astro.url;
     transition:
       background-color 0.25s var(--ease),
       border-color 0.25s var(--ease);
+  }
+
+  /* --- progress hairline -------------------------------------------- */
+  .site-header__progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s var(--ease);
+  }
+
+  .site-header.is-stuck .site-header__progress {
+    opacity: 1;
+  }
+
+  .site-header__progress span {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--accent);
+    transform-origin: 0 50%;
   }
 
   .site-header.is-stuck {
@@ -292,6 +319,31 @@ const { pathname } = Astro.url;
       document.addEventListener('DOMContentLoaded', watchBands, { once: true });
     } else {
       watchBands();
+    }
+
+    // Progress hairline. rAF-throttled, transform-only, so it never costs a
+    // layout; reduced-motion users get nothing.
+    const bar = header.querySelector('[data-progress]');
+    if (bar && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      let ticking = false;
+      const paint = () => {
+        const doc = document.documentElement;
+        const max = doc.scrollHeight - window.innerHeight;
+        const pct = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+        bar.style.width = (pct * 100).toFixed(2) + '%';
+        ticking = false;
+      };
+      addEventListener(
+        'scroll',
+        () => {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(paint);
+          }
+        },
+        { passive: true }
+      );
+      paint();
     }
   })();
 </script>

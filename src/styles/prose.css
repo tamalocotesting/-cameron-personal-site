@@ -9,27 +9,47 @@
 }
 
 .rich > section {
-  padding-top: var(--space-s);
+  padding-top: var(--space-m);
   border-top: 1px solid var(--rule-strong);
 }
 
 .rich > section > h2 {
   position: relative;
-  font-size: var(--step-2);
-  letter-spacing: -0.026em;
-  line-height: 1.12;
-  max-width: 24ch;
+  font-size: var(--step-3);
+  letter-spacing: -0.032em;
+  line-height: 1.06;
+  max-width: 20ch;
 }
 
+/* The section marker is set as a rule-to-rule label so the eye catches the
+   sequence before it catches the sentence. */
 .rich > section > h2 > .n {
-  display: block;
-  margin-bottom: 0.55rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.9rem;
   font-family: var(--font-mono);
   font-size: var(--step--2);
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--accent-ink);
+}
+
+.rich > section > h2 > .n::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+/* The opening paragraph of a section carries more weight than the rest. */
+.rich > section > h2 + p {
+  font-size: var(--step-1);
+  line-height: 1.5;
+  color: var(--ink);
+  max-width: 48ch;
+  margin-top: var(--space-m);
 }
 
 .rich > section > h3 {
@@ -128,17 +148,41 @@
 }
 
 /* A single strong idea, set apart. */
+/* One per case study: the sentence the whole page exists to deliver, set on
+   ink and pushed wider than the reading column so it lands as an event. */
 .rich > section > .pull {
-  margin-top: var(--space-l);
-  padding: var(--space-m) 0 var(--space-m) var(--space-m);
-  border-left: 2px solid var(--accent);
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-l);
+  padding: clamp(1.5rem, 1rem + 2.5vw, 3rem) clamp(1.25rem, 0.8rem + 2vw, 2.5rem);
+  background: var(--band-bg);
+  color: var(--band-ink);
+  border-radius: var(--radius-lg);
   font-family: var(--font-prose);
-  font-size: var(--step-2);
-  line-height: 1.34;
-  letter-spacing: -0.014em;
-  color: var(--ink);
-  max-width: 30ch;
+  font-size: var(--step-3);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  max-width: none;
   text-wrap: pretty;
+  position: relative;
+  overflow: hidden;
+}
+
+/* A hairline rule bleeding from the left edge, like a callout leader. */
+.rich > section > .pull::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: clamp(1.5rem, 1rem + 2.5vw, 3rem);
+  width: clamp(0.75rem, 0.5rem + 1.2vw, 1.5rem);
+  height: 2px;
+  background: var(--band-accent);
+}
+
+@media (min-width: 64em) {
+  .rich > section > .pull {
+    width: calc(100% + 7rem);
+    margin-left: -3.5rem;
+  }
 }
 
 /* Honest status note. */

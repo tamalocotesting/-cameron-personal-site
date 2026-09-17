@@ -3,85 +3,140 @@ import Base from '../layouts/Base.astro';
 import { projects } from '../data/projects';
 ---
 
-<Base
-  title="Page not found"
-  description="That page doesn't exist. Here's what does."
->
+<Base title="Page not found" description="That page isn’t here. Here’s what is.">
   <section class="nf">
-    <div class="shell shell--narrow">
-      <p class="label">Error 404</p>
-      <h1 class="nf__title">That page isn&rsquo;t here.</h1>
-      <p class="nf__body">
-        Either it moved or it never existed. Both are documentation failures, which is a little
-        embarrassing given the rest of this site. Here&rsquo;s what does exist:
-      </p>
+    <div class="shell">
+      <p class="kicker">Error 404</p>
 
-      <ul class="nf__list">
+      <div class="nf__head">
+        <span class="numeral nf__numeral" aria-hidden="true">86</span>
+        <div>
+          <h1 class="nf__title">This page is 86&rsquo;d.</h1>
+          <p class="nf__body">
+            Kitchen shorthand for <em>we&rsquo;re out of it, stop selling it</em>. Either the page
+            moved or it never existed &mdash; both are documentation failures, which is a little
+            embarrassing given the rest of this site.
+          </p>
+        </div>
+      </div>
+
+      <div class="ticks nf__rule" aria-hidden="true"></div>
+
+      <ol class="nf__list">
         <li class="nf__item">
+          <span class="nf__n" aria-hidden="true">01</span>
           <a href="/">Home</a>
           <span>The short version of who I am</span>
         </li>
         {
-          projects.map((p) => (
+          projects.map((p, i) => (
             <li class="nf__item">
+              <span class="nf__n" aria-hidden="true">
+                {String(i + 2).padStart(2, '0')}
+              </span>
               <a href={p.href}>{p.title}</a>
               <span>{p.tagline}</span>
             </li>
           ))
         }
         <li class="nf__item">
-          <a href="/background">Background</a>
-          <span>How operations turned into building software</span>
+          <span class="nf__n" aria-hidden="true">05</span>
+          <a href="/resume">R&eacute;sum&eacute;</a>
+          <span>Dates, titles and where they were</span>
         </li>
-      </ul>
+      </ol>
     </div>
   </section>
 </Base>
 
 <style>
   .nf {
-    padding-block: clamp(3rem, 1.5rem + 7vw, 6rem) var(--space-2xl);
+    padding-block: clamp(2.5rem, 1.5rem + 6vw, 5.5rem) var(--space-2xl);
+  }
+
+  .nf__head {
+    display: grid;
+    gap: var(--space-m);
+    margin-top: var(--space-l);
+  }
+
+  @media (min-width: 52em) {
+    .nf__head {
+      grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
+      gap: var(--space-xl);
+      align-items: start;
+    }
+  }
+
+  .nf__numeral {
+    display: block;
+    font-size: var(--step-6);
+    line-height: 0.78;
+  }
+
+  @media (min-width: 52em) {
+    .nf__numeral {
+      font-size: var(--step-7);
+      margin: -0.06em 0 0 -0.06em;
+    }
   }
 
   .nf__title {
-    margin-top: var(--space-m);
     font-size: var(--step-4);
-    letter-spacing: -0.033em;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
   }
 
   .nf__body {
-    margin-top: var(--space-s);
+    margin-top: var(--space-m);
     font-family: var(--font-prose);
     font-size: var(--step-1);
-    line-height: 1.6;
+    line-height: 1.55;
     color: var(--ink-2);
-    max-width: 50ch;
+    max-width: 48ch;
+  }
+
+  .nf__body em {
+    font-style: italic;
+    color: var(--ink);
+  }
+
+  .nf__rule {
+    margin-top: var(--space-2xl);
   }
 
   .nf__list {
-    margin-top: var(--space-xl);
-    border-top: 1px solid var(--rule);
+    display: grid;
   }
 
   .nf__item {
     display: grid;
-    gap: 0.15rem;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: 0.1rem 0.75rem;
     padding-block: var(--space-s);
     border-bottom: 1px solid var(--rule);
   }
 
-  @media (min-width: 40em) {
+  @media (min-width: 46em) {
     .nf__item {
-      grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+      grid-template-columns: 3.5rem minmax(0, 16rem) minmax(0, 1fr);
       gap: var(--space-m);
       align-items: baseline;
     }
   }
 
+  .nf__n {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--accent-ink);
+  }
+
   .nf__item a {
-    font-size: var(--step-0);
+    font-size: var(--step-1);
     font-weight: 620;
-    letter-spacing: -0.014em;
+    letter-spacing: -0.016em;
     text-decoration: none;
     color: var(--ink);
     transition: color 0.18s var(--ease);
@@ -91,7 +146,7 @@ import { projects } from '../data/projects';
     color: var(--accent-ink);
   }
 
-  .nf__item span {
+  .nf__item > span:last-child {
     font-size: var(--step--1);
     color: var(--ink-3);
     line-height: 1.5;

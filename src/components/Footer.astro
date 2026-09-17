@@ -5,6 +5,7 @@ const year = new Date().getFullYear();
 
 <footer class="site-footer">
   <div class="shell">
+    <div class="ticks site-footer__ticks" aria-hidden="true"></div>
     <div class="site-footer__grid">
       <div class="site-footer__lead">
         <p class="label">Get in touch</p>
@@ -68,9 +69,12 @@ const year = new Date().getFullYear();
   .site-footer {
     position: relative;
     z-index: 1;
-    border-top: 1px solid var(--rule);
-    padding-block: var(--space-xl) var(--space-l);
+    padding-block: 0 var(--space-l);
     margin-top: var(--space-xl);
+  }
+
+  .site-footer__ticks {
+    margin-bottom: var(--space-xl);
   }
 
   .site-footer__grid {
@@ -167,6 +171,12 @@ const year = new Date().getFullYear();
     font-size: var(--step--2);
     color: var(--ink-3);
     letter-spacing: 0.01em;
+  }
+
+  .site-footer__colophon::before {
+    content: '— END OF SHIFT — ';
+    color: var(--accent-ink);
+    letter-spacing: 0.14em;
   }
 
   .site-footer__top {
