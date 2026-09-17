@@ -121,6 +121,44 @@ it. Both cost well under a kilobyte.
 > fixed slots server-side and only mutate their text and classes. Never build
 > result rows with `createElement` in a scoped component.
 
+## Art direction
+
+The page deliberately changes key as you move down it, rather than repeating
+one section layout six times:
+
+- **Hero** — display type at `--step-6`, with the spec plate set as a kitchen
+  dupe (`.ticket`): perforated tear edge, mono, hung slightly high so the two
+  halves interlock.
+- **Track record** — an outlined `01` at `--step-7` leaning into the gutter,
+  statement left, argument right.
+- **Method** — oversized outlined numerals that gain weight down the list and
+  resolve to solid amber at step 05, mirroring the argument.
+- **Selected work** — three different compositions, not three cards:
+  `lead` (tool proud of the column, crossing the section rule), `tool` (the
+  interactive panel full width, writing underneath) and `statement` (type-led,
+  for a concept with nothing to demo).
+- **Questions** — an inverted `.band`. The header detects it and flips with it,
+  so the page reads as one surface.
+- **Contact** — the sign-off set as large as the opening line, to close the loop.
+
+Primitives live at the bottom of `global.css`: `.band`, `.ticks`, `.numeral`,
+`.kicker`, `.leader`, `.bleed`.
+
+## Photography
+
+`src/components/Photo.astro` is the art direction for photographs — framed
+plate, full-bleed band, tall detail crop, or a small layered inset, with an
+optional tone pass that warms phone snapshots into the palette.
+
+> **Nothing on the site uses it yet, because there are no photographs in this
+> project.** `src/assets/` is empty. Drop files in there, import them, and pick
+> a treatment:
+>
+> ```astro
+> import prep from '../assets/prep.jpg';
+> <Photo src={prep} alt="…" treatment="bleed" focus="50% 35%" tone />
+> ```
+
 ## Diagrams
 
 Each case study carries a drawn diagram as well as prose, because for this

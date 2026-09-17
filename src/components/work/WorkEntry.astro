@@ -1,0 +1,283 @@
+---
+import Badge from '../Badge.astro';
+import SpecList from '../SpecList.astro';
+import ProjectVisual from '../ProjectVisual.astro';
+import type { Project } from '../../data/projects';
+
+/**
+ * One piece of work, composed three different ways.
+ *
+ * Three identical cards stacked vertically is the default that makes a
+ * portfolio look like a template. Each entry here gets the composition its
+ * content actually wants:
+ *
+ *   lead      — the flagship. Big title, evidence on the right, the tool
+ *               overlapping the frame so it breaks the rectangle.
+ *   tool      — the interactive panel leads at full width and the writing
+ *               follows it in a strip. The thing itself is the headline.
+ *   statement — type-led and quiet. A concept has no product to show, so the
+ *               idea is set at display scale and given room.
+ */
+interface Props {
+  project: Project;
+  layout: 'lead' | 'tool' | 'statement';
+}
+const { project, layout } = Astro.props;
+---
+
+<article class:list={['we', `we--${layout}`]} data-reveal>
+  <header class="we__head">
+    <span class="numeral we__index" aria-hidden="true">{project.index}</span>
+    <span class="we__meta">
+      <Badge stage={project.stage} />
+    </span>
+  </header>
+
+  <div class="we__title-block">
+    <h3 class="we__title">
+      <a href={project.href} class="we__link">{project.title}</a>
+    </h3>
+    <p class="we__tagline">{project.tagline}</p>
+  </div>
+
+  <div class="we__visual">
+    <ProjectVisual visual={project.visual} />
+  </div>
+
+  <div class="we__detail">
+    <p class="we__summary">{project.summary}</p>
+    <SpecList items={project.spec} class="we__spec" />
+    <a href={project.href} class="we__cta">
+      Read the case study
+      <span class="we__arrow" aria-hidden="true">&rarr;</span>
+    </a>
+  </div>
+</article>
+
+<style>
+  .we {
+    position: relative;
+    display: grid;
+    gap: var(--space-m);
+    padding-top: var(--space-l);
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  /* ------------------------------------------------------------ head --- */
+  .we__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-s);
+  }
+
+  .we__index {
+    font-size: var(--step-6);
+    line-height: 0.74;
+    display: block;
+  }
+
+  .we__meta {
+    padding-top: 0.4rem;
+  }
+
+  /* ----------------------------------------------------------- title --- */
+  .we__title {
+    font-size: var(--step-4);
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    max-width: 14ch;
+  }
+
+  .we__link {
+    text-decoration: none;
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-size: 0 2px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.4s var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .we:hover .we__link {
+      background-size: 100% 2px;
+    }
+  }
+
+  .we__tagline {
+    margin-top: var(--space-s);
+    font-family: var(--font-prose);
+    font-size: var(--step-2);
+    line-height: 1.3;
+    letter-spacing: -0.014em;
+    color: var(--ink-2);
+    max-width: 30ch;
+    text-wrap: pretty;
+  }
+
+  /* ---------------------------------------------------------- detail --- */
+  .we__summary {
+    font-size: var(--step--1);
+    line-height: 1.62;
+    color: var(--ink-2);
+    max-width: 52ch;
+  }
+
+  .we__spec {
+    margin-top: var(--space-m);
+  }
+
+  .we__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    min-height: 44px;
+    margin-top: var(--space-s);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    text-decoration: none;
+  }
+
+  .we__arrow {
+    transition: transform 0.28s var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .we:hover .we__arrow {
+      transform: translateX(5px);
+    }
+  }
+
+  .we__visual {
+    min-width: 0;
+  }
+
+  /* ======================================================================
+     LEAD — title and writing left, the working tool right and oversized.
+     ====================================================================== */
+  @media (min-width: 62em) {
+    .we--lead {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+      grid-template-areas:
+        'head   visual'
+        'title  visual'
+        'detail visual';
+      grid-template-rows: auto auto 1fr;
+      column-gap: var(--space-2xl);
+      row-gap: var(--space-m);
+      align-items: start;
+    }
+
+    .we--lead .we__head {
+      grid-area: head;
+    }
+    .we--lead .we__title-block {
+      grid-area: title;
+    }
+    .we--lead .we__detail {
+      grid-area: detail;
+    }
+
+    /* The tool sits proud of the column and pushes past the section rule. */
+    .we--lead .we__visual {
+      grid-area: visual;
+      margin-top: calc(var(--space-l) * -1 - 1px);
+    }
+  }
+
+  /* ======================================================================
+     TOOL — the panel is the headline. Full width, writing underneath.
+     ====================================================================== */
+  .we--tool .we__visual {
+    order: -1;
+  }
+
+  @media (min-width: 62em) {
+    .we--tool {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--space-l);
+      row-gap: var(--space-l);
+    }
+
+    .we--tool .we__head {
+      grid-column: 1 / 13;
+      order: 0;
+    }
+
+    .we--tool .we__visual {
+      grid-column: 1 / 13;
+      order: 1;
+    }
+
+    .we--tool .we__title-block {
+      grid-column: 1 / 6;
+      order: 2;
+    }
+
+    .we--tool .we__detail {
+      grid-column: 7 / 13;
+      order: 2;
+    }
+
+    .we--tool .we__title {
+      max-width: 11ch;
+    }
+
+    .we--tool .we__tagline {
+      font-size: var(--step-1);
+    }
+  }
+
+  /* ======================================================================
+     STATEMENT — a concept has nothing to demo, so the idea is the object.
+     ====================================================================== */
+  .we--statement .we__tagline {
+    font-size: var(--step-3);
+    line-height: 1.16;
+    letter-spacing: -0.024em;
+    color: var(--ink);
+    max-width: 18ch;
+  }
+
+  @media (min-width: 62em) {
+    .we--statement {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--space-l);
+      row-gap: var(--space-xl);
+      align-items: end;
+    }
+
+    .we--statement .we__head {
+      grid-column: 1 / 13;
+    }
+
+    .we--statement .we__title-block {
+      grid-column: 1 / 8;
+    }
+
+    .we--statement .we__visual {
+      grid-column: 8 / 13;
+      align-self: end;
+    }
+
+    .we--statement .we__detail {
+      grid-column: 1 / 7;
+    }
+
+    .we--statement .we__title {
+      font-size: var(--step-2);
+      max-width: none;
+      letter-spacing: -0.022em;
+    }
+
+    /* The idea leads; the name is a caption above it. */
+    .we--statement .we__tagline {
+      font-size: var(--step-4);
+      margin-top: var(--space-m);
+    }
+  }
+</style>

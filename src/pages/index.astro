@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import SectionMarker from '../components/SectionMarker.astro';
-import ProjectCard from '../components/ProjectCard.astro';
+import WorkEntry from '../components/work/WorkEntry.astro';
 import Badge from '../components/Badge.astro';
 import { projects, exploration, stageMeta } from '../data/projects';
 import { site, mailto } from '../data/site';
@@ -67,22 +66,21 @@ const buildSkills = [
   description={site.description}
   suffix={false}
 >
-  <!-- ============================================================ HERO -->
+  <!-- ══════════════════════════════════════════════════════════ HERO ══ -->
   <section class="hero">
     <div class="shell">
-      <p class="hero__eyebrow">
-        <span class="label">Implementation &middot; operations &middot; training</span>
-        <span class="hero__eyebrow-sep" aria-hidden="true"></span>
-        <span class="label">{site.location}</span>
+      <p class="hero__kicker">
+        <span class="kicker">Implementation &middot; operations &middot; training</span>
+        <span class="hero__place">{site.location}</span>
       </p>
 
       <h1 class="hero__title">
-        Before it was called implementation,<br />
+        Before it was called implementation,
         <span class="hero__title-2">it was called opening a restaurant.</span>
       </h1>
 
       <div class="hero__grid">
-        <div>
+        <div class="hero__say">
           <p class="hero__lede">
             Ten years getting teams to standard &mdash; new-location openings, back of house,
             customer-facing retail. Now I build the internal tools and AI workflows that do the same
@@ -99,69 +97,82 @@ const buildSkills = [
           </div>
         </div>
 
-        <dl class="hero__spec">
-          <div class="hero__spec-row">
-            <dt class="spec__key">Now</dt>
-            <dd class="spec__val">
-              Back-of-House Manager, B&rsquo;s Bagels &mdash; Westfield, Indiana
-            </dd>
+        <!-- The dupe: what a kitchen hands you, holding what a recruiter needs. -->
+        <dl class="ticket">
+          <p class="ticket__head" aria-hidden="true">
+            <span>STATION</span><span>CAMERON M.</span>
+          </p>
+          <div class="ticket__row">
+            <dt>Now</dt>
+            <dd>Back-of-House Manager, B&rsquo;s Bagels &mdash; Westfield, Indiana</dd>
           </div>
-          <div class="hero__spec-row">
-            <dt class="spec__key">Before</dt>
-            <dd class="spec__val">
-              New-location opening trainer at Cooper&rsquo;s Hawk &middot; retail sales at AT&amp;T
-            </dd>
+          <div class="ticket__row">
+            <dt>Before</dt>
+            <dd>New-location opening trainer at Cooper&rsquo;s Hawk &middot; retail sales at AT&amp;T</dd>
           </div>
-          <div class="hero__spec-row">
-            <dt class="spec__key">Open to</dt>
-            <dd class="spec__val">
-              Implementation, customer onboarding, solutions and product-operations roles
-            </dd>
+          <div class="ticket__row">
+            <dt>Open to</dt>
+            <dd>Implementation, customer onboarding, solutions and product operations</dd>
           </div>
+          <p class="ticket__foot" aria-hidden="true">— FIRED —</p>
         </dl>
       </div>
     </div>
+
+    <div class="shell"><div class="ticks" aria-hidden="true"></div></div>
   </section>
 
-  <!-- ============================================================ PATH -->
-  <section class="section" id="approach">
+  <!-- ═════════════════════════════════════════════════ TRACK RECORD ══ -->
+  <section class="section rec" id="approach">
     <div class="shell">
-      <SectionMarker num="01" text="Track record" />
-
-      <div class="path__head">
-        <h2 class="path__title">Implementation, before it had that name.</h2>
-        <div class="prose path__intro">
-          <p>
-            Opening a restaurant is an implementation project. You arrive somewhere that
-            isn&rsquo;t running, with a team that has never done the job, against a date that
-            doesn&rsquo;t move. You set up the stations, train the people, get them to standard, and
-            leave it working without you.
-          </p>
-          <p>
-            I did that for two years at Cooper&rsquo;s Hawk before I wrote a line of software. Two
-            years before that I was at AT&amp;T explaining technology to people who didn&rsquo;t
-            care how it worked, only whether it solved their problem. Ten years
-            of it, and none of it was called implementation.
-          </p>
+      <div class="rec__top">
+        <span class="numeral rec__numeral" aria-hidden="true">01</span>
+        <div class="rec__intro">
+          <p class="kicker">Track record</p>
+          <h2 class="rec__title">Implementation, before it had that name.</h2>
+          <div class="prose rec__prose">
+            <p>
+              Opening a restaurant is an implementation project. You arrive somewhere that
+              isn&rsquo;t running, with a team that has never done the job, against a date that
+              doesn&rsquo;t move. You set up the stations, train the people, get them to standard,
+              and leave it working without you.
+            </p>
+            <p>
+              I did that for two years at Cooper&rsquo;s Hawk before I wrote a line of software. Two
+              years before that I was at AT&amp;T explaining technology to people who didn&rsquo;t
+              care how it worked, only whether it solved their problem. Ten years of it, and none of
+              it was called implementation.
+            </p>
+          </div>
         </div>
       </div>
 
       <Timeline />
+    </div>
+  </section>
 
-      <div class="path__lead">
-        <h3 class="path__lead-title">Doing that long enough gives you a method.</h3>
-        <p class="path__lead-body">
-          Not a philosophy &mdash; an order of operations. It is the same one I use on software now.
-        </p>
+  <!-- ══════════════════════════════════════════════════════ METHOD ══ -->
+  <section class="section section--sunken method">
+    <div class="shell">
+      <div class="method__head">
+        <p class="kicker">The method</p>
+        <h2 class="method__title">
+          Doing that long enough <span>gives you an order of operations.</span>
+        </h2>
+        <p class="method__sub">It is the same one I use on software now.</p>
       </div>
 
-      <ol class="path">
+      <ol class="method__list">
         {
           path.map((step, i) => (
-            <li class="path__step" data-reveal style={`--reveal-delay:${i * 55}ms`}>
-              <span class="path__n">{step.n}</span>
-              <h3 class="path__step-title">{step.title}</h3>
-              <p class="path__body">{step.body}</p>
+            <li class="step" data-reveal style={`--reveal-delay:${i * 55}ms`}>
+              <span class="numeral step__n" aria-hidden="true">
+                {step.n}
+              </span>
+              <div class="step__body">
+                <h3 class="step__title">{step.title}</h3>
+                <p class="step__text">{step.body}</p>
+              </div>
             </li>
           ))
         }
@@ -169,13 +180,15 @@ const buildSkills = [
     </div>
   </section>
 
-  <!-- ============================================================ WORK -->
-  <section class="section section--sunken" id="work">
+  <!-- ════════════════════════════════════════════════ SELECTED WORK ══ -->
+  <section class="section work" id="work">
     <div class="shell">
-      <SectionMarker num="02" text="Selected work" />
-
       <div class="work__head">
-        <h2 class="work__title">Three problems I couldn&rsquo;t stop looking at.</h2>
+        <div>
+          <p class="kicker">Selected work</p>
+          <h2 class="work__title">Three problems I couldn&rsquo;t stop looking at.</h2>
+        </div>
+
         <div class="work__legend">
           <p class="work__legend-intro">
             Each one is labelled with where it honestly stands. I&rsquo;d rather be believable than
@@ -195,7 +208,9 @@ const buildSkills = [
       </div>
 
       <div class="work__list">
-        {projects.map((project, i) => <ProjectCard project={project} flip={i % 2 === 1} />)}
+        <WorkEntry project={projects[0]} layout="lead" />
+        <WorkEntry project={projects[1]} layout="tool" />
+        <WorkEntry project={projects[2]} layout="statement" />
       </div>
 
       <div class="work__also" data-reveal>
@@ -211,42 +226,48 @@ const buildSkills = [
     </div>
   </section>
 
-  <!-- ======================================================= QUESTIONS -->
-  <section class="section" id="questions">
+  <!-- ═══════════════════════════════════════════ QUESTIONS — INVERTED ══ -->
+  <section class="band questions" id="questions">
     <div class="shell">
-      <div class="q">
-        <SectionMarker num="03" text="How I think" />
-
-        <h2 class="q__title">Every system I build is an answer to one of these.</h2>
-        <p class="prose q__intro">
+      <div class="questions__head">
+        <p class="kicker">How I think</p>
+        <h2 class="questions__title">
+          Every system I build is an answer to one of these.
+        </h2>
+        <p class="questions__sub">
           They are operational questions before they are technical ones. If you can&rsquo;t answer
           them about a process, software will only make the confusion faster.
         </p>
-
-        <ol class="q__list">
-          {
-            questions.map((question, i) => (
-              <li class="q__item" data-reveal style={`--reveal-delay:${i * 45}ms`}>
-                <span class="q__n">{String(i + 1).padStart(2, '0')}</span>
-                <p class="q__text">{question}</p>
-              </li>
-            ))
-          }
-        </ol>
       </div>
+
+      <ol class="questions__list">
+        {
+          questions.map((question, i) => (
+            <li class="q" data-reveal style={`--reveal-delay:${i * 50}ms`}>
+              <span class="q__n" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <p class="q__text">{question}</p>
+            </li>
+          ))
+        }
+      </ol>
     </div>
   </section>
 
-  <!-- ====================================================== CAPABILITY -->
-  <section class="section section--sunken" id="capability">
+  <!-- ══════════════════════════════════════════════════ CAPABILITY ══ -->
+  <section class="section cap">
     <div class="shell">
-      <SectionMarker num="04" text="What I do" />
-
-      <h2 class="cap__title">Two halves of the same job.</h2>
-      <p class="prose cap__intro">
-        The useful thing isn&rsquo;t either column on its own. It&rsquo;s being able to sit in a
-        walk-in counting cases in the morning and design the data model for it that afternoon.
-      </p>
+      <div class="cap__head">
+        <div>
+          <p class="kicker">What I do</p>
+          <h2 class="cap__title">Two halves of the same job.</h2>
+        </div>
+        <p class="cap__intro">
+          The useful thing isn&rsquo;t either column on its own. It&rsquo;s being able to sit in a
+          walk-in counting cases in the morning and design the data model for it that afternoon.
+        </p>
+      </div>
 
       <div class="cap__grid">
         <div class="cap__col" data-reveal>
@@ -280,44 +301,45 @@ const buildSkills = [
     </div>
   </section>
 
-  <!-- ========================================================= CONTACT -->
+  <!-- ═════════════════════════════════════════════════════ CONTACT ══ -->
   <section class="section contact" id="contact">
     <div class="shell">
-      <SectionMarker num="05" text="What’s next" />
+      <div class="shell"><div class="ticks contact__ticks" aria-hidden="true"></div></div>
+
+      <p class="kicker contact__kicker">What&rsquo;s next</p>
+
+      <h2 class="contact__title">
+        I&rsquo;m looking for work where understanding the customer&rsquo;s business
+        <span>is the hard part.</span>
+      </h2>
 
       <div class="contact__grid">
-        <div>
-          <h2 class="contact__title">
-            I&rsquo;m looking for work where understanding the customer&rsquo;s business is the hard
-            part.
-          </h2>
-          <div class="prose contact__body">
-            <p>
-              AI implementation, solutions and implementation work, product operations, operations
-              technology. Restaurant and hospitality software especially &mdash; but the pattern
-              travels. Any business where the real process lives in people&rsquo;s heads and the
-              software has to meet it there.
-            </p>
-            <p>
-              If you&rsquo;re building something and the hard part is getting it to survive contact
-              with a real operation, that&rsquo;s the part I&rsquo;m good at. And if you run a
-              restaurant or a service business drowning in its own undocumented knowledge, that
-              conversation is open too.
-            </p>
-          </div>
+        <div class="prose contact__body">
+          <p>
+            AI implementation, solutions and implementation work, product operations, operations
+            technology. Restaurant and hospitality software especially &mdash; but the pattern
+            travels. Any business where the real process lives in people&rsquo;s heads and the
+            software has to meet it there.
+          </p>
+          <p>
+            If you&rsquo;re building something and the hard part is getting it to survive contact
+            with a real operation, that&rsquo;s the part I&rsquo;m good at. And if you run a
+            restaurant or a service business drowning in its own undocumented knowledge, that
+            conversation is open too.
+          </p>
 
           <div class="contact__actions">
             <a class="btn btn--primary" href={mailto('Hello Cameron')}>
               Email me <span class="btn__arrow" aria-hidden="true">&rarr;</span>
             </a>
-            <a class="btn btn--ghost" href="/background">Full background</a>
+            <a class="btn btn--ghost" href="/resume">Full background</a>
           </div>
         </div>
 
         <aside class="contact__aside">
           <p class="label">Worth knowing</p>
           <ul class="contact__facts">
-            <li>Based in Indiana. Comfortable remote, happy to travel for implementation work.</li>
+            <li>Based in Carmel, Indiana. Comfortable remote, happy to travel for implementation work.</li>
             <li>
               I&rsquo;ll ask about your customers&rsquo; actual day before I ask about your stack.
             </li>
@@ -330,36 +352,28 @@ const buildSkills = [
 </Base>
 
 <style>
-  /* =========================================================== HERO === */
-
-  /* The hero arrives in one short beat rather than sitting there. CSS only,
-     so it runs without JavaScript and never blocks the content. */
+  /* ═══════════════════════════════════════════════════════════ HERO ══ */
   @media (prefers-reduced-motion: no-preference) {
-    .hero__eyebrow,
+    .hero__kicker,
     .hero__title,
     .hero__title-2,
-    .hero__lede,
-    .hero__actions,
-    .hero__spec {
+    .hero__say,
+    .ticket {
       animation: hero-rise 0.62s var(--ease-out) both;
     }
-
-    .hero__eyebrow {
+    .hero__kicker {
       animation-delay: 0.04s;
     }
     .hero__title {
       animation-delay: 0.1s;
     }
     .hero__title-2 {
-      animation-delay: 0.19s;
+      animation-delay: 0.2s;
     }
-    .hero__lede {
-      animation-delay: 0.26s;
+    .hero__say {
+      animation-delay: 0.28s;
     }
-    .hero__actions {
-      animation-delay: 0.32s;
-    }
-    .hero__spec {
+    .ticket {
       animation-delay: 0.36s;
     }
   }
@@ -367,65 +381,79 @@ const buildSkills = [
   @keyframes hero-rise {
     from {
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(14px);
     }
   }
 
   .hero {
     position: relative;
     z-index: 1;
-    padding-top: clamp(2rem, 0.9rem + 5vw, 4.5rem);
-    padding-bottom: clamp(2.5rem, 1.2rem + 5vw, 5rem);
+    padding-top: clamp(1.75rem, 0.8rem + 4vw, 4rem);
   }
 
-  .hero__eyebrow {
+  .hero__kicker {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.7rem;
-    margin-bottom: clamp(1.1rem, 0.5rem + 2vw, 1.85rem);
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: clamp(1.25rem, 0.6rem + 2.4vw, 2.5rem);
   }
 
-  .hero__eyebrow-sep {
-    width: 1.75rem;
-    height: 1px;
-    background: var(--rule-strong);
+  .hero__place {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-3);
   }
 
+  /* The scale jump is the point: this is the largest thing on the site. */
   .hero__title {
-    max-width: 17ch;
-    letter-spacing: -0.035em;
-    line-height: 0.98;
-    text-wrap: balance;
+    font-size: var(--step-6);
+    line-height: 0.92;
+    letter-spacing: -0.042em;
+    max-width: 15ch;
+    /* "implementation," is longer than a 320px screen at display size.
+       Hyphenate rather than let one word set the page width. */
+    hyphens: auto;
+    overflow-wrap: break-word;
   }
 
   .hero__title-2 {
     display: block;
-    margin-top: 0.22em;
-    font-size: 0.62em;
-    line-height: 1.04;
-    letter-spacing: -0.028em;
-    color: var(--ink-3);
+    margin-top: 0.14em;
+    font-size: 0.56em;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
     font-weight: 560;
+    color: var(--ink-3);
     max-width: 24ch;
   }
 
   .hero__grid {
     display: grid;
     gap: var(--space-l);
-    margin-top: clamp(1.4rem, 0.8rem + 2.2vw, 2.5rem);
+    margin-top: clamp(1.75rem, 1rem + 3vw, 3.25rem);
   }
 
-  @media (min-width: 58em) {
+  @media (min-width: 60em) {
     .hero__grid {
-      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
       gap: var(--space-2xl);
       align-items: start;
+    }
+
+    /* The dupe hangs a little higher than the column it sits beside, so the
+       two halves of the hero interlock rather than sitting on a shelf. */
+    .ticket {
+      margin-top: -0.4rem;
     }
   }
 
   .hero__lede {
-    max-width: 46ch;
+    max-width: 44ch;
     font-family: var(--font-prose);
     font-size: var(--step-1);
     line-height: 1.55;
@@ -439,154 +467,270 @@ const buildSkills = [
     margin-top: var(--space-m);
   }
 
-  .hero__spec {
+  /* --- the dupe ---------------------------------------------------- */
+  .ticket {
+    position: relative;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule-strong);
+    border-top: 0;
+    padding: 0 0 0.9rem;
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Perforated top edge, the way a ticket tears off the printer. */
+  .ticket::before {
+    content: '';
+    position: absolute;
+    inset: -7px 0 auto 0;
+    height: 8px;
+    background: var(--paper-raised);
+    border-inline: 1px solid var(--rule-strong);
+    mask-image: radial-gradient(circle 5px at 7px 0, transparent 98%, #000 100%);
+    mask-size: 14px 8px;
+    mask-repeat: repeat-x;
+    -webkit-mask-image: radial-gradient(circle 5px at 7px 0, transparent 98%, #000 100%);
+    -webkit-mask-size: 14px 8px;
+    -webkit-mask-repeat: repeat-x;
+  }
+
+  .ticket__head,
+  .ticket__foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.65rem 0.9rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.16em;
+    color: var(--ink-3);
+    border-bottom: 1px dashed var(--rule-strong);
+  }
+
+  .ticket__foot {
+    justify-content: center;
+    border-bottom: 0;
+    border-top: 1px dashed var(--rule-strong);
+    padding-bottom: 0;
+    padding-top: 0.75rem;
+    color: var(--accent-ink);
+  }
+
+  .ticket__row {
+    display: grid;
+    gap: 0.1rem;
+    padding: 0.6rem 0.9rem;
+  }
+
+  .ticket__row + .ticket__row {
     border-top: 1px solid var(--rule);
   }
 
-  @media (min-width: 58em) {
-    .hero__spec {
-      margin-top: 0.4rem;
-    }
+  .ticket__row dt {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-3);
   }
 
-  .hero__spec-row {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.1rem;
-    padding-block: 0.7rem;
-    border-bottom: 1px solid var(--rule);
+  .ticket__row dd {
+    font-size: var(--step--1);
+    line-height: 1.45;
+    color: var(--ink);
   }
 
-  @media (min-width: 34em) {
-    .hero__spec-row {
-      grid-template-columns: 5.5rem 1fr;
-      gap: var(--space-s);
-      align-items: baseline;
-    }
+  .hero .ticks {
+    margin-top: clamp(2rem, 1rem + 4vw, 4rem);
   }
 
-  /* =========================================================== PATH === */
-  .section--sunken {
-    background: color-mix(in srgb, var(--paper-sunken) 55%, transparent);
-    border-block: 1px solid var(--rule);
-  }
-
-  .path__head {
+  /* ═════════════════════════════════════════════════════ TRACK RECORD ══ */
+  .rec__top {
     display: grid;
     gap: var(--space-m);
     margin-bottom: var(--space-xl);
   }
 
-  @media (min-width: 52em) {
-    .path__head {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: var(--space-2xl);
+  @media (min-width: 62em) {
+    .rec__top {
+      grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
+      gap: var(--space-xl);
       align-items: start;
+    }
+
+    /* The numeral leans into the gutter — a page number, not a label. */
+    .rec__numeral {
+      margin-left: -0.06em;
     }
   }
 
-  .path__title {
-    font-size: var(--step-3);
-    max-width: 15ch;
-    letter-spacing: -0.03em;
+  .rec__numeral {
+    display: block;
+    font-size: var(--step-6);
   }
 
-  .path__intro {
+  @media (min-width: 62em) {
+    .rec__numeral {
+      font-size: var(--step-7);
+      margin-top: -0.06em;
+    }
+  }
+
+  .rec__title {
+    margin-top: var(--space-s);
+    font-size: var(--step-4);
+    letter-spacing: -0.033em;
+    max-width: 16ch;
+  }
+
+  .rec__prose {
+    margin-top: var(--space-m);
     font-size: var(--step-0);
+    max-width: 62ch;
   }
 
-  .path__intro p + p {
+  .rec__prose p + p {
     margin-top: 0.9em;
   }
 
-  .path__lead {
-    margin-top: var(--space-2xl);
-    margin-bottom: var(--space-m);
-    max-width: 52rem;
-  }
+  @media (min-width: 78em) {
+    /* Statement left, argument right — two voices instead of one column. */
+    .rec__intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: var(--space-2xl);
+      align-items: start;
+    }
 
-  .path__lead-title {
-    font-size: var(--step-1);
-    letter-spacing: -0.02em;
-  }
+    .rec__intro > .kicker {
+      grid-column: 1 / -1;
+    }
 
-  .path__lead-body {
-    margin-top: 0.4rem;
-    font-size: var(--step--1);
-    color: var(--ink-3);
-    line-height: 1.6;
-    max-width: 52ch;
-  }
+    .rec__title {
+      margin-top: var(--space-m);
+    }
 
-  /* Same content column as the questions list, so the hairline grid always
-     ends where the writing does instead of running off into empty paper. */
-  .path {
-    max-width: 52rem;
-    border-top: 1px solid var(--rule);
-  }
-
-  .path__step {
-    display: grid;
-    grid-template-columns: 2.25rem 1fr;
-    grid-template-areas:
-      'n title'
-      '. body';
-    gap: 0.35rem 0.5rem;
-    padding-block: var(--space-m);
-    border-bottom: 1px solid var(--rule);
-  }
-
-  @media (min-width: 46em) {
-    .path__step {
-      grid-template-columns: 3.5rem minmax(0, 14.5rem) minmax(0, 1fr);
-      grid-template-areas: 'n title body';
-      gap: var(--space-m);
-      align-items: baseline;
+    .rec__prose {
+      margin-top: var(--space-m);
     }
   }
 
-  .path__n {
-    grid-area: n;
-    font-family: var(--font-mono);
-    font-size: var(--step--2);
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    color: var(--accent-ink);
+  /* ═════════════════════════════════════════════════════════ METHOD ══ */
+  .method__head {
+    max-width: 46rem;
+    margin-bottom: var(--space-xl);
   }
 
-  .path__step-title {
-    grid-area: title;
-    font-size: var(--step-1);
-    letter-spacing: -0.018em;
-    line-height: 1.2;
+  .method__title {
+    margin-top: var(--space-s);
+    font-size: var(--step-3);
+    letter-spacing: -0.03em;
+    max-width: 20ch;
   }
 
-  .path__body {
-    grid-area: body;
+  .method__title span {
+    color: var(--ink-3);
+  }
+
+  .method__sub {
+    margin-top: var(--space-s);
     font-size: var(--step--1);
-    line-height: 1.62;
-    color: var(--ink-2);
+    color: var(--ink-3);
+    max-width: 48ch;
   }
 
-  /* =========================================================== WORK === */
+  .method__list {
+    display: grid;
+    border-top: 1px solid var(--rule);
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+    padding-block: var(--space-m);
+    border-bottom: 1px solid var(--rule);
+    align-items: start;
+  }
+
+  .step__n {
+    font-size: var(--step-5);
+    line-height: 0.8;
+    display: block;
+  }
+
+  .step__title {
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+    line-height: 1.16;
+  }
+
+  .step__text {
+    margin-top: 0.35rem;
+    font-size: var(--step--1);
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 56ch;
+  }
+
+  @media (min-width: 52em) {
+    .step {
+      grid-template-columns: minmax(0, 7rem) minmax(0, 14rem) minmax(0, 1fr);
+      gap: var(--space-l);
+      padding-block: var(--space-l);
+      align-items: baseline;
+    }
+
+    .step__n {
+      font-size: var(--step-6);
+    }
+
+    .step__body {
+      display: contents;
+    }
+
+    .step__text {
+      margin-top: 0;
+    }
+  }
+
+  /* The numerals grow as the method moves from watching to building. */
+  @media (min-width: 62em) {
+    .step:nth-child(1) .step__n {
+      opacity: 0.55;
+    }
+    .step:nth-child(2) .step__n {
+      opacity: 0.7;
+    }
+    .step:nth-child(3) .step__n {
+      opacity: 0.85;
+    }
+    .step:nth-child(5) .step__n {
+      color: var(--accent);
+      -webkit-text-stroke: 0;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════ WORK ══ */
   .work__head {
     display: grid;
     gap: var(--space-l);
-    margin-bottom: var(--space-xl);
+    margin-bottom: var(--space-2xl);
   }
 
   @media (min-width: 52em) {
     .work__head {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: var(--space-2xl);
-      align-items: start;
+      align-items: end;
     }
   }
 
   .work__title {
-    font-size: var(--step-3);
-    max-width: 16ch;
-    letter-spacing: -0.03em;
+    margin-top: var(--space-s);
+    font-size: var(--step-4);
+    max-width: 14ch;
+    letter-spacing: -0.033em;
   }
 
   .work__legend-intro {
@@ -603,12 +747,10 @@ const buildSkills = [
     align-items: start;
   }
 
-  /* Rows dissolve into the parent grid so every badge shares one column. */
   .work__legend-item {
     display: contents;
   }
 
-  /* Badges share a column for alignment but keep their own width. */
   .work__legend-list :global(.badge) {
     justify-self: start;
   }
@@ -621,19 +763,13 @@ const buildSkills = [
 
   .work__list {
     display: grid;
-    gap: var(--space-m);
-  }
-
-  @media (min-width: 40em) {
-    .work__list {
-      gap: var(--space-l);
-    }
+    gap: var(--space-3xl);
   }
 
   .work__also {
     display: grid;
     gap: var(--space-s);
-    margin-top: var(--space-2xl);
+    margin-top: var(--space-3xl);
     padding-top: var(--space-l);
     border-top: 1px solid var(--rule-strong);
   }
@@ -667,83 +803,122 @@ const buildSkills = [
     font-size: var(--step--1);
     line-height: 1.62;
     color: var(--ink-2);
-    max-width: 52ch;
+    max-width: 62ch;
   }
 
-  /* ====================================================== QUESTIONS === */
-  /* Capped but flush left, so the page keeps a single left axis throughout. */
-  .q {
-    max-width: 50rem;
+  /* ══════════════════════════════════════════ QUESTIONS — INVERTED ══ */
+  .questions {
+    padding-block: clamp(3.5rem, 2rem + 6vw, 7rem);
+    margin-block: var(--section-y);
   }
 
-  .q__title {
-    font-size: var(--step-3);
-    max-width: 20ch;
-    letter-spacing: -0.03em;
+  .questions__head {
+    max-width: 44rem;
+    margin-bottom: clamp(2rem, 1rem + 4vw, 3.5rem);
   }
 
-  .q__intro {
+  .questions__title {
     margin-top: var(--space-s);
-    font-size: var(--step-0);
-    max-width: 58ch;
+    font-size: var(--step-4);
+    letter-spacing: -0.034em;
+    max-width: 18ch;
   }
 
-  .q__list {
-    margin-top: var(--space-l);
+  .questions__sub {
+    margin-top: var(--space-m);
+    font-size: var(--step-0);
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 54ch;
+  }
+
+  .questions__list {
+    display: grid;
     border-top: 1px solid var(--rule);
   }
 
-  .q__item {
+  .q {
     display: grid;
-    grid-template-columns: 2.25rem 1fr;
-    gap: var(--space-2xs);
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: 0.4rem var(--space-s);
     align-items: baseline;
     padding-block: var(--space-m);
     border-bottom: 1px solid var(--rule);
   }
 
-  @media (min-width: 46em) {
-    .q__item {
-      grid-template-columns: 3.5rem 1fr;
-      gap: var(--space-m);
+  @media (min-width: 52em) {
+    .q {
+      grid-template-columns: 5rem minmax(0, 1fr);
+      gap: var(--space-l);
+      padding-block: var(--space-l);
     }
   }
 
   .q__n {
     font-family: var(--font-mono);
-    font-size: var(--step--2);
+    font-size: var(--step--1);
     font-weight: 500;
-    color: var(--ink-3);
     letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+
+  @media (min-width: 52em) {
+    .q__n {
+      font-size: var(--step-1);
+      letter-spacing: 0.02em;
+    }
   }
 
   .q__text {
     font-family: var(--font-prose);
     font-size: var(--step-2);
-    line-height: 1.3;
-    letter-spacing: -0.012em;
-    color: var(--ink);
-    max-width: 42ch;
+    line-height: 1.28;
+    letter-spacing: -0.014em;
+    color: var(--band-ink);
+    max-width: 30ch;
     text-wrap: pretty;
   }
 
-  /* ===================================================== CAPABILITY === */
+  @media (min-width: 52em) {
+    .q__text {
+      font-size: var(--step-3);
+      max-width: 26ch;
+    }
+  }
+
+  /* ═════════════════════════════════════════════════════ CAPABILITY ══ */
+  .cap__head {
+    display: grid;
+    gap: var(--space-m);
+    margin-bottom: var(--space-xl);
+  }
+
+  @media (min-width: 52em) {
+    .cap__head {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-2xl);
+      align-items: end;
+    }
+  }
+
   .cap__title {
+    margin-top: var(--space-s);
     font-size: var(--step-3);
-    max-width: 16ch;
+    max-width: 12ch;
     letter-spacing: -0.03em;
   }
 
   .cap__intro {
-    margin-top: var(--space-s);
-    font-size: var(--step-0);
-    max-width: 56ch;
+    font-family: var(--font-prose);
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--ink-2);
+    max-width: 44ch;
   }
 
   .cap__grid {
     display: grid;
     gap: var(--space-l);
-    margin-top: var(--space-xl);
   }
 
   @media (min-width: 44em) {
@@ -793,7 +968,6 @@ const buildSkills = [
     border-radius: 0 var(--radius) var(--radius) 0;
   }
 
-  /* Reads as another spec row: label on the left, the admission on the right. */
   @media (min-width: 48em) {
     .cap__honest {
       grid-template-columns: 11rem minmax(0, 1fr);
@@ -810,10 +984,35 @@ const buildSkills = [
     max-width: 70ch;
   }
 
-  /* ======================================================== CONTACT === */
+  /* ════════════════════════════════════════════════════════ CONTACT ══ */
+  .contact__ticks {
+    margin-bottom: var(--space-xl);
+  }
+
+  .contact .shell .shell {
+    padding-inline: 0;
+  }
+
+  .contact__kicker {
+    margin-bottom: var(--space-s);
+  }
+
+  /* The sign-off is set as large as the opening line, to close the loop. */
+  .contact__title {
+    font-size: var(--step-5);
+    letter-spacing: -0.038em;
+    line-height: 0.98;
+    max-width: 20ch;
+  }
+
+  .contact__title span {
+    color: var(--ink-3);
+  }
+
   .contact__grid {
     display: grid;
     gap: var(--space-xl);
+    margin-top: var(--space-xl);
   }
 
   @media (min-width: 52em) {
@@ -824,14 +1023,7 @@ const buildSkills = [
     }
   }
 
-  .contact__title {
-    font-size: var(--step-3);
-    max-width: 22ch;
-    letter-spacing: -0.03em;
-  }
-
   .contact__body {
-    margin-top: var(--space-m);
     font-size: var(--step-0);
   }
 

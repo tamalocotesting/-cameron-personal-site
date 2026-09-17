@@ -62,6 +62,38 @@ const { pathname } = Astro.url;
     -webkit-backdrop-filter: saturate(150%) blur(10px);
   }
 
+  /* Over an inverted section the bar flips with it, so the page reads as one
+     surface instead of a light plate laid on a dark one. */
+  .site-header.is-over-band {
+    background-color: color-mix(in srgb, var(--band-bg) 88%, transparent);
+    border-bottom-color: var(--band-rule);
+    color: var(--band-ink);
+  }
+
+  .site-header.is-over-band .wordmark__name {
+    color: var(--band-ink);
+  }
+
+  .site-header.is-over-band .site-nav__link {
+    color: var(--band-ink-2);
+  }
+
+  .site-header.is-over-band .site-nav__link:hover,
+  .site-header.is-over-band .site-nav__link[aria-current='page'] {
+    color: var(--band-ink);
+  }
+
+  .site-header.is-over-band .site-nav__link--cta {
+    color: var(--band-ink);
+    border-color: var(--band-rule-strong);
+  }
+
+  .site-header.is-over-band .site-nav__link--cta:hover {
+    background: var(--band-ink);
+    color: var(--band-bg);
+    border-color: var(--band-ink);
+  }
+
   .site-header__inner {
     display: flex;
     align-items: center;
@@ -227,10 +259,39 @@ const { pathname } = Astro.url;
   (() => {
     const header = document.querySelector('[data-header]');
     const sentinel = document.getElementById('scroll-sentinel');
-    if (!header || !sentinel || !('IntersectionObserver' in window)) return;
-    new IntersectionObserver(
-      ([entry]) => header.classList.toggle('is-stuck', !entry.isIntersecting),
-      { threshold: 0 }
-    ).observe(sentinel);
+    if (!header || !('IntersectionObserver' in window)) return;
+
+    if (sentinel) {
+      new IntersectionObserver(
+        ([entry]) => header.classList.toggle('is-stuck', !entry.isIntersecting),
+        { threshold: 0 }
+      ).observe(sentinel);
+    }
+
+    // Flip the bar while an inverted section is passing behind it.
+    // This runs during head/body parse, before <main> exists, so it waits for
+    // the document before it goes looking for the sections it watches.
+    const watchBands = () => {
+      const bands = document.querySelectorAll('.band');
+      if (!bands.length) return;
+      const behind = new Set();
+      const bar = header.getBoundingClientRect().height || 64;
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) =>
+            e.isIntersecting ? behind.add(e.target) : behind.delete(e.target)
+          );
+          header.classList.toggle('is-over-band', behind.size > 0);
+        },
+        { rootMargin: `0px 0px -${Math.max(0, window.innerHeight - bar)}px 0px` }
+      );
+      bands.forEach((b) => io.observe(b));
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', watchBands, { once: true });
+    } else {
+      watchBands();
+    }
   })();
 </script>

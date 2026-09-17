@@ -1,0 +1,134 @@
+---
+import { Image } from 'astro:assets';
+
+/**
+ * Art-directed photography.
+ *
+ * There are no photographs in this project yet — src/assets/ is empty — so
+ * nothing on the site calls this component. It exists so that when real
+ * photographs arrive they land in a considered treatment instead of a rounded
+ * rectangle: drop the file in src/assets/, import it, and pick a `treatment`.
+ *
+ *   <Photo src={prep} alt="…" treatment="bleed" caption="4:40am, dough table" />
+ *
+ * Treatments:
+ *   plate  — framed, paper border, sits in the column like a print
+ *   bleed  — full-width band, cropped hard, used as a section anchor
+ *   crop   — tall detail crop, for hands / equipment / close work
+ *   inset  — small, overlapping the column edge, layered against text
+ */
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  treatment?: 'plate' | 'bleed' | 'crop' | 'inset';
+  caption?: string;
+  /** Focal point to bias the crop toward, as object-position. */
+  focus?: string;
+  /** Warms the image into the site palette. Good for mixed-quality phone shots. */
+  tone?: boolean;
+  priority?: boolean;
+}
+
+const {
+  src,
+  alt,
+  treatment = 'plate',
+  caption,
+  focus = '50% 50%',
+  tone = false,
+  priority = false,
+} = Astro.props;
+
+const ratios: Record<string, string> = {
+  plate: '4 / 3',
+  bleed: '21 / 9',
+  crop: '3 / 4',
+  inset: '1 / 1',
+};
+---
+
+<figure class:list={['ph', `ph--${treatment}`, { 'ph--tone': tone }]}>
+  <div class="ph__frame" style={`--ratio:${ratios[treatment]}`}>
+    <Image
+      src={src}
+      alt={alt}
+      widths={[480, 800, 1200, 1800]}
+      sizes={treatment === 'bleed' ? '100vw' : '(min-width: 62em) 45vw, 92vw'}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding="async"
+      style={`object-position:${focus}`}
+    />
+  </div>
+  {caption && <figcaption class="ph__cap">{caption}</figcaption>}
+</figure>
+
+<style>
+  .ph {
+    margin: 0;
+  }
+
+  .ph__frame {
+    position: relative;
+    overflow: hidden;
+    background: var(--paper-sunken);
+    aspect-ratio: var(--ratio);
+  }
+
+  .ph__frame > :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Warms a phone snapshot into the palette without turning it into a filter. */
+  .ph--tone .ph__frame > :global(img) {
+    filter: saturate(0.82) contrast(1.04) sepia(0.12);
+  }
+
+  .ph__cap {
+    margin-top: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.02em;
+    color: var(--ink-3);
+  }
+
+  /* --- plate: a print laid on the page ------------------------------- */
+  .ph--plate .ph__frame {
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius);
+  }
+
+  /* --- bleed: edge to edge, a hard change of key ---------------------- */
+  .ph--bleed .ph__frame {
+    border-radius: 0;
+  }
+
+  .ph--bleed .ph__cap {
+    padding-inline: var(--gutter);
+  }
+
+  /* --- crop: tall detail, for hands and equipment --------------------- */
+  .ph--crop .ph__frame {
+    border-radius: var(--radius);
+  }
+
+  /* --- inset: small, layered against the text ------------------------ */
+  .ph--inset {
+    max-width: 12rem;
+  }
+
+  .ph--inset .ph__frame {
+    border: 4px solid var(--paper);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lift);
+  }
+
+  @media (min-width: 62em) {
+    .ph--inset {
+      max-width: 15rem;
+      margin-left: -3rem;
+    }
+  }
+</style>
