@@ -1,0 +1,30 @@
+{
+  "name": "mise-ops-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MISE OPS \u2014 public marketing site. Restaurant operations, captured and made usable.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build && node scripts/check-output.mjs",
+    "build:fast": "astro build && node scripts/check-output.mjs",
+    "preview": "astro preview",
+    "check": "astro check",
+    "fonts": "node scripts/sync-fonts.mjs",
+    "check:output": "node scripts/check-output.mjs",
+    "astro": "astro",
+    "og": "node scripts/make-og.mjs",
+    "verify": "node scripts/verify.mjs"
+  },
+  "dependencies": {
+    "astro": "^7.3.3",
+    "@astrojs/sitemap": "^3.7.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@fontsource-variable/schibsted-grotesk": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "typescript": "^5.7.2"
+  }
+}

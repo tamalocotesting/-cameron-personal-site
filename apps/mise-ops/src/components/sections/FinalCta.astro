@@ -1,0 +1,109 @@
+---
+import { brand, cta } from '../../config/brand';
+import { areaSentence } from '../../data/service-areas';
+---
+
+<section class="section final" id="book">
+  <div class="shell shell--wide">
+    <div class="panel" data-reveal>
+      <span class="tape tape--flat">Next step</span>
+      <h2 class="final__head">Book an Operations Walkthrough.</h2>
+      <p class="final__lede">
+        A conversation about how your restaurant runs right now — what lives in your head,
+        what lives in a binder, and what would break if the wrong person quit. No slides,
+        no obligation.
+      </p>
+
+      <ul class="what">
+        <li>We walk your operation with you, in person where we can.</li>
+        <li>You get a written read on where the knowledge gaps actually are.</li>
+        <li>If a Sprint is not the right thing for you, we will say so.</li>
+      </ul>
+
+      <div class="btn-row">
+        <a
+          class="btn btn--primary btn--lg"
+          href={cta.primary.href}
+          data-track="cta_click"
+          data-track-props='{"location":"final"}'
+        >
+          {cta.primary.label}
+        </a>
+        <a class="btn btn--ghost btn--lg" href={`mailto:${brand.email}`}>Email us instead</a>
+      </div>
+
+      <p class="areas mono">Serving {areaSentence}.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .final {
+    border-top: 1px solid var(--rule);
+  }
+
+  .panel {
+    background: var(--surface-raised);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-lift);
+    padding: var(--space-xl) var(--space-m);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-m);
+  }
+
+  .final__head {
+    font-size: var(--step-4);
+    max-width: 18ch;
+  }
+
+  .final__lede {
+    font-size: var(--step-1);
+    color: var(--ink-2);
+    line-height: 1.5;
+    max-width: 52ch;
+  }
+
+  .what {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 52ch;
+  }
+
+  .what li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+
+  .what li::before {
+    content: '';
+    flex: none;
+    inline-size: 0.45rem;
+    block-size: 0.45rem;
+    margin-top: 0.55em;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .areas {
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+  }
+
+  @media (min-width: 46rem) {
+    .panel {
+      padding: var(--space-2xl) var(--space-xl);
+    }
+  }
+</style>

@@ -1,0 +1,114 @@
+---
+import { method } from '../../data/method';
+---
+
+<section class="section section--ruled section--steel" id="method">
+  <div class="shell shell--wide">
+    <div class="section-head" data-reveal>
+      <span class="tape">The MISE method</span>
+      <h2>Five stages. You always know which one you are in.</h2>
+      <p>
+        No open-ended discovery, no deliverable that arrives as a surprise. Each stage ends
+        with something the restaurant is holding.
+      </p>
+    </div>
+
+    <ol class="stages">
+      {method.map((stage, i) => (
+        <li class="stage" data-reveal style={`--dot: var(--dot-${i + 1})`}>
+          <div class="stage__mark">
+            <span class="dot">{String(i + 1).padStart(2, '0')}</span>
+            {i < method.length - 1 && <span class="stage__line" aria-hidden="true"></span>}
+          </div>
+          <div class="stage__body">
+            <h3 class="stage__name">{stage.name}</h3>
+            <p class="stage__summary">{stage.summary}</p>
+            <p class="stage__detail">{stage.detail}</p>
+            <p class="stage__leaves mono">
+              <span class="stage__leaves-key">Leaves you with</span> {stage.leaves}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .stages {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stage {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-m);
+    padding-bottom: var(--space-xl);
+  }
+
+  .stage:last-child {
+    padding-bottom: 0;
+  }
+
+  .stage__mark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .stage .dot {
+    background: var(--dot);
+  }
+
+  /* The thread running between stages — this is a sequence, not a list. */
+  .stage__line {
+    inline-size: 2px;
+    flex: 1;
+    min-block-size: 1.5rem;
+    background: linear-gradient(var(--rule-strong), var(--rule));
+  }
+
+  .stage__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding-top: 0.35rem;
+    max-width: 58ch;
+  }
+
+  .stage__name {
+    font-size: var(--step-3);
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+
+  .stage__summary {
+    font-size: var(--step-1);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .stage__detail {
+    color: var(--ink-2);
+  }
+
+  .stage__leaves {
+    margin-top: var(--space-2xs);
+    padding-top: var(--space-xs);
+    border-top: 1px solid var(--rule);
+    color: var(--ink-2);
+    font-size: var(--step--2);
+  }
+
+  .stage__leaves-key {
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-right: 0.5em;
+  }
+</style>

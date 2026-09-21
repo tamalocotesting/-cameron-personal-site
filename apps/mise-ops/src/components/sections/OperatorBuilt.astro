@@ -1,0 +1,131 @@
+---
+/**
+ * Section 11 — operator-built.
+ *
+ * The brief is explicit that the founder is not to be framed as an AI expert
+ * or a software developer. The credibility claim here is restaurant floor
+ * time, and nothing else. No client names, no counts, no results — none have
+ * been supplied.
+ */
+---
+
+<section class="section section--ruled section--steel" id="operator-built">
+  <div class="shell shell--wide">
+    <div class="split">
+      <div class="copy" data-reveal>
+        <span class="tape">Operator-built</span>
+        <h2>Built by someone who has worked the shift.</h2>
+        <p class="lede">
+          MISE OPS comes out of running restaurant operations, not out of watching them from
+          a laptop.
+        </p>
+        <div class="stack-m body">
+          <p>
+            Every procedure on this site is shaped by the same experience: opening
+            locations, training crews, covering a station when somebody called off, and
+            finding out the hard way which knowledge was never written down.
+          </p>
+          <p>
+            That is why the method spends a whole stage on verification. Anyone can write a
+            procedure. Getting a chef to agree which of three versions is the standard — and
+            getting the crew to use it — is the part that actually changes how a restaurant
+            runs.
+          </p>
+          <p>
+            It is also why nothing here asks your team to learn a new system. Cooks did not
+            sign up for software. They will use something that gives them an answer faster
+            than asking a manager, and they will ignore anything slower.
+          </p>
+        </div>
+      </div>
+
+      <aside class="principles" data-reveal>
+        <h3 class="mono-caps principles__title">How we work</h3>
+        <ul class="principles__list">
+          <li>
+            <strong>We come to you.</strong> The knowledge is on the floor, not in a meeting.
+          </li>
+          <li>
+            <strong>Your standard, not ours.</strong> We document how you want it done, then
+            you approve it.
+          </li>
+          <li>
+            <strong>Written for the person doing it.</strong> Plain language, in the language
+            they work in.
+          </li>
+          <li>
+            <strong>Scoped before it starts.</strong> You know what is included and what it
+            costs.
+          </li>
+          <li>
+            <strong>You own it.</strong> It keeps working whether or not you stay with us.
+          </li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .split {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  .copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-s);
+  }
+
+  .body {
+    color: var(--ink-2);
+    max-width: var(--measure);
+  }
+
+  .principles {
+    background: var(--surface-raised);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-card);
+    padding: var(--space-m);
+  }
+
+  .principles__title {
+    margin-bottom: var(--space-s);
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .principles__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+  }
+
+  .principles__list li {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    line-height: 1.55;
+    padding-left: var(--space-s);
+    border-left: 2px solid var(--accent-wash-2);
+  }
+
+  .principles__list strong {
+    display: block;
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  @media (min-width: 58rem) {
+    .split {
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: var(--space-2xl);
+    }
+  }
+</style>

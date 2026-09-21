@@ -1,0 +1,58 @@
+---
+import { audience } from '../../data/home';
+---
+
+<section class="section section--ruled" id="who-its-for">
+  <div class="shell shell--wide">
+    <div class="section-head" data-reveal>
+      <span class="tape">Who it’s for</span>
+      <h2>There is usually a moment that makes this urgent.</h2>
+      <p>If one of these is happening now, the cost of undocumented knowledge is about to go up.</p>
+    </div>
+
+    <ul class="cases">
+      {audience.map((item) => (
+        <li class="case" data-reveal>
+          <h3 class="case__when">{item.when}</h3>
+          <p class="case__because">{item.because}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .cases {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .case {
+    padding-left: var(--space-m);
+    border-left: 2px solid var(--accent);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .case__when {
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+  }
+
+  .case__because {
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    line-height: 1.6;
+  }
+
+  @media (min-width: 46rem) {
+    .cases {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-l) var(--space-xl);
+    }
+  }
+</style>

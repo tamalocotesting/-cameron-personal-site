@@ -1,0 +1,176 @@
+/* ==========================================================================
+   MISE OPS — design tokens
+   ==========================================================================
+   Identity: a clean stainless work surface under good light. Cool neutral
+   ground, white cards that read as recipe cards, kraft labels, one confident
+   green that means "in place / verified / go", and one clay red used only to
+   show the before state. Type is a modern grotesque with a mono for every
+   label, quantity and station name — the way a kitchen actually writes things
+   down.
+
+   This system is MISE OPS's own. It shares no values with any other site in
+   this repository, and must not start doing so.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Schibsted Grotesk Variable';
+  src: url('/fonts/schibsted-grotesk-var-latin.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono Variable';
+  src: url('/fonts/jetbrains-mono-var-latin.woff2') format('woff2');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ---- Type families ---------------------------------------------------- */
+  --font-sans: 'Schibsted Grotesk Variable', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo,
+    Consolas, monospace;
+
+  /* ---- Fluid type scale — 360px → 1280px viewport ----------------------- */
+  --step--2: clamp(0.7rem, 0.68rem + 0.09vw, 0.75rem);
+  --step--1: clamp(0.825rem, 0.79rem + 0.15vw, 0.9rem);
+  --step-0: clamp(1rem, 0.97rem + 0.15vw, 1.075rem);
+  --step-1: clamp(1.15rem, 1.09rem + 0.28vw, 1.3rem);
+  --step-2: clamp(1.35rem, 1.22rem + 0.58vw, 1.7rem);
+  --step-3: clamp(1.6rem, 1.35rem + 1.1vw, 2.25rem);
+  --step-4: clamp(1.95rem, 1.5rem + 2vw, 3rem);
+  --step-5: clamp(2.35rem, 1.65rem + 3.1vw, 3.9rem);
+  /* Display — type used as a graphic, not as a heading. */
+  --step-6: clamp(2.75rem, 1.5rem + 5.6vw, 5.5rem);
+
+  /* ---- Spacing ---------------------------------------------------------- */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-s: 1rem;
+  --space-m: 1.5rem;
+  --space-l: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --section-y: clamp(3.25rem, 2rem + 5vw, 6rem);
+
+  /* ---- Layout ----------------------------------------------------------- */
+  --measure: 62ch;
+  --shell: 74rem;
+  --shell-wide: 84rem;
+  --gutter: clamp(1.15rem, 0.8rem + 1.7vw, 2.75rem);
+  --radius-xs: 2px;
+  --radius: 4px;
+  --radius-m: 8px;
+  --radius-l: 14px;
+  --radius-pill: 999px;
+
+  /* ---- Motion ----------------------------------------------------------- */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-fast: 120ms;
+  --t-base: 220ms;
+
+  /* ---- Palette: service (light) ----------------------------------------- */
+  --surface: #f3f5f4;
+  --surface-raised: #ffffff;
+  --surface-sunken: #e4e8e6;
+  --steel: #dfe4e2;
+  --steel-2: #eceeed;
+
+  --ink: #121614;
+  --ink-2: #3b4340;
+  --ink-3: #5f6864;
+  --ink-inverse: #f4f7f5;
+
+  --rule: rgb(18 22 20 / 0.12);
+  --rule-strong: rgb(18 22 20 / 0.24);
+  --rule-heavy: rgb(18 22 20 / 0.7);
+
+  /* The one accent. Passes AA as text on --surface and --surface-raised. */
+  --accent: #0a6b47;
+  --accent-deep: #075437;
+  --accent-bright: #0e8a5c;
+  --accent-wash: rgb(10 107 71 / 0.08);
+  --accent-wash-2: rgb(10 107 71 / 0.16);
+  --on-accent: #f2fbf6;
+
+  /* Kraft label stock — the masking-tape and prep-label motif. */
+  --tape: #e7dcc2;
+  --tape-2: #f0e8d6;
+  --tape-ink: #4a4230;
+  --tape-edge: rgb(74 66 48 / 0.22);
+
+  /* Before-state only: scattered, unverified, out of date. Never a CTA. */
+  --clay: #a8432a;
+  --clay-wash: rgb(168 67 42 / 0.09);
+
+  /* Day-dot colours — the numbered steps in the method. Decorative only;
+     never the sole carrier of meaning. */
+  --dot-1: #0a6b47;
+  --dot-2: #1f6f8b;
+  --dot-3: #8a5a1f;
+  --dot-4: #6b3f7a;
+  --dot-5: #a8432a;
+
+  --shadow-card: 0 1px 2px rgb(18 22 20 / 0.05), 0 12px 28px -20px rgb(18 22 20 / 0.4);
+  --shadow-lift: 0 2px 6px rgb(18 22 20 / 0.06), 0 26px 52px -28px rgb(18 22 20 / 0.45);
+  --shadow-inset-steel: inset 0 1px 0 rgb(255 255 255 / 0.7);
+
+  color-scheme: light;
+}
+
+/* ---- Palette: night service (dark) --------------------------------------
+   Not an inversion — a kitchen after close. The ground goes to dark steel,
+   cards lift instead of sinking, and the accent brightens so it still reads
+   as the go colour. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #101413;
+    --surface-raised: #181d1b;
+    --surface-sunken: #0a0d0c;
+    --steel: #232a27;
+    --steel-2: #1d2321;
+
+    --ink: #eef1ef;
+    --ink-2: #b7bfbb;
+    --ink-3: #8b948f;
+    --ink-inverse: #101413;
+
+    --rule: rgb(238 241 239 / 0.13);
+    --rule-strong: rgb(238 241 239 / 0.26);
+    --rule-heavy: rgb(238 241 239 / 0.6);
+
+    --accent: #3fbc86;
+    --accent-deep: #2aa171;
+    --accent-bright: #5fd3a1;
+    --accent-wash: rgb(63 188 134 / 0.12);
+    --accent-wash-2: rgb(63 188 134 / 0.2);
+    --on-accent: #06251a;
+
+    --tape: #3a3527;
+    --tape-2: #2f2b20;
+    --tape-ink: #e2d7bc;
+    --tape-edge: rgb(226 215 188 / 0.24);
+
+    --clay: #e08063;
+    --clay-wash: rgb(224 128 99 / 0.12);
+
+    --dot-1: #3fbc86;
+    --dot-2: #5aaecb;
+    --dot-3: #d2a45f;
+    --dot-4: #b18cc0;
+    --dot-5: #e08063;
+
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.5), 0 14px 32px -20px rgb(0 0 0 / 0.8);
+    --shadow-lift: 0 2px 6px rgb(0 0 0 / 0.5), 0 28px 56px -28px rgb(0 0 0 / 0.85);
+    --shadow-inset-steel: inset 0 1px 0 rgb(255 255 255 / 0.05);
+
+    color-scheme: dark;
+  }
+}

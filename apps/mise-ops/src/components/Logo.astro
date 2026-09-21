@@ -1,0 +1,33 @@
+---
+/**
+ * The MISE OPS mark: a four-square grid with one square filled — mise en
+ * place, everything in its place, one thing currently in hand. Drawn rather
+ * than shipped as an image so it stays sharp and follows the colour tokens.
+ */
+interface Props {
+  size?: number;
+}
+const { size = 24 } = Astro.props;
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  aria-hidden="true"
+  focusable="false"
+  class="logo-mark"
+>
+  <rect x="1" y="1" width="9.5" height="9.5" rx="1.5" stroke="currentColor" stroke-width="1.6" />
+  <rect x="13.5" y="1" width="9.5" height="9.5" rx="1.5" fill="var(--accent)" />
+  <rect x="1" y="13.5" width="9.5" height="9.5" rx="1.5" stroke="currentColor" stroke-width="1.6" />
+  <rect x="13.5" y="13.5" width="9.5" height="9.5" rx="1.5" stroke="currentColor" stroke-width="1.6" />
+</svg>
+
+<style>
+  .logo-mark {
+    display: block;
+    flex: none;
+  }
+</style>

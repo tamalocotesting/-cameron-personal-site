@@ -1,0 +1,125 @@
+---
+import { stations } from '../../data/home';
+---
+
+<section class="section section--ruled" id="where-the-work-happens">
+  <div class="shell shell--wide">
+    <div class="section-head" data-reveal>
+      <span class="tape">Where the work happens</span>
+      <h2>Put the answer where the work happens.</h2>
+      <p>
+        A procedure nobody can reach at the moment they need it is not documentation, it is
+        filing. A label on the machine opens exactly what that machine needs.
+      </p>
+    </div>
+
+    <ul class="grid grid--4 stations">
+      {stations.map((s) => (
+        <li class="station" data-reveal>
+          <div class="station__tag">
+            <span class="qr" aria-hidden="true"></span>
+            <span class="mono station__code">{s.label}</span>
+          </div>
+          <h3 class="station__name">{s.station}</h3>
+          <ul class="station__opens">
+            {s.opens.map((o) => (
+              <li>{o}</li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ul>
+
+    <p class="note mono" data-reveal>
+      Scan with the camera already on the phone. No app to install, no account for a
+      dishwasher to remember.
+    </p>
+  </div>
+</section>
+
+<style>
+  .stations {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .station {
+    background: var(--surface-raised);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-card);
+    padding: var(--space-m);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .station__tag {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px dashed var(--rule-strong);
+  }
+
+  .station__code {
+    font-size: var(--step--2);
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+  }
+
+  .qr {
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    flex: none;
+    border-radius: 2px;
+    background-color: var(--ink);
+    background-image:
+      linear-gradient(var(--surface-raised) 0 0),
+      linear-gradient(var(--surface-raised) 0 0),
+      linear-gradient(var(--surface-raised) 0 0),
+      linear-gradient(var(--surface-raised) 0 0);
+    background-repeat: no-repeat;
+    background-size: 0.32rem 0.32rem, 0.32rem 0.32rem, 0.32rem 0.32rem, 0.26rem 0.26rem;
+    background-position: 0.26rem 0.26rem, 1.17rem 0.26rem, 0.26rem 1.17rem, 1.05rem 1.1rem;
+  }
+
+  .station__name {
+    font-size: var(--step-1);
+  }
+
+  .station__opens {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    color: var(--ink-2);
+    font-size: var(--step--1);
+  }
+
+  .station__opens li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .station__opens li::before {
+    content: '';
+    inline-size: 0.35rem;
+    block-size: 0.35rem;
+    border-radius: 50%;
+    background: var(--accent);
+    flex: none;
+  }
+
+  .note {
+    margin-top: var(--space-xl);
+    color: var(--ink-3);
+    font-size: var(--step--2);
+    max-width: 52ch;
+    line-height: 1.6;
+  }
+</style>
