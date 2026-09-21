@@ -20,10 +20,19 @@ const year = new Date().getFullYear();
         </a>
       </div>
 
-      <nav class="links" aria-label="Footer">
-        <h2 class="mono-caps">Site</h2>
+      <nav class="links" aria-label="Service">
+        <h2 class="mono-caps">Service</h2>
         <ul>
-          {footerNav.map((item) => (
+          {footerNav.service.map((item) => (
+            <li><a href={item.href}>{item.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <nav class="links" aria-label="Company">
+        <h2 class="mono-caps">Company</h2>
+        <ul>
+          {footerNav.company.map((item) => (
             <li><a href={item.href}>{item.label}</a></li>
           ))}
         </ul>
@@ -36,10 +45,7 @@ const year = new Date().getFullYear();
             <li>{area.city}, Indiana</li>
           ))}
         </ul>
-      </div>
-
-      <div class="links">
-        <h2 class="mono-caps">Contact</h2>
+        <h2 class="mono-caps links__second">Contact</h2>
         <ul>
           <li><a href={`mailto:${brand.email}`}>{brand.email}</a></li>
           {brand.phone && <li><a href={`tel:${brand.phone.replace(/[^+\d]/g, '')}`}>{brand.phone}</a></li>}
@@ -102,6 +108,10 @@ const year = new Date().getFullYear();
     margin-bottom: var(--space-xs);
   }
 
+  .links__second {
+    margin-top: var(--space-m);
+  }
+
   .links ul {
     list-style: none;
     margin: 0;
@@ -112,14 +122,18 @@ const year = new Date().getFullYear();
   }
 
   .links li {
+    display: flex;
     color: var(--ink-2);
     font-size: var(--step--1);
     line-height: 1.5;
   }
 
+  /* The whole row is the target, not just the word. A short link like
+     "About" is otherwise 37px wide on a phone, and the miss lands on the
+     link above or below it. */
   .links a {
-    /* 44px minimum target: these sit close together on a phone. */
-    display: inline-flex;
+    display: flex;
+    flex: 1;
     align-items: center;
     min-height: 2.75rem;
     color: var(--ink-2);
@@ -147,7 +161,7 @@ const year = new Date().getFullYear();
 
   @media (min-width: 46rem) {
     .top {
-      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
       gap: var(--space-l);
     }
   }

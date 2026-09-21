@@ -1,0 +1,69 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Method from '../../components/sections/Method.astro';
+import CtaBand from '../../components/sections/CtaBand.astro';
+import { publishedAreas, type ServiceArea } from '../../data/service-areas';
+
+/**
+ * Location pages, generated from src/data/service-areas.ts.
+ *
+ * Only areas with `publish: true` produce a page. Right now that is none of
+ * them, so this route builds nothing — on purpose. Every city is already
+ * listed in areaServed and in the footer, which is the true claim. A page per
+ * city that swaps the name into the same paragraph is a doorway page: thin,
+ * obviously templated to the owner reading it, and demoted by search engines.
+ *
+ * To publish one: write a real `angle` and real `detail` for that city in the
+ * data file, then flip `publish`. If you cannot write something true that is
+ * not equally true of the other five, it is not ready.
+ */
+export const getStaticPaths: GetStaticPaths = () =>
+  publishedAreas.map((area) => ({ params: { city: area.slug }, props: { area } }));
+
+interface Props {
+  area: ServiceArea;
+}
+const { area } = Astro.props;
+---
+
+<Base
+  title={`Restaurant operations in ${area.city}, Indiana`}
+  description={area.angle ?? `MISE OPS works with independent restaurants in ${area.city}, ${area.county}.`}
+>
+  <PageHeader
+    eyebrow={`${area.city}, Indiana`}
+    title={`Restaurant operations in ${area.city}.`}
+    lede={area.angle}
+  />
+
+  {area.detail && (
+    <section class="section">
+      <div class="shell shell--wide">
+        <div class="body">
+          {area.detail.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <Method />
+  <CtaBand title={`Book a walkthrough in ${area.city}.`} />
+</Base>
+
+<style>
+  .body {
+    max-width: var(--measure);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+  }
+
+  .body p {
+    color: var(--ink-2);
+    line-height: 1.7;
+  }
+</style>

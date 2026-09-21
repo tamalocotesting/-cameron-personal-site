@@ -1,0 +1,100 @@
+---
+import Legal from '../layouts/Legal.astro';
+import { brand } from '../config/brand';
+
+/**
+ * ── NEEDS LEGAL REVIEW BEFORE LAUNCH ───────────────────────────────────────
+ * This is a plain-language starting point describing how the site and the
+ * engagements actually work. It is deliberately modest: it makes no sweeping
+ * liability disclaimers and claims no protections that have not been drafted
+ * by a lawyer, because terms that read authoritative without being reviewed
+ * are worse than terms that are obviously a starting point.
+ *
+ * Have an Indiana attorney review this before the site goes live, and replace
+ * the sections that matter to the business — limitation of liability, IP
+ * ownership of delivered materials, and payment terms in particular.
+ * ───────────────────────────────────────────────────────────────────────────
+ */
+---
+
+<Legal
+  title="Terms"
+  eyebrow="Terms"
+  updated="21 September 2026"
+  description="The terms that apply to this website, and how MISE OPS engagements are agreed. Prices shown are starting points, not offers."
+>
+  <h2>About these terms</h2>
+  <p>
+    These terms cover <strong>this website</strong>. They are not the agreement for a piece
+    of work — every MISE OPS engagement is agreed in a separate written scope and quote
+    that you see and accept before anything starts. Where the two differ, the signed scope
+    wins.
+  </p>
+
+  <h2>What this site is</h2>
+  <p>
+    Marketing information about a service. It describes how MISE OPS works and what an
+    engagement can include. It is written to be accurate, but it is general information
+    rather than advice about your specific restaurant.
+  </p>
+
+  <h3>Pricing shown here</h3>
+  <p>
+    Figures on this site say <strong>“starting around”</strong> and mean it. They are entry
+    points for a scoped engagement, not a fixed price list and not an offer capable of
+    acceptance. What your restaurant would cost depends on scope, and you will be given
+    that in writing before you commit to anything.
+  </p>
+
+  <h3>Examples and demonstrations</h3>
+  <p>
+    Every example on this site uses a fictional demonstration restaurant and is labelled as
+    such. Nothing on this site is a customer, a result, a testimonial or a case study. We
+    will add real ones when we have permission to.
+  </p>
+
+  <h2>The walkthrough</h2>
+  <p>
+    Requesting an Operations Walkthrough does not commit you to anything and does not cost
+    anything. It also does not oblige us to take the work on — if MISE OPS is not the right
+    fit for your restaurant, we will say so.
+  </p>
+
+  <h2>Using this site</h2>
+  <p>
+    The text, design, images and code on this site belong to MISE OPS. You are welcome to
+    read it, print it and share links to it. Please do not copy it wholesale for a
+    competing service.
+  </p>
+  <p>
+    Do not use the form to send abuse, spam, or anything unlawful, and do not attempt to
+    disrupt or gain unauthorised access to the site.
+  </p>
+
+  <h2>Availability and accuracy</h2>
+  <p>
+    We keep this site accurate and online, but we cannot promise it is error-free or never
+    unavailable. If something here is wrong, tell us and we will fix it.
+  </p>
+
+  <h2>Links to other sites</h2>
+  <p>
+    Where this site links somewhere else, that site is not under our control and these
+    terms do not apply to it.
+  </p>
+
+  <h2>Governing law</h2>
+  <p>
+    These terms are governed by the laws of the State of Indiana, United States.
+  </p>
+
+  <h2>Changes</h2>
+  <p>
+    If these terms change, the date at the top changes with them.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    <a class="link" href={`mailto:${brand.email}`}>{brand.email}</a>
+  </p>
+</Legal>

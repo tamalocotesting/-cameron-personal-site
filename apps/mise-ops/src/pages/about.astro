@@ -1,0 +1,190 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import OperatorBuilt from '../components/sections/OperatorBuilt.astro';
+import CtaBand from '../components/sections/CtaBand.astro';
+import { brand } from '../config/brand';
+import { allAreas, areaSentence } from '../data/service-areas';
+
+const beliefs = [
+  {
+    t: 'A restaurant should not depend on one person remembering',
+    b: 'Not because people are unreliable, but because they are allowed to have a day off, a better offer, or a life. Every procedure that exists in exactly one head is a single point of failure the owner is carrying without pricing it.',
+  },
+  {
+    t: 'The standard is whatever the team actually does',
+    b: 'Not what the binder says. If three cooks make it three ways, the restaurant has three standards, and the written one is fiction until somebody decides and tells them.',
+  },
+  {
+    t: 'Cooks did not sign up for software',
+    b: 'They will use something that gives them an answer faster than asking a manager, and ignore anything slower. That is the entire design brief, and it rules out most of what gets sold to restaurants.',
+  },
+  {
+    t: 'Documentation is worthless if it is not maintained',
+    b: 'A system that stops matching the restaurant stops being trusted, and once it is not trusted it is a binder again. This is why we say no to unlimited-scope promises we could not keep.',
+  },
+];
+---
+
+<Base
+  title="About"
+  description="MISE OPS comes out of running restaurant operations — opening locations, training crews, and finding out the hard way which knowledge was never written down. Working with independent restaurants across Central Indiana."
+>
+  <PageHeader
+    eyebrow="About"
+    title="Written by someone who has had to cover the station."
+    lede="MISE OPS exists because the same problem shows up in every restaurant worth working in: most of what the place knows has never been written down, and everybody has been too busy to fix it."
+  />
+
+  <OperatorBuilt />
+
+  <section class="section section--ruled">
+    <div class="shell shell--wide">
+      <div class="section-head" data-reveal>
+        <span class="tape">What we believe</span>
+        <h2>Four things, and they shape everything else.</h2>
+      </div>
+
+      <ol class="beliefs">
+        {beliefs.map((b, i) => (
+          <li class="belief" data-reveal style={`--dot: var(--dot-${i + 1})`}>
+            <span class="dot">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h3 class="belief__t">{b.t}</h3>
+              <p class="belief__b">{b.b}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--ruled section--steel">
+    <div class="shell shell--wide">
+      <div class="area">
+        <div class="area__copy" data-reveal>
+          <span class="tape">Where we work</span>
+          <h2>On site, in Central Indiana.</h2>
+          <p>
+            The capture stage means being in your restaurant during service, so this is
+            deliberately a local business rather than a remote one. We work across
+            {' '}{areaSentence}.
+          </p>
+          <p class="area__note">
+            Somewhere nearby that is not on the list? Ask — the boundary is drive time, not
+            a rule. <a class="link" href={`mailto:${brand.email}`}>{brand.email}</a>
+          </p>
+        </div>
+
+        <ul class="area__list" data-reveal>
+          {allAreas.map((a) => (
+            <li>
+              <span class="area__city">{a.city}</span>
+              <span class="area__county mono">{a.county}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .beliefs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .belief {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-m);
+    align-items: start;
+  }
+
+  .belief .dot {
+    background: var(--dot);
+  }
+
+  .belief__t {
+    font-size: var(--step-1);
+    margin-bottom: 0.35rem;
+  }
+
+  .belief__b {
+    color: var(--ink-2);
+    line-height: 1.6;
+    max-width: 62ch;
+  }
+
+  .area {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  .area__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-s);
+  }
+
+  .area__copy p {
+    color: var(--ink-2);
+    max-width: 48ch;
+  }
+
+  .area__note {
+    font-size: var(--step--1);
+    color: var(--ink-3);
+  }
+
+  .area__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+  }
+
+  .area__list li {
+    background: var(--surface-raised);
+    padding: var(--space-s) var(--space-m);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-s);
+  }
+
+  .area__city {
+    font-weight: 700;
+  }
+
+  .area__county {
+    font-size: var(--step--2);
+    color: var(--ink-3);
+  }
+
+  @media (min-width: 46rem) {
+    .area__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 62rem) {
+    .area {
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: var(--space-2xl);
+    }
+  }
+</style>

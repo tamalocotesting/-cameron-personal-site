@@ -236,14 +236,68 @@ the portal is a full-stack application whose stack should be chosen when there
 are real customers and a real idea of what they need. Do not pre-build for it
 here, and do not pick its technology now.
 
+## Pages
+
+| Route | What it is |
+| --- | --- |
+| `/` | The argument, end to end |
+| `/how-it-works` | The five stages, what we need from you, and the calculator |
+| `/sprint` | The build: who does what, what is and is not included |
+| `/care` | Upkeep: how documentation drifts, and what Care covers |
+| `/examples` | The Before/After demonstration and the rest of the system |
+| `/about` | Why it exists, what we believe, where we work |
+| `/contact` | The Operations Walkthrough request |
+| `/thanks` | Where a no-JS submission lands. `noindex`, and kept out of the sitemap |
+| `/privacy` | Written from what the site actually does |
+| `/terms` | **Needs legal review — see below** |
+| `/404` | `86'd` — kitchen shorthand for *we are out of it* |
+| `/restaurant-operations/[city]` | Generates from data. Currently builds nothing, on purpose |
+
+## The operations calculator
+
+`/how-it-works#calculator`. The arithmetic lives in `src/lib/calculator.ts` so
+the server-rendered defaults and the client-side updates cannot disagree, and
+it renders correct numbers before any script runs.
+
+It estimates what the current way of working consumes, from the visitor's own
+inputs. It deliberately **does not estimate a saving**, and says so on the
+page: MISE OPS has no customer results to derive one from, and a fabricated
+"you will save $X" would be the least defensible thing on the site. Every
+assumption — 60 shifts a month, fully-loaded manager cost — is printed
+underneath it rather than buried in the code.
+
+## ⚠ Terms needs a lawyer before launch
+
+`src/pages/terms.astro` is a plain-language starting point describing how the
+site and the engagements actually work. It is deliberately modest: it makes no
+sweeping liability disclaimers and claims no protections that have not been
+drafted, because terms that read authoritative without being reviewed are worse
+than terms that are obviously a starting point.
+
+**Have an Indiana attorney review it before the site goes live.** The sections
+that matter most are limitation of liability, ownership of delivered materials,
+and payment terms. The privacy page does not have this problem — it is written
+from what the code does, and it is accurate.
+
+## Before launch
+
+- [ ] **`hello@miseops.com` must exist.** It is in `src/config/brand.ts` and
+      every call to action and the structured data point at it.
+- [ ] **A phone number, if you want one.** `brand.phone` is empty, which hides
+      it everywhere rather than shipping a dead `tel:` link.
+- [ ] **Terms reviewed** (above).
+- [ ] **Point the domain at the Netlify site** and confirm `PRODUCTION_URL` in
+      `site.config.mjs` matches it.
+- [ ] **Check the form once in production.** Netlify registers a form by
+      parsing the deployed HTML, so it only becomes real after the first
+      deploy. Submit it and confirm the notification arrives.
+
 ## Status
 
-Built: the homepage, the design system, the layout, the Before/After
-demonstration, SEO and schema, analytics, the lead-capture abstraction, and the
-location-page capability.
+Built and verified: all ten pages above, the design system, the Before/After
+demonstration, the operations calculator, the Operations Walkthrough form, SEO
+and schema, analytics, and the location-page capability.
 
-Not built yet: How It Works, Sprint, Care, Examples, About, Contact (with the
-Operations Walkthrough form), Privacy, Terms, the ROI calculator, and the
-location pages. Navigation and calls to action currently point at homepage
-sections so the site ships no dead link; when those pages exist, change the two
-hrefs in `cta` and the `nav` list in `src/config/brand.ts` and nothing else.
+Not built, by decision: authentication, a database, any portal, POS
+integration, scheduling, inventory, payroll, billing, a CMS, a chatbot, a
+native app, an LMS. See the boundary above.

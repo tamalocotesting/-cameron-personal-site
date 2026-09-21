@@ -44,41 +44,35 @@ export const brand = {
   region: 'Central Indiana',
 } as const;
 
-/**
- * Calls to action.
- *
- * PHASE 1 CHECKPOINT: these point at homepage sections, because the homepage
- * is the only page built so far and the site must not ship a dead link. When
- * /contact and /how-it-works exist, change the two hrefs here and nowhere
- * else — every CTA on the site reads from this object.
- */
+/** Calls to action. Every CTA on the site reads from this object. */
 export const cta = {
-  primary: { label: 'Book an Operations Walkthrough', href: '#book' },
-  secondary: { label: 'See How MISE Works', href: '#method' },
+  primary: { label: 'Book an Operations Walkthrough', href: '/contact' },
+  secondary: { label: 'See How MISE Works', href: '/how-it-works' },
 } as const;
 
-/**
- * Primary navigation. Same note as above: these become real routes
- * (/how-it-works, /sprint, /care, /examples, /about) as those pages are built.
- */
 export const nav = [
-  { label: 'The problem', href: '#the-problem' },
-  { label: 'Before & after', href: '#before-after' },
-  { label: 'Method', href: '#method' },
-  { label: 'Pricing', href: '#engagements' },
-  { label: 'About', href: '#operator-built' },
+  { label: 'How it works', href: '/how-it-works' },
+  { label: 'Sprint', href: '/sprint' },
+  { label: 'Care', href: '/care' },
+  { label: 'Examples', href: '/examples' },
+  { label: 'About', href: '/about' },
 ] as const;
 
-export const footerNav = [
-  { label: 'The problem', href: '#the-problem' },
-  { label: 'Before & after', href: '#before-after' },
-  { label: 'What we organize', href: '#what-we-organize' },
-  { label: 'The MISE method', href: '#method' },
-  { label: 'MISE OPS Sprint', href: '#sprint' },
-  { label: 'MISE OPS Care', href: '#care' },
-  { label: 'Questions', href: '#faq' },
-  { label: 'Book a walkthrough', href: '#book' },
-] as const;
+export const footerNav = {
+  service: [
+    { label: 'How it works', href: '/how-it-works' },
+    { label: 'MISE OPS Sprint', href: '/sprint' },
+    { label: 'MISE OPS Care', href: '/care' },
+    { label: 'Examples', href: '/examples' },
+    { label: 'What it costs you now', href: '/how-it-works#calculator' },
+  ],
+  company: [
+    { label: 'About', href: '/about' },
+    { label: 'Book a walkthrough', href: '/contact' },
+    { label: 'Privacy', href: '/privacy' },
+    { label: 'Terms', href: '/terms' },
+  ],
+} as const;
 
 /**
  * Pricing. "Starting around" is load-bearing — these are entry points for a

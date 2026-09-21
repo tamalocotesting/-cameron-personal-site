@@ -55,6 +55,13 @@ button {
   cursor: pointer;
 }
 
+/* The `hidden` attribute has to beat any display an author style sets, or a
+   component that declares `display: flex` renders while marked hidden. This
+   is exactly how the form's success panel shipped visible above the form. */
+[hidden] {
+  display: none !important;
+}
+
 /* --------------------------------------------------------------------------
    Typography
    -------------------------------------------------------------------------- */

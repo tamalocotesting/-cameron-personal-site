@@ -13,7 +13,15 @@ export default defineConfig({
   integrations: [
     // Previews are noindex (see src/pages/robots.txt.ts), so there is nothing
     // for a sitemap to usefully point at either.
-    ...(isProductionDeploy() ? [sitemap()] : []),
+    ...(isProductionDeploy()
+      ? [
+          sitemap({
+            // A thank-you page in the index skews conversion data and is
+            // useless to a searcher. It carries noindex too.
+            filter: (page) => !page.endsWith('/thanks'),
+          }),
+        ]
+      : []),
   ],
   build: {
     inlineStylesheets: 'auto',

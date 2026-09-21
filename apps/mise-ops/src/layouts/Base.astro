@@ -17,6 +17,8 @@ interface Props {
   ogImage?: string;
   /** Extra JSON-LD for this page (FAQPage, Service, …). */
   schema?: unknown[];
+  /** Keep this page out of search even in production (e.g. /thanks). */
+  noindex?: boolean;
 }
 
 const {
@@ -26,6 +28,7 @@ const {
   ogType = 'website',
   ogImage = '/og.png',
   schema = [],
+  noindex = false,
 } = Astro.props;
 
 const pageTitle = suffix ? `${title} — ${brand.name}` : title;
@@ -36,8 +39,8 @@ const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.si
 const ogImageUrl = new URL(ogImage, Astro.site).href;
 
 // Previews and branch deploys must not be indexed, or they compete with the
-// real site for the same queries.
-const indexable = isProductionDeploy();
+// real site for the same queries. Some pages opt out even in production.
+const indexable = isProductionDeploy() && !noindex;
 
 const graph = [organizationSchema(Astro.site), webSiteSchema(Astro.site), ...schema];
 ---

@@ -1,0 +1,158 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import LeadForm from '../components/forms/LeadForm.astro';
+import { brand } from '../config/brand';
+import { areaSentence } from '../data/service-areas';
+
+const next = [
+  {
+    n: '01',
+    t: 'We read it',
+    b: 'Not a queue, not an auto-responder. You get a reply within one business day, by whichever method you picked.',
+  },
+  {
+    n: '02',
+    t: 'We walk your operation',
+    b: 'In person where we can. An hour or so, during a time that does not wreck your service.',
+  },
+  {
+    n: '03',
+    t: 'You get a written read',
+    b: 'Where the knowledge gaps actually are, and what would be worth building first — yours to keep either way.',
+  },
+];
+---
+
+<Base
+  title="Book an Operations Walkthrough"
+  description="Request an Operations Walkthrough: a conversation about how your restaurant runs right now, where the knowledge gaps are, and what would break if the wrong person quit. No obligation."
+>
+  <PageHeader
+    eyebrow="Operations walkthrough"
+    title="Tell us how your restaurant runs right now."
+    lede="It takes about two minutes. The more honest the last question, the more useful the walkthrough."
+  />
+
+  <section class="section">
+    <div class="shell shell--wide">
+      <div class="layout">
+        <div class="form-col">
+          <LeadForm />
+        </div>
+
+        <aside class="side">
+          <div class="side__block">
+            <h2 class="mono-caps">What happens next</h2>
+            <ol class="next">
+              {next.map((s) => (
+                <li>
+                  <span class="next__n mono">{s.n}</span>
+                  <div>
+                    <h3 class="next__t">{s.t}</h3>
+                    <p class="next__b">{s.b}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div class="side__block">
+            <h2 class="mono-caps">Rather just email?</h2>
+            <p class="side__p">
+              <a class="link" href={`mailto:${brand.email}`}>{brand.email}</a>
+            </p>
+            <p class="side__p side__p--muted">
+              Serving {areaSentence}. If you are nearby but not on that list, ask anyway.
+            </p>
+          </div>
+
+          <div class="side__block side__block--quiet">
+            <h2 class="mono-caps">What we do with this</h2>
+            <p class="side__p side__p--muted">
+              It reaches us and nobody else. We do not sell it, share it, or add you to a
+              mailing list — there isn’t one. See the
+              <a class="link" href="/privacy">privacy page</a>.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .layout {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  .side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-l);
+  }
+
+  .side__block h2 {
+    padding-bottom: var(--space-xs);
+    margin-bottom: var(--space-s);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .side__p {
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    line-height: 1.6;
+  }
+
+  .side__p--muted {
+    color: var(--ink-3);
+    font-size: var(--step--2);
+  }
+
+  .side__block--quiet {
+    padding-top: var(--space-s);
+  }
+
+  .next {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+  }
+
+  .next li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-s);
+    align-items: start;
+  }
+
+  .next__n {
+    color: var(--accent);
+    font-size: var(--step--2);
+    letter-spacing: 0.14em;
+    padding-top: 0.2rem;
+  }
+
+  .next__t {
+    font-size: var(--step-0);
+    margin-bottom: 0.2rem;
+  }
+
+  .next__b {
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    line-height: 1.55;
+  }
+
+  @media (min-width: 64rem) {
+    .layout {
+      grid-template-columns: 1.55fr 0.85fr;
+      gap: var(--space-2xl);
+    }
+  }
+</style>

@@ -1,0 +1,393 @@
+---
+/**
+ * The operations calculator.
+ *
+ * It estimates what answering the same questions and onboarding from scratch
+ * currently consumes, using the visitor's own numbers. It deliberately does
+ * NOT claim a saving: MISE OPS has no customer results to base one on, and a
+ * fabricated "you will save $X" would be the least defensible thing on the
+ * site. Every assumption is stated on the page.
+ *
+ * Server-rendered with the defaults already computed, so it is correct and
+ * readable before any script runs.
+ */
+import { SHIFTS_PER_MONTH, defaults, compute, money, hours } from '../lib/calculator';
+
+const initial = compute(defaults);
+
+const inputs = [
+  { name: 'locations', label: 'Locations', min: 1, max: 20, step: 1, suffix: '' },
+  { name: 'employees', label: 'Employees per location', min: 1, max: 300, step: 1, suffix: '' },
+  { name: 'newHires', label: 'New hires per month', min: 0, max: 50, step: 1, suffix: '' },
+  { name: 'trainingHours', label: 'Training hours per new hire', min: 0, max: 60, step: 1, suffix: 'h' },
+  { name: 'managerRate', label: 'Manager cost per hour', min: 10, max: 120, step: 1, suffix: '$' },
+  { name: 'questionsPerShift', label: 'Repeated questions per shift', min: 0, max: 60, step: 1, suffix: '' },
+  { name: 'minutesPerQuestion', label: 'Minutes per question', min: 1, max: 30, step: 1, suffix: 'm' },
+] as const;
+---
+
+<div class="calc" id="calculator" data-calc>
+  <div class="calc__grid">
+    <form class="calc__inputs" data-calc-form>
+      <h3 class="calc__sub mono-caps">Your numbers</h3>
+      {inputs.map((f) => (
+        <div class="row">
+          <label class="row__label" for={`c-${f.name}`}>
+            {f.label}
+            {f.suffix === '$' && <span class="row__unit mono">$/hr</span>}
+            {f.suffix === 'h' && <span class="row__unit mono">hours</span>}
+            {f.suffix === 'm' && <span class="row__unit mono">minutes</span>}
+          </label>
+          <input
+            class="row__input"
+            id={`c-${f.name}`}
+            name={f.name}
+            type="number"
+            inputmode="numeric"
+            value={defaults[f.name]}
+            min={f.min}
+            max={f.max}
+            step={f.step}
+          />
+        </div>
+      ))}
+      <p class="calc__reset">
+        <button type="reset" class="btn btn--ghost" data-calc-reset>Reset to defaults</button>
+      </p>
+    </form>
+
+    <div class="calc__out">
+      <h3 class="calc__sub mono-caps">What that currently consumes</h3>
+
+      <div class="headline">
+        <span class="headline__label mono">Manager time, per month</span>
+        <output class="headline__figure" data-out="totalHours" for="c-locations c-newHires">
+          {hours(initial.totalHours)}
+        </output>
+      </div>
+
+      <ul class="breakdown">
+        <li>
+          <span>Answering repeated questions</span>
+          <output class="mono" data-out="questionHours">{hours(initial.questionHours)}</output>
+        </li>
+        <li>
+          <span>Training new hires from scratch</span>
+          <output class="mono" data-out="onboardingHours">{hours(initial.onboardingHours)}</output>
+        </li>
+        <li class="breakdown__split">
+          <span>Per employee, per month</span>
+          <output class="mono" data-out="perEmployee">{hours(initial.perEmployee)}</output>
+        </li>
+      </ul>
+
+      <div class="costs">
+        <div class="cost">
+          <span class="cost__label mono">Monthly, at that rate</span>
+          <output class="cost__figure" data-out="monthlyCost">{money(initial.monthlyCost)}</output>
+        </div>
+        <div class="cost">
+          <span class="cost__label mono">Over a year</span>
+          <output class="cost__figure cost__figure--big" data-out="annualCost">
+            {money(initial.annualCost)}
+          </output>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calc__assumptions">
+    <h3 class="mono-caps">What this is, and what it is not</h3>
+    <ul>
+      <li>
+        <strong>These are your numbers, not ours.</strong> The calculator multiplies what
+        you entered. Change an input and the answer changes — it has no data of its own.
+      </li>
+      <li>
+        <strong>It assumes {SHIFTS_PER_MONTH} shifts a month</strong> — roughly two a day —
+        and that a repeated question costs a manager the minutes you entered.
+      </li>
+      <li>
+        <strong>Manager cost per hour should be fully loaded</strong> if you want the
+        dollar figures to mean anything: wage plus tax and benefits, not just the wage.
+      </li>
+      <li>
+        <strong>This is not a saving, and we are not claiming one.</strong> It describes
+        what the current way of working consumes. How much of it a documented system
+        recovers depends on your restaurant, and we have no customer results to quote yet.
+      </li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  import { defaults, compute, money, hours } from '../lib/calculator';
+  import { track, EVENTS } from '../lib/analytics';
+
+  const root = document.querySelector<HTMLElement>('[data-calc]');
+  const form = root?.querySelector<HTMLFormElement>('[data-calc-form]');
+
+  if (root && form) {
+    const outs = new Map<string, HTMLOutputElement>();
+    root.querySelectorAll<HTMLOutputElement>('[data-out]').forEach((el) => {
+      outs.set(el.dataset.out!, el);
+    });
+
+    const read = () => {
+      const values = { ...defaults };
+      (Object.keys(defaults) as (keyof typeof defaults)[]).forEach((key) => {
+        const input = form.elements.namedItem(key) as HTMLInputElement | null;
+        if (!input) return;
+        const n = Number(input.value);
+        // An empty or nonsense box falls back to the default rather than
+        // rendering NaN across the whole panel.
+        values[key] = Number.isFinite(n) && n >= 0 ? n : defaults[key];
+      });
+      return values;
+    };
+
+    const render = () => {
+      const r = compute(read());
+      outs.get('totalHours')!.textContent = hours(r.totalHours);
+      outs.get('questionHours')!.textContent = hours(r.questionHours);
+      outs.get('onboardingHours')!.textContent = hours(r.onboardingHours);
+      outs.get('perEmployee')!.textContent = hours(r.perEmployee);
+      outs.get('monthlyCost')!.textContent = money(r.monthlyCost);
+      outs.get('annualCost')!.textContent = money(r.annualCost);
+    };
+
+    let reported = false;
+    form.addEventListener('input', () => {
+      render();
+      if (!reported) {
+        reported = true;
+        track(EVENTS.calculatorUse);
+      }
+    });
+
+    // A native reset fires before the values revert, so render on the next tick.
+    form.addEventListener('reset', () => window.setTimeout(render, 0));
+  }
+</script>
+
+<style>
+  .calc {
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-l);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+
+  .calc__grid {
+    display: grid;
+  }
+
+  .calc__sub {
+    padding-bottom: var(--space-xs);
+    margin-bottom: var(--space-m);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .calc__inputs {
+    padding: var(--space-m);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding: 0.35rem 0;
+  }
+
+  .row__label {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .row__unit {
+    font-size: var(--step--2);
+    color: var(--ink-3);
+  }
+
+  .row__input {
+    inline-size: 5.5rem;
+    min-height: 2.75rem;
+    flex: none;
+    padding: 0.5rem 0.6rem;
+    text-align: right;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: var(--step-0);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .row__input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-wash-2);
+  }
+
+  .calc__reset {
+    margin-top: var(--space-m);
+  }
+
+  .calc__reset .btn {
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
+    font-size: var(--step--1);
+  }
+
+  /* ---- Output ---- */
+
+  .calc__out {
+    padding: var(--space-m);
+    background: var(--surface-sunken);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+  }
+
+  .headline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .headline__label {
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .headline__figure {
+    font-size: var(--step-5);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .breakdown {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .breakdown li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+
+  .breakdown li output {
+    color: var(--ink);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .breakdown__split {
+    border-bottom: 0;
+    color: var(--ink-3);
+  }
+
+  .costs {
+    display: grid;
+    gap: var(--space-s);
+    padding-top: var(--space-s);
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  .cost {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .cost__label {
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .cost__figure {
+    font-size: var(--step-2);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .cost__figure--big {
+    font-size: var(--step-3);
+    color: var(--accent);
+  }
+
+  /* ---- Assumptions ---- */
+
+  .calc__assumptions {
+    padding: var(--space-m);
+    border-top: 1px solid var(--rule);
+  }
+
+  .calc__assumptions h3 {
+    margin-bottom: var(--space-s);
+  }
+
+  .calc__assumptions ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .calc__assumptions li {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    line-height: 1.55;
+    padding-left: var(--space-s);
+    border-left: 2px solid var(--rule-strong);
+  }
+
+  .calc__assumptions strong {
+    color: var(--ink);
+  }
+
+  @media (min-width: 52rem) {
+    .calc__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .calc__inputs {
+      border-bottom: 0;
+      border-right: 1px solid var(--rule);
+    }
+    .calc__inputs,
+    .calc__out,
+    .calc__assumptions {
+      padding: var(--space-l);
+    }
+    .costs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .calc__assumptions ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-m);
+    }
+  }
+</style>

@@ -18,7 +18,18 @@
 import { chromium } from 'playwright';
 
 const BASE = process.env.VERIFY_BASE || 'http://localhost:4331';
-const ROUTES = ['/'];
+const ROUTES = [
+  '/',
+  '/how-it-works',
+  '/sprint',
+  '/care',
+  '/examples',
+  '/about',
+  '/contact',
+  '/thanks',
+  '/privacy',
+  '/terms',
+];
 const WIDTHS = [320, 360, 390, 414, 768, 1024, 1440, 1728];
 
 const failures = [];
@@ -157,6 +168,100 @@ for (const scheme of ['light', 'dark']) {
   });
   note(small.length === 0, `tap targets under 44x44 at 390px: ${small.length}`);
   small.slice(0, 10).forEach((s) => console.log(`         <${s.tag}> "${s.text}" ${s.w}x${s.h}`));
+  await ctx.close();
+}
+
+// ---- the walkthrough form ---------------------------------------------------
+{
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await ctx.newPage();
+  await page.goto(BASE + '/contact', { waitUntil: 'networkidle' });
+
+  // Netlify needs these three things present in the built HTML to register
+  // the form at deploy time. If any goes missing, submissions silently vanish.
+  const wiring = await page.evaluate(() => {
+    const form = document.querySelector('form[data-netlify]');
+    return {
+      hasForm: !!form,
+      name: form?.getAttribute('name') ?? null,
+      hiddenName: form?.querySelector('input[name="form-name"]')?.value ?? null,
+      honeypot: form?.getAttribute('netlify-honeypot') ?? null,
+      action: form?.getAttribute('action') ?? null,
+    };
+  });
+  note(wiring.hasForm, 'form: data-netlify present');
+  note(
+    wiring.name !== null && wiring.name === wiring.hiddenName,
+    `form: name "${wiring.name}" matches hidden form-name "${wiring.hiddenName}"`
+  );
+  note(!!wiring.honeypot, `form: honeypot declared (${wiring.honeypot})`);
+  note(wiring.action === '/thanks', `form: no-JS action is ${wiring.action}`);
+
+  // The honeypot must be off-screen, not display:none, and never required.
+  const trap = await page.evaluate((field) => {
+    const el = document.querySelector(`input[name="${field}"]`);
+    if (!el) return null;
+    const st = getComputedStyle(el);
+    return { required: el.required, display: st.display, tabIndex: el.tabIndex };
+  }, wiring.honeypot ?? '');
+  note(trap !== null && !trap.required && trap.display !== 'none' && trap.tabIndex === -1,
+    'form: honeypot is off-screen, optional and not tabbable');
+
+  // Submitting empty must be stopped by the browser, not by us.
+  await page.click('[data-lead-submit]');
+  note(
+    await page.locator('[data-lead-success]').isHidden(),
+    'form: empty submit blocked by native validation'
+  );
+
+  // Fill it, stub the network, and check the success panel takes over.
+  await page.route('**/*', (route) =>
+    route.request().method() === 'POST'
+      ? route.fulfill({ status: 200, body: 'ok' })
+      : route.continue()
+  );
+  await page.fill('#f-first-name', 'Sam');
+  await page.fill('#f-last-name', 'Rivera');
+  await page.fill('#f-restaurant', 'Birch & Board');
+  await page.fill('#f-email', 'sam@example.com');
+  await page.fill('#f-phone', '3175550123');
+  await page.fill('#f-city', 'Carmel');
+  await page.selectOption('#f-locations', '1');
+  await page.selectOption('#f-employees', '11–25');
+  await page.click('input[name="opening-another"][value="Yes"] + .chip__face');
+  await page.fill('#f-frustration', 'Same questions every single shift.');
+  await page.click('input[name="contact-preference"][value="Email"] + .chip__face');
+  await page.click('[data-lead-submit]');
+  await page.waitForTimeout(600);
+
+  note(await page.locator('[data-lead-success]').isVisible(), 'form: success panel shown after submit');
+  note(await page.locator('form[data-netlify]').isHidden(), 'form: form hidden after submit');
+  await ctx.close();
+}
+
+// ---- the calculator ---------------------------------------------------------
+{
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(BASE + '/how-it-works', { waitUntil: 'networkidle' });
+
+  const before = await page.locator('[data-out="annualCost"]').textContent();
+  await page.fill('#c-questionsPerShift', '30');
+  await page.dispatchEvent('#c-questionsPerShift', 'input');
+  await page.waitForTimeout(150);
+  const after = await page.locator('[data-out="annualCost"]').textContent();
+  note(before !== after, `calculator: recomputes on input (${before?.trim()} → ${after?.trim()})`);
+
+  // An emptied box must fall back to the default, never render NaN.
+  await page.fill('#c-managerRate', '');
+  await page.dispatchEvent('#c-managerRate', 'input');
+  await page.waitForTimeout(150);
+  const nan = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('[data-out]')).some((el) =>
+      (el.textContent || '').includes('NaN')
+    )
+  );
+  note(!nan, 'calculator: no NaN when an input is emptied');
   await ctx.close();
 }
 

@@ -1,0 +1,125 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Method from '../components/sections/Method.astro';
+import Stations from '../components/sections/Stations.astro';
+import Calculator from '../components/Calculator.astro';
+import CtaBand from '../components/sections/CtaBand.astro';
+
+const expectations = [
+  {
+    k: 'Shadowed shifts',
+    v: 'We are on site, staying out of the way, during the shifts that matter — usually a prep morning and a busy service.',
+  },
+  {
+    k: 'One review block',
+    v: 'You and your chef or GM sit with us and approve procedures. Expect real decisions here, not a rubber stamp.',
+  },
+  {
+    k: 'Access to what exists',
+    v: 'Binders, recipe sheets, photos on a manager’s phone, the group chat. Nothing is too messy to be useful.',
+  },
+  {
+    k: 'One manager walkthrough',
+    v: 'An hour with the people who will run it, so it is theirs rather than something that was done to them.',
+  },
+];
+---
+
+<Base
+  title="How it works"
+  description="How MISE OPS works: five stages from capturing how your restaurant actually runs to launching a system your team uses on shift — and what each one asks of you."
+>
+  <PageHeader
+    eyebrow="How it works"
+    title="We do the work. You decide what is correct."
+    lede="Five stages, in order, each ending with something the restaurant is holding. No open-ended discovery and no deliverable that arrives as a surprise."
+  />
+
+  <Method />
+
+  <section class="section section--ruled">
+    <div class="shell shell--wide">
+      <div class="section-head" data-reveal>
+        <span class="tape">What we need from you</span>
+        <h2>Four things, and not much of your week.</h2>
+        <p>
+          Most of this is ours to do. These are the parts that genuinely need you, and
+          saying so up front is the difference between a project that lands and one that
+          stalls in someone’s inbox.
+        </p>
+      </div>
+
+      <ul class="needs">
+        {expectations.map((e) => (
+          <li class="need" data-reveal>
+            <h3 class="need__k">{e.k}</h3>
+            <p class="need__v">{e.v}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <Stations />
+
+  <section class="section section--ruled section--steel">
+    <div class="shell shell--wide">
+      <div class="section-head" data-reveal>
+        <span class="tape">Before you spend anything</span>
+        <h2>What the current way of working costs.</h2>
+        <p>
+          Put your own numbers in. This is not a sales figure and it does not estimate a
+          saving — it estimates what answering the same questions and training from scratch
+          already consumes.
+        </p>
+      </div>
+      <Calculator />
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .needs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .need {
+    background: var(--surface-raised);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-card);
+    padding: var(--space-m);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .need__k {
+    font-size: var(--step-1);
+  }
+
+  .need__v {
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    line-height: 1.55;
+  }
+
+  @media (min-width: 46rem) {
+    .needs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 68rem) {
+    .needs {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

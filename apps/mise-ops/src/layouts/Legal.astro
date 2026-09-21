@@ -1,0 +1,79 @@
+---
+import Base from './Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow: string;
+  updated: string;
+}
+const { title, description, eyebrow, updated } = Astro.props;
+---
+
+<Base title={title} description={description}>
+  <PageHeader eyebrow={eyebrow} title={title}>
+    <p class="updated mono">Last updated {updated}</p>
+  </PageHeader>
+
+  <section class="section">
+    <div class="shell shell--wide">
+      <div class="prose">
+        <slot />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .updated {
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+  }
+
+  .prose {
+    max-width: 68ch;
+  }
+
+  .prose :global(h2) {
+    font-size: var(--step-2);
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-s);
+    padding-bottom: var(--space-2xs);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .prose :global(h3) {
+    font-size: var(--step-1);
+    margin-top: var(--space-l);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .prose :global(p) {
+    color: var(--ink-2);
+    line-height: 1.7;
+    margin-bottom: var(--space-s);
+  }
+
+  .prose :global(ul) {
+    margin: 0 0 var(--space-m);
+    padding-left: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .prose :global(li) {
+    color: var(--ink-2);
+    line-height: 1.65;
+  }
+
+  .prose :global(strong) {
+    color: var(--ink);
+  }
+</style>
