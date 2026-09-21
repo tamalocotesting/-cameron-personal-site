@@ -1,0 +1,1957 @@
+// RecruiterOS data model.
+//
+// Conventions that the whole schema relies on:
+//   * Every business row carries `organizationId`. Nothing is global.
+//   * Child rows reference their parent through a COMPOUND key that includes
+//     `organizationId`, so the database itself refuses a cross-organization
+//     reference. That is why most models carry `@@unique([organizationId, id])`.
+//   * Mutable aggregates carry `version` for optimistic concurrency.
+//   * State is a constrained enum plus a check-enforced transition table in
+//     application code (src/server/domain/state-machines.ts). The enum keeps
+//     junk out of the column; the transition table keeps the workflow honest.
+//   * Provenance rows (messages, intake answers, note revisions) are immutable.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ===========================================================================
+// Authentication identities (Better Auth owns these table shapes)
+// ===========================================================================
+
+model User {
+  id            String   @id
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Deactivation is an operational state, separate from deletion. A member
+  // cannot be deactivated while they still own active cases.
+  banned     Boolean?  @default(false)
+  banReason  String?
+  banExpires DateTime?
+  role       String?
+
+  twoFactorEnabled Boolean? @default(false)
+
+  sessions    Session[]
+  accounts    Account[]
+  members     Member[]
+  invitations Invitation[] @relation("InvitedBy")
+  twofactors  TwoFactor[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  activeOrganizationId String?
+  impersonatedBy       String?
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model TwoFactor {
+  id          String @id
+  secret      String
+  backupCodes String
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// Enrolment and lockout state owned by the two-factor plugin.
+  verified                Boolean?  @default(false)
+  failedVerificationCount Int?      @default(0)
+  lockedUntil             DateTime?
+
+  @@index([userId])
+  @@map("twoFactor")
+}
+
+// ===========================================================================
+// Organizations, teams, membership, grants, coverage
+// ===========================================================================
+
+enum AppModeScope {
+  DEMO
+  LIVE
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  logo      String?
+  metadata  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// A DEMO organization may only ever hold fictional data and may only use
+  /// simulated providers. The boundary is enforced in code AND checked by the
+  /// provider registry before any dispatch.
+  dataScope AppModeScope @default(DEMO)
+
+  settings            OrganizationSettings?
+  members             Member[]
+  invitations         Invitation[]
+  teams               Team[]
+  grants              PermissionGrant[]
+  coverages           Coverage[]
+  absences            Absence[]
+  applicants          Applicant[]
+  contactPoints       ContactPoint[]
+  channelPermissions  ChannelPermission[]
+  consentEvents       ConsentEvent[]
+  inquiries           InquiryEpisode[]
+  intakeDefinitions   IntakeDefinition[]
+  intakeSessions      IntakeSession[]
+  conversations       Conversation[]
+  messages            Message[]
+  callEvents          CallEvent[]
+  notes               Note[]
+  tasks               Task[]
+  appointments        Appointment[]
+  reviewFlags         ReviewFlag[]
+  briefs              Brief[]
+  templates           MessageTemplate[]
+  integrations        IntegrationConfig[]
+  webhookReceipts     WebhookReceipt[]
+  outbox              OutboxRecord[]
+  handoffExports      HandoffExport[]
+  metricEvents        MetricEvent[]
+  baselines           BaselineObservation[]
+  auditEvents         AuditEvent[]
+  duplicateCandidates DuplicateCandidate[]
+  retentionPolicies   RetentionPolicy[]
+  availabilityWindows AvailabilityWindow[]
+  commercial          CommercialMetadata?
+  smsSuppressions     SmsSuppression[]
+
+  @@map("organization")
+}
+
+model OrganizationSettings {
+  id             String       @id @default(cuid())
+  organizationId String       @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// IANA timezone used when an applicant's own timezone is unknown and a
+  /// conservative default is required.
+  defaultTimezone String @default("America/Chicago")
+
+  /// Contact-window policy. Quiet hours are local to the recipient when the
+  /// recipient timezone is known; otherwise UNKNOWN_TZ_POLICY decides.
+  quietHoursStartMinute Int                   @default(1260) // 21:00
+  quietHoursEndMinute   Int                   @default(480) // 08:00
+  /// BLOCK  : never send when the recipient timezone is unknown and the
+  ///          organization timezone window is closed (default, conservative).
+  /// REVIEW : require recruiter review instead of sending.
+  unknownTimezonePolicy UnknownTimezonePolicy @default(BLOCK)
+
+  /// Routing for a brand-new inquiry.
+  routingStrategy       RoutingStrategy @default(ROUND_ROBIN)
+  /// Always-active recruiter that receives work when the routed owner is away.
+  fallbackOwnerMemberId String?
+
+  /// Seat limit. Purely operational; not a payment gate.
+  seatLimit Int @default(5)
+
+  /// Whether the org has recorded an internal approval of its intake question
+  /// set. This records an ORGANIZATION's decision. It does not and cannot
+  /// create any official/government authorization.
+  intakeApprovalRecordedAt DateTime?
+  intakeApprovalRecordedBy String?
+  intakeApprovalNote       String?
+
+  /// Youth/age intake policy is a deployment decision, not a product default.
+  minimumIntakeAge Int?
+  youthPolicyNote  String?
+
+  /// Citizenship questions are off unless the organization turns them on in an
+  /// approved question set.
+  citizenshipQuestionsEnabled Boolean @default(false)
+
+  /// AI brief preparation: organization-level enablement and data categories.
+  aiPreparationEnabled Boolean  @default(true)
+  aiProvider           String   @default("local-rules")
+  aiApprovedCategories String[] @default(["intake_answers", "applicant_messages", "recruiter_messages", "call_outcomes"])
+
+  /// Automation allowlist: only approved template kinds may be auto-sent.
+  automationEnabled Boolean @default(true)
+
+  /// Answering a call nobody picked up with ONE automated text, which asks
+  /// whether the caller wants to answer a few questions by text. Off by
+  /// default: whether to text someone who called you is a deployment
+  /// decision with legal weight, not a product default.
+  textBackEnabled       Boolean @default(false)
+  /// How long after the missed call the single reply may still be sent. After
+  /// this it is stale and the recruiter calls back instead.
+  textBackWindowMinutes Int     @default(15)
+  /// The most questions the scripted SMS intake will ask before it stops and
+  /// leaves the rest to the recruiter.
+  textBackMaxQuestions  Int     @default(8)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  version   Int      @default(0)
+
+  @@map("organization_settings")
+}
+
+enum UnknownTimezonePolicy {
+  BLOCK
+  REVIEW
+}
+
+enum RoutingStrategy {
+  ROUND_ROBIN
+  FALLBACK_ONLY
+}
+
+model CommercialMetadata {
+  id             String       @id @default(cuid())
+  organizationId String       @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// Editable hypothesis, not established pricing.
+  implementationFeeCents Int?
+  monthlyFeeCents        Int?
+  licensedSeats          Int?
+  contractStart          DateTime?
+  contractEnd            DateTime?
+  note                   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("commercial_metadata")
+}
+
+enum StaffRole {
+  RECRUITER
+  MANAGER
+  ORG_ADMIN
+}
+
+model Member {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Better Auth writes its own role string here ("owner"/"admin"/"member").
+  role           String       @default("member")
+  createdAt      DateTime     @default(now())
+
+  /// RecruiterOS staff role. This is the role the authorization layer reads.
+  staffRole     StaffRole @default(RECRUITER)
+  displayName   String    @default("")
+  /// Deactivated members lose access immediately. Deactivation is blocked
+  /// while the member still owns an active case.
+  active        Boolean   @default(true)
+  deactivatedAt DateTime?
+
+  teamMemberships TeamMember[]
+  grantsReceived  PermissionGrant[]    @relation("GrantSubject")
+  grantsIssued    PermissionGrant[]    @relation("GrantIssuer")
+  coverageGiven   Coverage[]           @relation("CoverageFrom")
+  coverageTaken   Coverage[]           @relation("CoverageTo")
+  absences        Absence[]
+  ownedApplicants Applicant[]          @relation("CaseOwner")
+  ownedTasks      Task[]               @relation("TaskOwner")
+  appointments    Appointment[]        @relation("AppointmentRecruiter")
+  availability    AvailabilityWindow[]
+  managedTeams    Team[]               @relation("TeamManager")
+
+  @@unique([organizationId, userId])
+  @@unique([organizationId, id])
+  @@index([organizationId, staffRole])
+  @@index([organizationId, active])
+  @@map("member")
+}
+
+model Invitation {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  status         String       @default("pending")
+  expiresAt      DateTime
+  inviterId      String
+  inviter        User         @relation("InvitedBy", fields: [inviterId], references: [id], onDelete: Cascade)
+
+  /// The RecruiterOS staff role the invitation grants on acceptance.
+  staffRole StaffRole @default(RECRUITER)
+  teamId    String?
+
+  createdAt DateTime @default(now())
+
+  @@index([organizationId, status])
+  @@index([email])
+  @@map("invitation")
+}
+
+model Team {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  managerMemberId String?
+  manager         Member? @relation("TeamManager", fields: [organizationId, managerMemberId], references: [organizationId, id], onDelete: Restrict)
+
+  members    TeamMember[]
+  applicants Applicant[]
+
+  @@unique([organizationId, name])
+  @@unique([organizationId, id])
+  @@map("team")
+}
+
+model TeamMember {
+  id             String   @id @default(cuid())
+  organizationId String
+  teamId         String
+  memberId       String
+  team           Team     @relation(fields: [organizationId, teamId], references: [organizationId, id], onDelete: Cascade)
+  member         Member   @relation(fields: [organizationId, memberId], references: [organizationId, id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+
+  @@unique([organizationId, teamId, memberId])
+  @@index([organizationId, memberId])
+  @@map("team_member")
+}
+
+enum GrantType {
+  /// Read the content of a case's conversation, intake answers and notes.
+  CASE_CONTENT
+  /// Read conversation content across an authorized team.
+  TEAM_CONVERSATION_CONTENT
+  /// Reassign case ownership.
+  REASSIGNMENT
+  /// Produce CSV / handoff exports.
+  EXPORT
+  /// Read sensitive free text and its derived material.
+  SENSITIVE_SOURCE
+  /// Read team operational reports.
+  TEAM_REPORTS
+  /// Record baseline/observation measurements used by the savings report.
+  BASELINE_ENTRY
+  /// Run retention previews and executions.
+  RETENTION_ADMIN
+}
+
+/// An explicit, revocable, optionally time-bounded grant. Roles give a floor;
+/// grants give anything above it. Nothing is implied by being an admin.
+model PermissionGrant {
+  id              String       @id @default(cuid())
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  subjectMemberId String
+  subject         Member       @relation("GrantSubject", fields: [organizationId, subjectMemberId], references: [organizationId, id], onDelete: Cascade)
+  grant           GrantType
+  /// Optional narrowing: a single case, or a single team.
+  applicantId     String?
+  teamId          String?
+
+  grantedByMemberId String?
+  grantedBy         Member?   @relation("GrantIssuer", fields: [organizationId, grantedByMemberId], references: [organizationId, id], onDelete: Restrict)
+  reason            String
+  startsAt          DateTime  @default(now())
+  expiresAt         DateTime?
+  revokedAt         DateTime?
+  createdAt         DateTime  @default(now())
+
+  @@index([organizationId, subjectMemberId, grant])
+  @@index([organizationId, applicantId])
+  @@map("permission_grant")
+}
+
+/// Coverage always expires. An open-ended coverage grant is not expressible.
+model Coverage {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  fromMemberId   String
+  fromMember     Member       @relation("CoverageFrom", fields: [organizationId, fromMemberId], references: [organizationId, id], onDelete: Cascade)
+  toMemberId     String
+  toMember       Member       @relation("CoverageTo", fields: [organizationId, toMemberId], references: [organizationId, id], onDelete: Cascade)
+  /// Null = all of fromMember's cases.
+  applicantId    String?
+  startsAt       DateTime
+  expiresAt      DateTime
+  revokedAt      DateTime?
+  reason         String
+  createdAt      DateTime     @default(now())
+
+  @@index([organizationId, toMemberId, expiresAt])
+  @@index([organizationId, fromMemberId])
+  @@map("coverage")
+}
+
+model Absence {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  memberId       String
+  member         Member       @relation(fields: [organizationId, memberId], references: [organizationId, id], onDelete: Cascade)
+  startsAt       DateTime
+  endsAt         DateTime
+  note           String?
+  createdAt      DateTime     @default(now())
+
+  @@index([organizationId, memberId, startsAt])
+  @@map("absence")
+}
+
+// ===========================================================================
+// Applicants (cases), contact points, channel permission & consent
+// ===========================================================================
+
+enum CaseStatus {
+  NEW_INQUIRY
+  INTAKE_IN_PROGRESS
+  READY_FOR_RECRUITER
+  CONTACT_ATTEMPTED
+  TWO_WAY_CONVERSATION
+  APPOINTMENT_SCHEDULED
+  AWAITING_APPLICANT
+  CLOSED
+}
+
+/// Why a case was closed. An operational record of what the office did.
+/// Never a statement about whether a person is eligible to serve.
+enum CaseClosureReason {
+  APPLICANT_REQUESTED_STOP
+  APPLICANT_WITHDREW
+  UNABLE_TO_REACH
+  REFERRED_ELSEWHERE
+  MERGED_DUPLICATE
+  HANDED_OFF_TO_OFFICIAL_SYSTEM
+  OTHER
+}
+
+model Applicant {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// Short human-facing reference, unique inside the organization.
+  reference String
+
+  displayName       String
+  preferredName     String?
+  /// General location only. No street address is collected in this build.
+  generalLocation   String?
+  /// IANA timezone, confirmed with the applicant where possible.
+  timezone          String?
+  timezoneConfirmed Boolean @default(false)
+
+  status        CaseStatus         @default(NEW_INQUIRY)
+  closureReason CaseClosureReason?
+  closureNote   String?
+  closedAt      DateTime?
+
+  ownerMemberId String?
+  owner         Member? @relation("CaseOwner", fields: [organizationId, ownerMemberId], references: [organizationId, id], onDelete: Restrict)
+  teamId        String?
+  team          Team?   @relation(fields: [organizationId, teamId], references: [organizationId, id], onDelete: Restrict)
+
+  /// Automated conversational progression is paused while a human must look.
+  automationPaused       Boolean @default(false)
+  automationPausedReason String?
+
+  /// Set when this case was merged into another. Merged cases stay readable
+  /// for provenance and are excluded from the queue.
+  mergedIntoApplicantId String?
+  mergedAt              DateTime?
+
+  /// Retention: an explicit hold blocks every retention action.
+  legalHold       Boolean @default(false)
+  legalHoldReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  version   Int      @default(0)
+
+  contactPoints      ContactPoint[]
+  channelPermissions ChannelPermission[]
+  consentEvents      ConsentEvent[]
+  inquiries          InquiryEpisode[]
+  intakeSessions     IntakeSession[]
+  conversations      Conversation[]
+  messages           Message[]
+  callEvents         CallEvent[]
+  notes              Note[]
+  tasks              Task[]
+  appointments       Appointment[]
+  reviewFlags        ReviewFlag[]
+  briefs             Brief[]
+  handoffExports     HandoffExport[]
+  duplicatesA        DuplicateCandidate[] @relation("DuplicateA")
+  duplicatesB        DuplicateCandidate[] @relation("DuplicateB")
+
+  @@unique([organizationId, reference])
+  @@unique([organizationId, id])
+  @@index([organizationId, status])
+  @@index([organizationId, ownerMemberId, status])
+  @@index([organizationId, teamId])
+  @@index([organizationId, updatedAt])
+  @@map("applicant")
+}
+
+enum ContactChannel {
+  PHONE_CALL
+  SMS
+  EMAIL
+}
+
+/// A phone number or email address belonging to a case.
+/// A phone number does NOT identify a person: the same number can legitimately
+/// appear on several cases (family phone, shared line). Hence no global unique.
+model ContactPoint {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applicantId    String
+  applicant      Applicant    @relation(fields: [organizationId, applicantId], references: [organizationId, id], onDelete: Cascade)
+
+  channel    ContactChannel
+  /// E.164 for phones, lowercased address for email.
+  value      String
+  label      String?
+  isPrimary  Boolean        @default(false)
+  verifiedAt DateTime?
+  createdAt  DateTime       @default(now())
+
+  @@unique([organizationId, applicantId, channel, value])
+  @@index([organizationId, channel, value])
+  @@map("contact_point")
+}
+
+enum ConsentPurpose {
+  /// Permission to place a voice callback to a number the applicant gave us.
+  CALLBACK_CALL
+  /// A NARROW basis, created only by an inbound call the person placed to the
+  /// organization's own number: one automated reply to that same number,
+  /// asking whether they want to continue by text. It is not general SMS
+  /// consent, it expires, and it authorizes exactly one message.
+  INBOUND_CALL_RESPONSE
+  /// Permission to text the intake link.
+  INTAKE_SMS
+  /// Permission to text appointment reminders.
+  APPOINTMENT_REMINDER_SMS
+  /// Permission for ongoing recruiter SMS conversation.
+  RECRUITER_SMS
+  /// Permission for email updates.
+  EMAIL_UPDATES
+}
+
+/// Current permission state per (channel, purpose). Derived from the immutable
+/// ConsentEvent log, kept here for fast pre-dispatch checks.
+model ChannelPermission {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applicantId    String
+  applicant      Applicant    @relation(fields: [organizationId, applicantId], references: [organizationId, id], onDelete: Cascade)
+
+  channel      ContactChannel
+  purpose      ConsentPurpose
+  /// The specific contact point the permission applies to.
+  contactValue String
+
+  granted           Boolean
+  /// Provider-level suppression (STOP keyword, provider opt-out metadata).
+  /// A recruiter cannot override this by pressing Send.
+  suppressed        Boolean   @default(false)
+  suppressedAt      DateTime?
+  suppressionSource String?
+
+  lastEventId String?
+  updatedAt   DateTime @updatedAt
+
+  @@unique([organizationId, applicantId, channel, purpose, contactValue])
+  @@index([organizationId, contactValue, channel])
+  @@map("channel_permission")
+}
+
+enum ConsentAction {
+  GRANTED
+  REVOKED
+  SUPPRESSED
+  RESUMED
+}
+
+/// Immutable consent history. Records the exact disclosure text version the
+/// applicant saw, where it came from, and when.
+/// An opt-out belongs to a PHONE NUMBER, not to a case.
+///
+/// Someone can text STOP before they have a case, from a number that appears
+/// on three cases, or from one we have never seen. All of those have to stick,
+/// so suppression is recorded here, once per number per organization, and is
+/// checked before every send regardless of which case is sending.
+model SmsSuppression {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  contactValue   String
+
+  suppressedAt DateTime
+  source       String
+  /// Set when the person explicitly opts back in. Nothing else clears it.
+  liftedAt     DateTime?
+  liftedSource String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, contactValue])
+  @@index([organizationId, contactValue, liftedAt])
+  @@map("sms_suppression")
+}
+
+model ConsentEvent {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applicantId    String
+  applicant      Applicant    @relation(fields: [organizationId, applicantId], references: [organizationId, id], onDelete: Cascade)
+
+  channel      ContactChannel
+  purpose      ConsentPurpose
+  contactValue String
+  action       ConsentAction
+
+  /// Exact disclosure identifier + version the applicant was shown.
+  disclosureKey     String
+  disclosureVersion Int
+  disclosureText    String
+
+  /// Where it came from: "intake_session:<id>", "sms_keyword:STOP",
+  /// "provider_optout", "recruiter:<memberId>".
+  source     String
+  occurredAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([organizationId, applicantId, occurredAt])
+  @@map("consent_event")
+}
+
+/// One inquiry episode = one "clock" for time-to-contact reporting. A reopened
+/// case starts a NEW episode; merging cases never resets an existing one.
+model InquiryEpisode {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applicantId    String
+  applicant      Applicant    @relation(fields: [organizationId, applicantId], references: [organizationId, id], onDelete: Cascade)
+
+  /// "web_intake" | "callback_request" | "inbound_sms" | "missed_call" | "manual"
+  originKind              String
+  openedAt                DateTime
+  /// First automated acknowledgment (provider acceptance) and its delivery.
+  acknowledgedAcceptedAt  DateTime?
+  acknowledgedDeliveredAt DateTime?
+  /// First outbound attempt authored by a human recruiter.
+  firstHumanOutreachAt    DateTime?
+  /// First genuine two-way human contact: an applicant reply to a human
+  /// message, or a connected call. Bot exchanges do not count.
+  firstTwoWayHumanAt      DateTime?
+  closedAt                DateTime?
+  /// True when this episode's case was later reopened into a new episode.
+  supersededAt            DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([organizationId, applicantId, openedAt])
+  @@index([organizationId, openedAt])
+  @@map("inquiry_episode")
+}
+
+// ===========================================================================
+// Intake: definitions, immutable published versions, sessions, answers
+// ===========================================================================
+
+enum DefinitionState {
+  DRAFT
+  PENDING_APPROVAL
+  PUBLISHED
+  RETIRED
+}
+
+/// Where an intake session is being answered. The question set, the
+/// versioning and the handoff rules are identical either way; only the
+/// transport differs.
+enum IntakeChannel {
+  WEB
+  SMS
+}
+
+enum IntakePathway {
+  CALLBACK_REQUEST
+  FULL_INTAKE
+}
+
+enum QuestionType {
+  SHORT_TEXT
+  LONG_TEXT
+  SINGLE_SELECT
+  MULTI_SELECT
+  PHONE
+  EMAIL
+  TIMEZONE
+  CONSENT
+}
+
+model IntakeDefinition {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  key            String       @default("default")
+  name           String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  versions IntakeVersion[]
+
+  @@unique([organizationId, key])
+  @@unique([organizationId, id])
+  @@map("intake_definition")
+}
+
+/// A published version is immutable. Editing a published question set creates
+/// a new version; sessions keep the version they started on.
+model IntakeVersion {
+  id             String           @id @default(cuid())
+  organizationId String
+  definitionId   String
+  definition     IntakeDefinition @relation(fields: [organizationId, definitionId], references: [organizationId, id], onDelete: Cascade)
+
+  version Int
+  state   DefinitionState @default(DRAFT)
+
+  greeting       String
+  /// Shown at the end. Deliberately has no response-time promise baked in.
+  completionText String
+  /// Neutral language used when a sensitive topic appears.
+  handoffText    String
+
+  approvedByMemberId String?
+  approvedAt         DateTime?
+  approvalNote       String?
+  publishedAt        DateTime?
+  retiredAt          DateTime?
+
+  createdAt DateTime @default(now())
+
+  questions IntakeQuestion[]
+  sessions  IntakeSession[]
+
+  @@unique([organizationId, definitionId, version])
+  @@unique([organizationId, id])
+  @@index([organizationId, state])
+  @@map("intake_version")
+}
+
+model IntakeQuestion {
+  id              String        @id @default(cuid())
+  organizationId  String
+  intakeVersionId String
+  intakeVersion   IntakeVersion @relation(fields: [organizationId, intakeVersionId], references: [organizationId, id], onDelete: Cascade)
+
+  /// Stable key across versions, so answers remain comparable.
+  key               String
+  order             Int
+  pathway           IntakePathway
+  type              QuestionType
+  prompt            String
+  helpText          String?
+  /// Required for the pathway to be operationally usable (e.g. a contact
+  /// channel for a callback). Everything else is skippable.
+  required          Boolean         @default(false)
+  options           String[]        @default([])
+  /// Consent questions carry the exact disclosure they record.
+  consentPurpose    ConsentPurpose?
+  disclosureKey     String?
+  disclosureText    String?
+  /// Off by default; only an approved question set turns these on.
+  sensitiveCategory String?
+
+  // A key is stable ACROSS versions and may appear on both pathways, so the
+  // uniqueness is per pathway. That keeps answers comparable between versions.
+  @@unique([organizationId, intakeVersionId, pathway, key])
+  @@unique([organizationId, id])
+  @@index([organizationId, intakeVersionId, order])
+  @@map("intake_question")
+}
+
+enum IntakeSessionStatus {
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+  HANDED_OFF
+  ABANDONED
+}
+
+model IntakeSession {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  /// Created lazily: a session can begin before we know who it belongs to.
+  applicantId    String?
+  applicant      Applicant?   @relation(fields: [organizationId, applicantId], references: [organizationId, id], onDelete: Cascade)
+
+  intakeVersionId String
+  intakeVersion   IntakeVersion @relation(fields: [organizationId, intakeVersionId], references: [organizationId, id])
+
+  pathway IntakePathway
+  status  IntakeSessionStatus @default(IN_PROGRESS)
+  channel IntakeChannel       @default(WEB)
+
+  /// SMS sessions only: the number this conversation is with, the moment the
+  /// invitation went out, and the moment the person explicitly said yes. No
+  /// question is asked by text before `smsOptInAt` is set.
+  smsContactValue String?
+  smsInvitedAt    DateTime?
+  smsOptInAt      DateTime?
+
+  /// Resume credential: high-entropy secret, stored only as a SHA-256 hash.
+  resumeTokenHash            String?   @unique
+  resumeExpiresAt            DateTime?
+  resumeRevokedAt            DateTime?
+  /// Verification required before previously submitted answers are revealed
+  /// on a new device.
+  resumeVerificationHash     String?
+  resumeVerificationAttempts Int       @default(0)
+
+  /// Server-side cursor, so progress never depends on the browser.
+  currentQuestionKey String?
+  lastActivityAt     DateTime  @default(now())
+  completedAt        DateTime?
+  handedOffAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  version   Int      @default(0)
+
+  answers IntakeAnswer[]
+
+  @@unique([organizationId, id])
+  @@index([organizationId, status])
+  @@index([organizationId, applicantId])
+  @@index([organizationId, smsContactValue, status])
+  @@map("intake_session")
+}
+
+/// Immutable answer revisions. A changed answer is a new row; nothing is
+/// overwritten, so a brief citation can point at an exact revision.
+model IntakeAnswer {
+  id              String        @id @default(cuid())
+  organizationId  String
+  intakeSessionId String
+  intakeSession   IntakeSession @relation(fields: [organizationId, intakeSessionId], references: [organizationId, id], onDelete: Cascade)
+
+  questionKey    String
+  questionPrompt String
+  revision       Int      @default(1)
+  /// Normalized text form, always present for citation excerpts.
+  valueText      String
+  /// Selected option keys for select questions.
+  valueOptions   String[] @default([])
+  skipped        Boolean  @default(false)
+
+  /// Sensitive free text is access-restricted and excluded from external AI.
+  sensitive Boolean @default(false)
+
+  answeredAt   DateTime  @default(now())
+  supersededAt DateTime?
+
+  @@unique([organizationId, intakeSessionId, questionKey, revision])
+  @@unique([organizationId, id])
+  @@index([organizationId, intakeSessionId])
+  @@map("intake_answer")
+}
+
+// ===========================================================================
+// Conversations, messages, delivery events, calls
+// ===========================================================================
+
+model Conversation {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applicantId    String
+  applicant      Applicant    @relation(fields: [organizationId, applicantId], references: [organizationId, id], onDelete: Cascade)
+
+  channel      ContactChannel
+  /// The applicant-side address this thread is with.
+  contactValue String
+  lastEventAt  DateTime       @default(now())
+  createdAt    DateTime       @default(now())
+
+  messages Message[]
+
+  @@unique([organizationId, applicantId, channel, contactValue])
+  @@unique([organizationId, id])
+  @@index([organizationId, lastEventAt])
+  @@map("conversation")
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum MessageAuthorKind {
+  APPLICANT
+  RECRUITER
+  /// An approved, versioned administrative template dispatched by the system.
+  APPROVED_AUTOMATION
+  /// Structural entries (system notes inside a thread).
+  SYSTEM
+}
+
+/// Transport state. Deliberately not a straight line: a provider can report
+/// out of order, and "accepted" is not "delivered".
+enum MessageState {
+  /// Inbound messages land here.
+  RECEIVED
+  DRAFT
+  APPROVED
+  SCHEDULED
+  QUEUED
+  SUBMITTING
+  PROVIDER_ACCEPTED
+  SENT
+  DELIVERED
+  FAILED
+  CANCELED
+  /// Pre-dispatch checks refused it (opt-out, quiet hours, no permission).
+  BLOCKED
+  /// Submitted, but the provider's response never arrived. Needs
+  /// reconciliation before any retry — a blind retry could double-send.
+  OUTCOME_UNKNOWN
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applicantId    String
+  applicant      Applicant    @relation(fields: [organizationId, applicantId], references: [organizationId, id], onDelete: Cascade)
+  conversationId String
+  conversation   Conversation @relation(fields: [organizationId, conversationId], references: [organizationId, id], onDelete: Cascade)
+
+  direction      MessageDirection
+  authorKind     MessageAuthorKind
+  authorMemberId String?
+  channel        ContactChannel
+
+  fromValue String
+  toValue   String
+  body      String
+
+  state MessageState
+
+  /// AI-drafted text requires recruiter approval. Editing an approved draft
+  /// clears the approval (see messaging service).
+  aiGenerated        Boolean   @default(false)
+  aiBriefId          String?
+  /// Hash of the exact text that was approved. If the body no longer matches,
+  /// the approval is stale and dispatch refuses.
+  approvedBodyHash   String?
+  approvedByMemberId String?
+  approvedAt         DateTime?
+
+  /// The consent purpose this send was gated on.
+  ///
+  /// Stored rather than inferred: the gate runs once before queueing and
+  /// again immediately before dispatch, and both have to be asking the same
+  /// question. Inferring it from the author kind at dispatch meant a message
+  /// could pass one check and fail a different one.
+  consentPurpose    ConsentPurpose?
+
+  /// Set when an approved template drives this send.
+  templateVersionId String?
+
+  scheduledFor      DateTime?
+  submittedAt       DateTime?
+  providerMessageId String?
+  providerName      String?
+  /// Business idempotency key: one logical send, whatever the retries.
+  idempotencyKey    String?
+  attemptCount      Int       @default(0)
+
+  blockedReason String?
+  failureCode   String?
+  failureDetail String?
+
+  /// Simulated traffic is labelled everywhere it is displayed.
+  simulated Boolean @default(false)
+
+  occurredAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  version    Int      @default(0)
+
+  deliveryEvents MessageDeliveryEvent[]
+
+  @@unique([organizationId, id])
+  @@unique([organizationId, idempotencyKey])
+  @@index([organizationId, applicantId, occurredAt])
+  @@index([organizationId, state, scheduledFor])
+  @@index([organizationId, providerMessageId])
+  @@map("message")
+}
+
+/// Append-only provider callbacks. Out-of-order arrivals are kept and resolved
+/// by sequence, so a late "sent" never overwrites a newer "delivered".
+model MessageDeliveryEvent {
+  id             String  @id @default(cuid())
+  organizationId String
+  messageId      String
+  message        Message @relation(fields: [organizationId, messageId], references: [organizationId, id], onDelete: Cascade)
+
+  /// Raw provider status string, kept verbatim for audit.
+  providerStatus  String
+  /// Normalized state this event implies.
+  normalizedState MessageState
+  /// Monotonic rank used to resolve out-of-order callbacks.
+  stateRank       Int
+  errorCode       String?
+  errorMessage    String?
+  /// Provider event identifier, for deduplication.
+  providerEventId String?
+  occurredAt      DateTime
+  receivedAt      DateTime     @default(now())
+
+  @@unique([organizationId, messageId, providerStatus, occurredAt])
+  @@index([organizationId, messageId, occurredAt])
+  @@map("message_delivery_event")
+}
+
+enum CallDirection {
+  INBOUND
+  /// A call the recruiter placed outside the app and then logged.
+  OUTBOUND_MANUAL
+  /// A call the provider forwarded to a recruiter.
+  FORWARDED
+}
+
+enum CallOutcome {
+  CONNECTED
+  NO_ANSWER
+  BUSY
+  FAILED
+  VOICEMAIL
+  CANCELED
+  /// The forwarded leg was not answered by a human.
+  FORWARD_UNANSWERED
+  UNKNOWN
+}
+
+model CallEvent {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applicantId    String?
+  applicant      Applicant?   @relation(fields: [organizationId, applicantId], references: [organizationId, id], onDelete: Cascade)
+
+  direction       CallDirection
+  fromValue       String
+  toValue         String
+  outcome         CallOutcome
+  /// True only when a human actually spoke with the applicant. Clicking a
+  /// tel: link never sets this.
+  humanConnected  Boolean       @default(false)
+  durationSeconds Int?
+
+  /// Provider identifiers: the parent call and, for a forwarded call, the
+  /// child leg whose outcome actually tells us whether a human answered.
+  providerCallSid       String?
+  providerParentCallSid String?
+  providerLeg           String?
+  providerName          String?
+
+  recordedByMemberId String?
+  note               String?
+  simulated          Boolean @default(false)
+
+  occurredAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@unique([organizationId, id])
+  @@unique([organizationId, providerCallSid, providerLeg])
+  @@index([organizationId, applicantId, occurredAt])
+  @@map("call_event")
+}
+
+// ===========================================================================
+// Notes, tasks, appointments, review flags
+// ===========================================================================
+
+model Note {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applicantId    String
+  applicant      Applicant    @relation(fields: [organizationId, applicantId], references: [organizationId, id], onDelete: Cascade)
+
+  authorMemberId String
+  /// Private staff notes are never sent to an external AI provider.
+  private        Boolean  @default(true)
+  sensitive      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  revisions NoteRevision[]
+
+  @@unique([organizationId, id])
+  @@index([organizationId, applicantId, createdAt])
+  @@map("note")
+}
+
+/// Immutable note revisions, so a brief can cite the exact text it read.
+model NoteRevision {
+  id             String   @id @default(cuid())
+  organizationId String
+  noteId         String
+  note           Note     @relation(fields: [organizationId, noteId], references: [organizationId, id], onDelete: Cascade)
+  revision       Int
+  body           String
+  authorMemberId String
+  createdAt      DateTime @default(now())
+
+  @@unique([organizationId, noteId, revision])
+  @@unique([organizationId, id])
+  @@map("note_revision")
+}
+
+enum TaskType {
+  CALLBACK
+  FOLLOW_UP
+  REVIEW_BRIEF
+  REVIEW_SENSITIVE
+  REVIEW_HUMAN_REQUEST
+  LINKING_REVIEW
+  APPOINTMENT_PREP
+  RECONCILE_SEND
+  OTHER
+}
+
+enum TaskStatus {
+  OPEN
+  SNOOZED
+  COMPLETED
+  CANCELED
+}
+
+enum TaskCompletionOutcome {
+  SPOKE_WITH_APPLICANT
+  LEFT_VOICEMAIL
+  NO_ANSWER
+  SENT_MESSAGE
+  APPOINTMENT_SET
+  RESOLVED
+  NOT_NEEDED
+  OTHER
+}
+
+model Task {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applicantId    String
+  applicant      Applicant    @relation(fields: [organizationId, applicantId], references: [organizationId, id], onDelete: Cascade)
+
+  type      TaskType
+  title     String
+  /// Why this task exists, in workflow terms. Shown in the queue.
+  reason    String
+  /// Where it came from: "missed_call:<id>", "intake_session:<id>", ...
+  sourceRef String?
+
+  ownerMemberId String
+  owner         Member @relation("TaskOwner", fields: [organizationId, ownerMemberId], references: [organizationId, id], onDelete: Restrict)
+
+  dueAt         DateTime
+  /// The date first promised. Snoozing never rewrites it.
+  originalDueAt DateTime
+  status        TaskStatus @default(OPEN)
+
+  snoozeCount Int @default(0)
+
+  completedAt         DateTime?
+  completedByMemberId String?
+  completionOutcome   TaskCompletionOutcome?
+  completionNote      String?
+  canceledAt          DateTime?
+  cancelReason        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  version   Int      @default(0)
+
+  snoozes TaskSnooze[]
+
+  @@unique([organizationId, id])
+  @@index([organizationId, ownerMemberId, status, dueAt])
+  @@index([organizationId, status, dueAt])
+  @@index([organizationId, applicantId, status])
+  @@map("task")
+}
+
+model TaskSnooze {
+  id             String   @id @default(cuid())
+  organizationId String
+  taskId         String
+  task           Task     @relation(fields: [organizationId, taskId], references: [organizationId, id], onDelete: Cascade)
+  fromDueAt      DateTime
+  toDueAt        DateTime
+  reason         String
+  byMemberId     String
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, taskId])
+  @@map("task_snooze")
+}
+
+model AvailabilityWindow {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  memberId       String
+  member         Member       @relation(fields: [organizationId, memberId], references: [organizationId, id], onDelete: Cascade)
+  /// 0 = Sunday .. 6 = Saturday, in the member's office timezone.
+  weekday        Int
+  startMinute    Int
+  endMinute      Int
+  timezone       String
+
+  @@unique([organizationId, memberId, weekday, startMinute])
+  @@map("availability_window")
+}
+
+enum AppointmentState {
+  PROPOSED
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELED
+  NO_SHOW
+}
+
+enum AppointmentOutcome {
+  ATTENDED
+  NO_SHOW
+  CANCELED_BY_APPLICANT
+  CANCELED_BY_RECRUITER
+  RESCHEDULED
+}
+
+enum AppointmentMedium {
+  IN_PERSON
+  PHONE
+  VIDEO
+}
+
+model Appointment {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applicantId    String
+  applicant      Applicant    @relation(fields: [organizationId, applicantId], references: [organizationId, id], onDelete: Cascade)
+
+  recruiterMemberId String
+  recruiter         Member @relation("AppointmentRecruiter", fields: [organizationId, recruiterMemberId], references: [organizationId, id], onDelete: Restrict)
+
+  /// Stored as a UTC instant plus the IANA zone it was agreed in.
+  startsAt       DateTime
+  endsAt         DateTime
+  timezone       String
+  medium         AppointmentMedium @default(IN_PERSON)
+  locationDetail String?
+  purpose        String
+
+  state                     AppointmentState    @default(PROPOSED)
+  outcome                   AppointmentOutcome?
+  outcomeNote               String?
+  outcomeRecordedByMemberId String?
+  outcomeRecordedAt         DateTime?
+
+  confirmedAt  DateTime?
+  canceledAt   DateTime?
+  cancelReason String?
+
+  /// Reschedule lineage. A superseded slot never counts as attended.
+  supersedesAppointmentId   String?
+  supersededByAppointmentId String?
+
+  /// Applicant-facing confirmation credential (hashed, expiring, revocable).
+  confirmTokenHash String?   @unique
+  confirmExpiresAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  version   Int      @default(0)
+
+  reminders AppointmentReminder[]
+
+  @@unique([organizationId, id])
+  @@index([organizationId, recruiterMemberId, startsAt])
+  @@index([organizationId, applicantId, startsAt])
+  @@index([organizationId, state, startsAt])
+  @@map("appointment")
+}
+
+model AppointmentReminder {
+  id             String      @id @default(cuid())
+  organizationId String
+  appointmentId  String
+  appointment    Appointment @relation(fields: [organizationId, appointmentId], references: [organizationId, id], onDelete: Cascade)
+  sendAt         DateTime
+  /// "pending" | "canceled" | "dispatched" | "skipped"
+  status         String      @default("pending")
+  canceledAt     DateTime?
+  dispatchedAt   DateTime?
+  skipReason     String?
+  createdAt      DateTime    @default(now())
+
+  @@index([organizationId, appointmentId, status])
+  @@map("appointment_reminder")
+}
+
+enum ReviewFlagKind {
+  HUMAN_REQUESTED
+  SENSITIVE_QUESTION
+  LINKING_REVIEW
+  BRIEF_REVIEW
+  SEND_RECONCILIATION
+  DUPLICATE_SUSPECTED
+  MERGE_PERMISSION_REVIEW
+}
+
+enum ReviewFlagStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
+}
+
+model ReviewFlag {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applicantId    String
+  applicant      Applicant    @relation(fields: [organizationId, applicantId], references: [organizationId, id], onDelete: Cascade)
+
+  kind       ReviewFlagKind
+  status     ReviewFlagStatus @default(OPEN)
+  /// Neutral, workflow-only description. Never a judgement about a person.
+  detail     String
+  /// Restricted flags require the SENSITIVE_SOURCE grant to read `detail`.
+  restricted Boolean          @default(false)
+  sourceRef  String?
+
+  raisedAt           DateTime  @default(now())
+  resolvedAt         DateTime?
+  resolvedByMemberId String?
+  resolutionReason   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, id])
+  @@index([organizationId, status, kind])
+  @@index([organizationId, applicantId, status])
+  @@map("review_flag")
+}
+
+// ===========================================================================
+// Recruiter briefs (AI-prepared, recruiter-reviewed)
+// ===========================================================================
+
+enum BriefState {
+  GENERATED
+  APPROVED
+  REJECTED
+  /// A newer reviewed version exists, or new events made this one stale.
+  SUPERSEDED
+  FAILED
+}
+
+enum BriefItemKind {
+  INTENT
+  FACT
+  CLARIFICATION
+  SUGGESTION
+  NEXT_ACTION
+  REVIEW_REASON
+}
+
+model Brief {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applicantId    String
+  applicant      Applicant    @relation(fields: [organizationId, applicantId], references: [organizationId, id], onDelete: Cascade)
+
+  revision Int
+
+  providerName      String
+  modelId           String?
+  promptVersion     String
+  /// Hash + timestamp of the case events the generation actually saw. Used to
+  /// decide whether a brief is stale, and to reject an async result that
+  /// arrives after a newer reviewed version.
+  inputSnapshotHash String
+  inputEventCount   Int
+  generatedAt       DateTime @default(now())
+  durationMs        Int?
+
+  state   BriefState @default(GENERATED)
+  /// Set when a newer conversation event arrived after generation.
+  staleAt DateTime?
+
+  reviewedByMemberId String?
+  reviewedAt         DateTime?
+  reviewNote         String?
+
+  failureReason String?
+
+  /// Optional recruiter-reviewed message draft that came out of the brief.
+  draftMessageBody String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  version   Int      @default(0)
+
+  items   BriefItem[]
+  reviews BriefReview[]
+
+  @@unique([organizationId, applicantId, revision])
+  @@unique([organizationId, id])
+  @@index([organizationId, applicantId, generatedAt])
+  @@map("brief")
+}
+
+model BriefItem {
+  id             String @id @default(cuid())
+  organizationId String
+  briefId        String
+  brief          Brief  @relation(fields: [organizationId, briefId], references: [organizationId, id], onDelete: Cascade)
+
+  kind              BriefItemKind
+  order             Int
+  /// The generated text, retained verbatim even after a recruiter edits it.
+  generatedText     String
+  /// A recruiter correction. Regeneration never overwrites this.
+  recruiterText     String?
+  recruiterMemberId String?
+  recruiterEditedAt DateTime?
+  /// Interpretations are labelled as suggestions in the UI, never as fact.
+  interpretation    Boolean       @default(false)
+  /// Explicitly unknown information stays visibly unknown.
+  unknown           Boolean       @default(false)
+  dismissed         Boolean       @default(false)
+
+  sources BriefSourceRef[]
+
+  @@unique([organizationId, id])
+  @@index([organizationId, briefId, order])
+  @@map("brief_item")
+}
+
+enum SourceKind {
+  MESSAGE
+  INTAKE_ANSWER
+  NOTE_REVISION
+  CALL_EVENT
+}
+
+/// A citation. Validated server-side: the row must exist, belong to the SAME
+/// case, be readable by the viewer, and the quoted excerpt must actually occur
+/// in the stored source text.
+model BriefSourceRef {
+  id             String    @id @default(cuid())
+  organizationId String
+  briefItemId    String
+  briefItem      BriefItem @relation(fields: [organizationId, briefItemId], references: [organizationId, id], onDelete: Cascade)
+
+  sourceKind     SourceKind
+  sourceId       String
+  /// Answer revision / note revision number, where the source is versioned.
+  sourceRevision Int?
+  quotedExcerpt  String
+  /// Verified at write time; a ref that fails verification is never stored.
+  verifiedAt     DateTime   @default(now())
+
+  @@index([organizationId, briefItemId])
+  @@index([organizationId, sourceKind, sourceId])
+  @@map("brief_source_ref")
+}
+
+model BriefReview {
+  id                 String   @id @default(cuid())
+  organizationId     String
+  briefId            String
+  brief              Brief    @relation(fields: [organizationId, briefId], references: [organizationId, id], onDelete: Cascade)
+  /// "approved" | "edited" | "rejected" | "regenerated"
+  action             String
+  memberId           String
+  note               String?
+  /// How many items the recruiter changed in this review pass. Used by the
+  /// correction report — a count of real actions, not an accuracy score.
+  correctedItemCount Int      @default(0)
+  createdAt          DateTime @default(now())
+
+  @@index([organizationId, briefId, createdAt])
+  @@map("brief_review")
+}
+
+// ===========================================================================
+// Templates, integrations, webhooks, outbox
+// ===========================================================================
+
+enum TemplateKind {
+  ACKNOWLEDGMENT
+  /// The single automated reply to a call nobody answered.
+  MISSED_CALL_REPLY
+  /// One question of a scripted intake, asked over SMS.
+  INTAKE_SMS_PROMPT
+  INTAKE_INVITATION
+  APPOINTMENT_REMINDER
+  RECRUITER_MANUAL
+}
+
+model MessageTemplate {
+  id             String         @id @default(cuid())
+  organizationId String
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  key            String
+  kind           TemplateKind
+  channel        ContactChannel
+  name           String
+  /// Only templates whose kind is in the automation allowlist AND that have a
+  /// published approved version may be dispatched without a recruiter.
+  automatable    Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  versions TemplateVersion[]
+
+  @@unique([organizationId, key])
+  @@unique([organizationId, id])
+  @@map("message_template")
+}
+
+model TemplateVersion {
+  id                 String          @id @default(cuid())
+  organizationId     String
+  templateId         String
+  template           MessageTemplate @relation(fields: [organizationId, templateId], references: [organizationId, id], onDelete: Cascade)
+  version            Int
+  state              DefinitionState @default(DRAFT)
+  body               String
+  /// Declared placeholders, so rendering can refuse unknown variables.
+  placeholders       String[]        @default([])
+  approvedByMemberId String?
+  approvedAt         DateTime?
+  publishedAt        DateTime?
+  createdAt          DateTime        @default(now())
+
+  @@unique([organizationId, templateId, version])
+  @@unique([organizationId, id])
+  @@map("template_version")
+}
+
+enum IntegrationKind {
+  SMS
+  VOICE
+  AI_BRIEF
+  OUTBOUND_WEBHOOK
+  EMAIL
+}
+
+enum IntegrationStatus {
+  DISABLED
+  DEMO
+  CONFIGURED_UNVERIFIED
+  HEALTHY
+  ERROR
+}
+
+model IntegrationConfig {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  kind     IntegrationKind
+  /// "simulator" | "twilio" | "local-rules" | "anthropic" | "https-webhook"
+  provider String
+  /// Organization-level enablement. Credentials alone are never enough.
+  enabled  Boolean         @default(false)
+
+  /// Non-secret configuration only. Secrets live in the environment / secret
+  /// manager and are referenced by NAME here; they are never returned to the
+  /// settings page.
+  secretRefs String[] @default([])
+  settings   Json     @default("{}")
+
+  status        IntegrationStatus @default(DISABLED)
+  statusDetail  String?
+  /// A HEALTHY label requires an actual check to have run.
+  lastCheckedAt DateTime?
+  lastCheckKind String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  version   Int      @default(0)
+
+  @@unique([organizationId, kind, provider])
+  @@index([organizationId, kind])
+  @@map("integration_config")
+}
+
+/// Durable receipt for every inbound provider callback. Written before slow
+/// processing so the acknowledgment can return immediately and so a replay is
+/// recognised instead of re-processed.
+model WebhookReceipt {
+  id             String        @id @default(cuid())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  provider         String
+  endpoint         String
+  /// Provider-supplied identity of the event (e.g. MessageSid + status).
+  providerEventKey String
+  signatureValid   Boolean
+  /// Whole-body payload, retained for reconciliation. Access-restricted.
+  payload          Json
+  /// "received" | "processed" | "rejected" | "duplicate"
+  outcome          String    @default("received")
+  outcomeDetail    String?
+  receivedAt       DateTime  @default(now())
+  processedAt      DateTime?
+
+  @@unique([provider, providerEventKey])
+  @@index([organizationId, receivedAt])
+  @@map("webhook_receipt")
+}
+
+enum OutboxStatus {
+  PENDING
+  PUBLISHED
+  FAILED
+}
+
+/// Transactional outbox. Written in the SAME transaction as the business
+/// change; the worker publishes it to pg-boss and marks it published.
+model OutboxRecord {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  jobName        String
+  /// Scoped identifiers only. Never transcripts or applicant free text.
+  payload        Json
+  /// Business idempotency key. Unique, so a duplicate submit is a no-op.
+  idempotencyKey String   @unique
+  availableAt    DateTime @default(now())
+
+  status         OutboxStatus @default(PENDING)
+  publishedAt    DateTime?
+  attempts       Int          @default(0)
+  lastError      String?
+  /// Set when the job exhausted its retries: visible in the operations view.
+  deadLetteredAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, availableAt])
+  @@index([organizationId, status])
+  @@map("outbox_record")
+}
+
+// ===========================================================================
+// Handoff exports, metrics, audit, duplicates, retention
+// ===========================================================================
+
+enum HandoffState {
+  DRAFT
+  APPROVED
+  EXPORTED
+  TRANSPORT_ACCEPTED
+  TRANSPORT_FAILED
+  /// Someone on the receiving side told us it landed. A 2xx does not.
+  EXTERNALLY_CONFIRMED
+}
+
+model HandoffExport {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applicantId    String
+  applicant      Applicant    @relation(fields: [organizationId, applicantId], references: [organizationId, id], onDelete: Cascade)
+
+  packageVersion String
+  /// Allowlisted fields only, recruiter-reviewed before approval.
+  payload        Json
+  state          HandoffState @default(DRAFT)
+
+  preparedByMemberId  String
+  approvedByMemberId  String?
+  approvedAt          DateTime?
+  exportedAt          DateTime?
+  /// "json" | "csv" | "webhook"
+  transport           String?
+  transportDetail     String?
+  externalReferenceId String?
+  confirmedAt         DateTime?
+  confirmedByMemberId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, id])
+  @@index([organizationId, applicantId, createdAt])
+  @@map("handoff_export")
+}
+
+enum MetricEventKind {
+  INQUIRY_OPENED
+  ACK_PROVIDER_ACCEPTED
+  ACK_DELIVERED
+  HUMAN_OUTREACH_ATTEMPTED
+  TWO_WAY_HUMAN_CONTACT
+  APPOINTMENT_SCHEDULED
+  APPOINTMENT_COMPLETED
+  APPOINTMENT_CANCELED
+  APPOINTMENT_NO_SHOW
+  TASK_COMPLETED_ON_TIME
+  TASK_COMPLETED_LATE
+  BRIEF_REVIEWED
+  BRIEF_CORRECTED
+  CASE_CLOSED
+  CASE_REOPENED
+}
+
+/// Reports read these rows, never live aggregates over mutable state.
+model MetricEvent {
+  id               String       @id @default(cuid())
+  organizationId   String
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  /// Deliberately NOT a foreign key: metric rows outlive a retention
+  /// deletion so historical reports stay stable. They hold no case content.
+  applicantId      String?
+  inquiryEpisodeId String?
+  teamId           String?
+  memberId         String?
+
+  kind         MetricEventKind
+  occurredAt   DateTime
+  /// Small scalar payload (e.g. elapsed seconds). Never applicant content.
+  numericValue Int?
+  detail       String?
+  createdAt    DateTime        @default(now())
+
+  @@index([organizationId, kind, occurredAt])
+  @@index([organizationId, inquiryEpisodeId])
+  @@map("metric_event")
+}
+
+/// Manually recorded, authorized baseline and observation measurements. The
+/// "time saved" report shows "Not measured" unless a comparable pair exists.
+model BaselineObservation {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  taskType           String
+  /// "baseline" | "observation"
+  measurementKind    String
+  periodStart        DateTime
+  periodEnd          DateTime
+  sampleCount        Int
+  /// Mean minutes per unit of work for this sample.
+  meanMinutes        Float
+  methodology        String
+  recordedByMemberId String
+  createdAt          DateTime @default(now())
+
+  @@index([organizationId, taskType, measurementKind])
+  @@map("baseline_observation")
+}
+
+enum AuditCategory {
+  SECURITY
+  OPERATIONAL
+}
+
+/// Append-only through the application. That is NOT tamper-proof against a
+/// database administrator — see SECURITY.md.
+model AuditEvent {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  category      AuditCategory
+  action        String
+  actorKind     String
+  actorMemberId String?
+  actorUserId   String?
+  actorLabel    String?
+
+  subjectType String
+  subjectId   String?
+  applicantId String?
+
+  /// Redacted, minimal metadata. Full sensitive payloads are never copied
+  /// here; only field names and identifiers.
+  metadata   Json     @default("{}")
+  ipAddress  String?
+  userAgent  String?
+  occurredAt DateTime @default(now())
+
+  @@index([organizationId, occurredAt])
+  @@index([organizationId, applicantId, occurredAt])
+  @@index([organizationId, category, action])
+  @@map("audit_event")
+}
+
+/// Two cases that MIGHT be the same person. Never merged automatically and
+/// never used to reveal one case's content on the other.
+model DuplicateCandidate {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  applicantAId   String
+  applicantA     Applicant    @relation("DuplicateA", fields: [organizationId, applicantAId], references: [organizationId, id], onDelete: Cascade)
+  applicantBId   String
+  applicantB     Applicant    @relation("DuplicateB", fields: [organizationId, applicantBId], references: [organizationId, id], onDelete: Cascade)
+
+  /// "shared_phone" | "shared_email" | "similar_name" | "manual"
+  signal             String
+  signalDetail       String
+  /// "open" | "merged" | "not_duplicate"
+  resolution         String    @default("open")
+  resolvedByMemberId String?
+  resolvedAt         DateTime?
+  createdAt          DateTime  @default(now())
+
+  @@unique([organizationId, applicantAId, applicantBId, signal])
+  @@index([organizationId, resolution])
+  @@map("duplicate_candidate")
+}
+
+model RetentionPolicy {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  name                        String
+  /// Null = no automatic deletion. There is deliberately no destructive
+  /// default for a LIVE organization.
+  closedCaseRetentionDays     Int?
+  webhookPayloadRetentionDays Int?
+  briefRetentionDays          Int?
+  auditMetadataRetentionDays  Int?
+
+  /// An organization must explicitly approve a policy before it can run.
+  approvedByMemberId String?
+  approvedAt         DateTime?
+  enabled            Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  runs RetentionRun[]
+
+  @@unique([organizationId, name])
+  @@unique([organizationId, id])
+  @@map("retention_policy")
+}
+
+model RetentionRun {
+  id                  String          @id @default(cuid())
+  organizationId      String
+  policyId            String
+  policy              RetentionPolicy @relation(fields: [organizationId, policyId], references: [organizationId, id], onDelete: Cascade)
+  /// "preview" | "execute"
+  mode                String
+  requestedByMemberId String
+  /// Counts per entity, plus what was skipped for legal hold.
+  summary             Json            @default("{}")
+  startedAt           DateTime        @default(now())
+  finishedAt          DateTime?
+  error               String?
+
+  @@index([organizationId, policyId, startedAt])
+  @@map("retention_run")
+}
+
+/// Global demo clock control, so "Today" is meaningful whenever the app starts
+/// and so tests can pin time deterministically.
+model SystemClock {
+  id            String    @id @default("singleton")
+  /// Null = real clock.
+  frozenAt      DateTime?
+  offsetSeconds Int       @default(0)
+  updatedAt     DateTime  @updatedAt
+
+  @@map("system_clock")
+}

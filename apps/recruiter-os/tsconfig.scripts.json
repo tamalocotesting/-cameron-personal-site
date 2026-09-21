@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@worker/*": ["./worker/*"],
+      "server-only": ["./scripts/shims/server-only.ts"]
+    }
+  }
+}

@@ -1,0 +1,112 @@
+name: recruiter-os CI
+
+on:
+  push:
+    paths: ['apps/recruiter-os/**', '.github/workflows/recruiter-os.yml']
+  pull_request:
+    paths: ['apps/recruiter-os/**', '.github/workflows/recruiter-os.yml']
+
+defaults:
+  run:
+    working-directory: apps/recruiter-os
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: recruiteros_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      APP_MODE: DEMO
+      DEMO_TOOLS_ENABLED: 'true'
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/recruiteros_test?schema=public
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/recruiteros_test?schema=public
+      # `pnpm db:check` creates and drops this throwaway database itself.
+      SHADOW_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/recruiteros_shadow?schema=public
+      BETTER_AUTH_SECRET: ci0123456789abcdef0123456789abcdef0123456789abcd
+      BETTER_AUTH_URL: http://localhost:3000
+      PUBLIC_APP_URL: http://localhost:3000
+      LOG_LEVEL: error
+      NEXT_TELEMETRY_DISABLED: '1'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: apps/recruiter-os/.nvmrc
+          cache: pnpm
+          cache-dependency-path: apps/recruiter-os/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Generate the Prisma client
+        run: pnpm exec prisma generate
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Apply migrations
+        run: pnpm db:migrate
+
+      - name: Check the migrations match the schema
+        # A schema change with no committed migration fails here rather than in
+        # somebody's deployment.
+        run: pnpm db:check
+
+      - name: Unit and integration tests
+        run: pnpm test
+
+      - name: Production build
+        run: pnpm build
+
+      - name: Seed the fictional demo dataset
+        run: pnpm run seed
+
+      - name: Configuration check
+        run: pnpm config:check
+
+      - name: Install Chromium for the browser tests
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Start the worker
+        # The browser suite exercises the real queue, so the worker has to be
+        # up. Playwright starts the application itself (see playwright.config).
+        run: |
+          nohup pnpm worker > worker.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3001/health && break
+            sleep 1
+          done
+
+      - name: Browser tests
+        run: pnpm test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-test-artifacts
+          path: |
+            apps/recruiter-os/playwright-report
+            apps/recruiter-os/test-results
+          retention-days: 7

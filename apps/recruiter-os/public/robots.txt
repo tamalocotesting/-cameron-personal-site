@@ -1,0 +1,4 @@
+# RecruiterOS is a staff workspace and an applicant intake form. Neither
+# belongs in a search index.
+User-agent: *
+Disallow: /

@@ -1,0 +1,83 @@
+{
+  "name": "recruiter-os",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RecruiterOS — a daily operating workspace for military recruiters. AI prepares. Recruiter decides.",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=22.12.0 <23"
+  },
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "dev:worker": "tsx --tsconfig tsconfig.scripts.json watch worker/index.ts",
+    "build": "prisma generate && next build",
+    "start": "node scripts/start.mjs",
+    "worker": "tsx --tsconfig tsconfig.scripts.json worker/index.ts",
+    "prisma:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:reset": "prisma migrate reset --force --skip-seed",
+    "db:status": "prisma migrate status",
+    "db:check": "tsx --tsconfig tsconfig.scripts.json scripts/check-migrations.ts",
+    "seed": "tsx --tsconfig tsconfig.scripts.json prisma/seed.ts",
+    "seed:reset": "tsx --tsconfig tsconfig.scripts.json prisma/seed.ts --reset",
+    "bootstrap:org": "tsx --tsconfig tsconfig.scripts.json scripts/bootstrap-organization.ts",
+    "config:check": "tsx --tsconfig tsconfig.scripts.json scripts/check-production-config.ts",
+    "setup": "tsx --tsconfig tsconfig.scripts.json scripts/setup.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install --with-deps chromium",
+    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm db:check && pnpm build"
+  },
+  "prisma": {
+    "seed": "tsx --tsconfig tsconfig.scripts.json prisma/seed.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.127.0",
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "7.10.0",
+    "better-auth": "1.7.5",
+    "clsx": "2.1.1",
+    "lucide-react": "1.47.0",
+    "next": "16.3.5",
+    "nodemailer": "^10.0.10",
+    "pg": "8.23.0",
+    "pg-boss": "12.33.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "0.0.1",
+    "tailwind-merge": "3.7.0",
+    "twilio": "6.1.1",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "22.20.4",
+    "@types/nodemailer": "^8.0.2",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "axe-core": "4.13.0",
+    "dotenv": "17.2.3",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.5",
+    "prisma": "7.10.0",
+    "tailwindcss": "4.3.3",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vitest": "5.0.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/engines",
+      "prisma",
+      "esbuild",
+      "unrs-resolver"
+    ]
+  }
+}
