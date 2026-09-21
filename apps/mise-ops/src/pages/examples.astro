@@ -1,0 +1,172 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import BeforeAfter from '../components/sections/BeforeAfter.astro';
+import OnTheFloor from '../components/sections/OnTheFloor.astro';
+import CtaBand from '../components/sections/CtaBand.astro';
+import { demoRestaurant } from '../data/demo';
+
+/** More of the system, same fictional restaurant. Labelled as a demonstration. */
+const artifacts = [
+  {
+    label: 'OPEN · 00',
+    title: 'Opening — line',
+    kind: 'checklist',
+    items: ['Ovens on, confirm 475°F', 'Pull prep list, check against pars', 'Wells filled and temped', 'Ticket printer paper and test fire'],
+  },
+  {
+    label: 'TRAIN · 01',
+    title: 'First shift — prep',
+    kind: 'steps',
+    items: [
+      'Day one: shadow only. Watch two full prep lists.',
+      'Day two: run the cold station with the list open.',
+      'Day three: run it, then have it checked before service.',
+    ],
+  },
+  {
+    label: 'SAFE · 02',
+    title: 'Cooling — cooked product',
+    kind: 'steps',
+    items: [
+      '135°F to 70°F within two hours.',
+      '70°F to 41°F within a further four.',
+      'Log both readings. If either is missed, the product goes.',
+    ],
+  },
+];
+---
+
+<Base
+  title="Examples"
+  description="See what MISE OPS produces: the same recipe as scattered notes and as a structured system, plus checklists, training paths and food-safety procedures. All examples use a clearly labelled demonstration restaurant."
+>
+  <PageHeader
+    eyebrow="Examples"
+    title="What it looks like when it is finished."
+    lede="Everything below uses a demonstration restaurant. There are no MISE OPS customers to show yet, and showing an invented one as real would be the fastest way to deserve your scepticism."
+  >
+    <p class="flag">
+      <span class="flag__chip mono">Demonstration</span>
+      {demoRestaurant.name} is fictional. Nothing here is a customer, a result or a review.
+    </p>
+  </PageHeader>
+
+  <BeforeAfter />
+
+  <section class="section section--ruled section--steel">
+    <div class="shell shell--wide">
+      <div class="section-head" data-reveal>
+        <span class="tape">More of the system</span>
+        <h2>The rest of what gets built.</h2>
+        <p>
+          A recipe is the easy example. Most of what a restaurant actually runs on is
+          sequence, standard and the thing that goes wrong at 7pm.
+        </p>
+      </div>
+
+      <div class="grid grid--3">
+        {artifacts.map((a) => (
+          <article class="card" data-reveal>
+            <div class="card__head">
+              <span class="mono-caps">{a.label}</span>
+              <span class="qr" aria-hidden="true"></span>
+            </div>
+            <div class="card__body">
+              <h3 class="art__title">{a.title}</h3>
+              {a.kind === 'checklist' ? (
+                <ul class="checklist art__list">
+                  {a.items.map((i) => <li>{i}</li>)}
+                </ul>
+              ) : (
+                <ol class="art__steps">
+                  {a.items.map((i) => <li>{i}</li>)}
+                </ol>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <p class="note mono" data-reveal>
+        Every procedure carries who approved it and when. A page nobody has signed is a
+        suggestion, and a team can tell the difference.
+      </p>
+    </div>
+  </section>
+
+  <OnTheFloor />
+
+  <CtaBand
+    title="See what this would look like for your restaurant."
+    body="The walkthrough covers what you already have, where the gaps are, and which procedures would be worth building first."
+  />
+</Base>
+
+<style>
+  .flag {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    max-width: 56ch;
+  }
+
+  .flag__chip {
+    background: var(--tape);
+    color: var(--tape-ink);
+    padding: 0.3em 0.7em;
+    border-radius: var(--radius-xs);
+    font-size: var(--step--2);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .art__title {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .art__list {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+
+  .art__steps {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+
+  .qr {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    flex: none;
+    border-radius: 2px;
+    background-color: var(--ink);
+    background-image:
+      linear-gradient(var(--steel-2) 0 0),
+      linear-gradient(var(--steel-2) 0 0),
+      linear-gradient(var(--steel-2) 0 0),
+      linear-gradient(var(--steel-2) 0 0);
+    background-repeat: no-repeat;
+    background-size: 0.28rem 0.28rem, 0.28rem 0.28rem, 0.28rem 0.28rem, 0.22rem 0.22rem;
+    background-position: 0.22rem 0.22rem, 1rem 0.22rem, 0.22rem 1rem, 0.92rem 0.95rem;
+  }
+
+  .note {
+    margin-top: var(--space-xl);
+    color: var(--ink-3);
+    font-size: var(--step--2);
+    max-width: 54ch;
+    line-height: 1.6;
+  }
+</style>

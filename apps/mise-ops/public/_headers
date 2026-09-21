@@ -1,0 +1,17 @@
+# Mirrors the [[headers]] blocks in netlify.toml.
+#
+# netlify.toml is only read when Netlify runs the build. A drag-and-drop deploy
+# uploads an already-built folder, so this file is what carries the headers
+# there. Change one, change the other.
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()

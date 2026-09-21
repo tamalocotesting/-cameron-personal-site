@@ -1,0 +1,106 @@
+---
+import { faqs } from '../../data/faq';
+---
+
+<section class="section section--ruled" id="faq">
+  <div class="shell shell--wide">
+    <div class="section-head" data-reveal>
+      <span class="tape">Questions</span>
+      <h2>The ones owners actually ask.</h2>
+    </div>
+
+    <div class="list" data-reveal>
+      {faqs.map((item) => (
+        <details class="qa" name="faq">
+          <summary>
+            <span class="qa__q">{item.q}</span>
+            <span class="qa__mark" aria-hidden="true"></span>
+          </summary>
+          <div class="qa__a">
+            <p>{item.a}</p>
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .list {
+    border-top: 1px solid var(--rule);
+    max-width: 62rem;
+  }
+
+  .qa {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .qa summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-m);
+    padding: var(--space-m) 0;
+    min-height: 3.5rem;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .qa summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .qa__q {
+    font-size: var(--step-1);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    text-wrap: pretty;
+  }
+
+  /* A plus that becomes a minus. Two bars, one of which rotates away. */
+  .qa__mark {
+    position: relative;
+    flex: none;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+  }
+
+  .qa__mark::before,
+  .qa__mark::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0;
+    inline-size: 100%;
+    block-size: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+    transform: translateY(-50%);
+    transition: transform var(--t-base) var(--ease);
+  }
+
+  .qa__mark::after {
+    transform: translateY(-50%) rotate(90deg);
+  }
+
+  .qa[open] .qa__mark::after {
+    transform: translateY(-50%) rotate(0deg);
+  }
+
+  .qa__a {
+    padding-bottom: var(--space-m);
+    max-width: var(--measure);
+  }
+
+  .qa__a p {
+    color: var(--ink-2);
+    line-height: 1.65;
+  }
+
+  @media (hover: hover) {
+    .qa summary:hover .qa__q {
+      color: var(--accent);
+    }
+  }
+</style>

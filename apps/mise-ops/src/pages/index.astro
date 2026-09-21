@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/sections/Hero.astro';
+import Problem from '../components/sections/Problem.astro';
+import BeforeAfter from '../components/sections/BeforeAfter.astro';
+import Organizes from '../components/sections/Organizes.astro';
+import Method from '../components/sections/Method.astro';
+import Stations from '../components/sections/Stations.astro';
+import OnTheFloor from '../components/sections/OnTheFloor.astro';
+import Offers from '../components/sections/Offers.astro';
+import Audience from '../components/sections/Audience.astro';
+import OperatorBuilt from '../components/sections/OperatorBuilt.astro';
+import Faq from '../components/sections/Faq.astro';
+import FinalCta from '../components/sections/FinalCta.astro';
+import { brand } from '../config/brand';
+import { faqs } from '../data/faq';
+import { faqSchema } from '../lib/seo';
+---
+
+<Base
+  title={`${brand.name} — Restaurant operations your whole team can follow`}
+  description="MISE OPS captures the recipes, procedures, training and checklists trapped in your restaurant’s owners and managers, and turns them into a simple operating system your team can actually use. Serving Carmel, Westfield, Fishers, Indianapolis, Noblesville and Zionsville."
+  suffix={false}
+  schema={[faqSchema(faqs)]}
+>
+  <Hero />
+  <Problem />
+  <BeforeAfter />
+  <Organizes />
+  <Method />
+  <Stations />
+  <OnTheFloor />
+  <Offers />
+  <Audience />
+  <OperatorBuilt />
+  <Faq />
+  <FinalCta />
+</Base>

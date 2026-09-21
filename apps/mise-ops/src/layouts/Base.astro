@@ -1,0 +1,146 @@
+---
+import '../styles/tokens.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { brand } from '../config/brand';
+import { organizationSchema, webSiteSchema } from '../lib/seo';
+import { isProductionDeploy } from '../../site.config.mjs';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Pass false on the homepage so the title is not "MISE OPS — MISE OPS". */
+  suffix?: boolean;
+  ogType?: 'website' | 'article';
+  /** Per-page social card in public/. Falls back to the site-wide one. */
+  ogImage?: string;
+  /** Extra JSON-LD for this page (FAQPage, Service, …). */
+  schema?: unknown[];
+  /** Keep this page out of search even in production (e.g. /thanks). */
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  suffix = true,
+  ogType = 'website',
+  ogImage = '/og.png',
+  schema = [],
+  noindex = false,
+} = Astro.props;
+
+const pageTitle = suffix ? `${title} — ${brand.name}` : title;
+
+// Astro.site comes from site.config.mjs. A deploy preview resolves to its own
+// URL, so nothing here ever claims to be production when it is not.
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site).href;
+const ogImageUrl = new URL(ogImage, Astro.site).href;
+
+// Previews and branch deploys must not be indexed, or they compete with the
+// real site for the same queries. Some pages opt out even in production.
+const indexable = isProductionDeploy() && !noindex;
+
+const graph = [organizationSchema(Astro.site), webSiteSchema(Astro.site), ...schema];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Gates the scroll-reveal styles. Runs before first paint, so the page
+         never flashes; without JS the reveal CSS simply never applies and
+         everything is visible. -->
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {!indexable && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta name="theme-color" content="#f3f5f4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#101413" media="(prefers-color-scheme: dark)" />
+
+    <!-- The headline paints in this one; preload beats the CSS round-trip. -->
+    <link
+      rel="preload"
+      href="/fonts/schibsted-grotesk-var-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    {indexable && <link rel="sitemap" href="/sitemap-index.xml" />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={brand.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${brand.name} — ${brand.tagline}`} />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    {graph.map((node) => (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(node)} />
+    ))}
+  </head>
+
+  <body id="top">
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      import { bindTrackedElements } from '../lib/analytics';
+
+      // Progressive scroll reveal. Nothing depends on it — content is visible
+      // without JS, and reduced-motion users never see it run.
+      const items = document.querySelectorAll('[data-reveal]');
+      if (items.length) {
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduced || !('IntersectionObserver' in window)) {
+          items.forEach((el) => el.classList.add('is-revealed'));
+        } else {
+          const io = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('is-revealed');
+                io.unobserve(entry.target);
+              });
+            },
+            { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+          );
+          items.forEach((el) => io.observe(el));
+        }
+      }
+
+      bindTrackedElements();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  main:focus {
+    outline: none;
+  }
+</style>

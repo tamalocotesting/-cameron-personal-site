@@ -1,0 +1,533 @@
+---
+import { walkthroughFields } from '../../lib/leads';
+import { forms } from '../../config/forms';
+import { brand } from '../../config/brand';
+
+/**
+ * The Operations Walkthrough request.
+ *
+ * Rendered from `walkthroughFields` rather than hand-written, so the form, a
+ * future CRM mapping and the field list can never drift apart.
+ *
+ * Progressive enhancement is the whole design:
+ *  · Without script this is a plain Netlify form. It POSTs natively and lands
+ *    on /thanks, which is a real page in the site's design system.
+ *  · With script it submits in place through `submitLead()` and swaps to the
+ *    success panel, which is rendered on the server and simply hidden.
+ * Nothing is built with createElement, because Astro's scoped CSS would not
+ * apply to it.
+ */
+
+const essentials = walkthroughFields.filter((f) =>
+  ['first-name', 'last-name', 'restaurant', 'email', 'phone', 'city'].includes(f.name)
+);
+const operation = walkthroughFields.filter((f) =>
+  ['locations', 'employees', 'opening-another', 'frustration', 'contact-preference'].includes(f.name)
+);
+const extras = walkthroughFields.filter((f) => f.name === 'notes');
+
+const fieldId = (name: string) => `f-${name}`;
+---
+
+<div class="lead" data-lead>
+  <form
+    class="form"
+    name={forms.formName}
+    method="POST"
+    action="/thanks"
+    data-netlify="true"
+    netlify-honeypot={forms.honeypot}
+    novalidate={false}
+  >
+    <!-- Netlify identifies the submission by this field. -->
+    <input type="hidden" name="form-name" value={forms.formName} />
+
+    <!-- The trap. Hidden from sight and from screen readers, never required. -->
+    <p class="hp" aria-hidden="true">
+      <label>
+        Leave this field empty
+        <input type="text" name={forms.honeypot} tabindex="-1" autocomplete="off" />
+      </label>
+    </p>
+
+    <fieldset class="group">
+      <legend class="group__legend">
+        <span class="group__n mono">01</span> Who you are
+      </legend>
+      <div class="fields">
+        {essentials.map((f) => (
+          <div class={f.half ? 'field field--half' : 'field'}>
+            <label class="field__label" for={fieldId(f.name)}>
+              {f.label}
+              {!f.required && <span class="field__opt mono">optional</span>}
+            </label>
+            <input
+              class="input"
+              id={fieldId(f.name)}
+              name={f.name}
+              type={f.type === 'select' || f.type === 'textarea' || f.type === 'radio' ? 'text' : f.type}
+              required={f.required}
+              autocomplete={f.autocomplete}
+              placeholder={f.placeholder}
+            />
+          </div>
+        ))}
+      </div>
+    </fieldset>
+
+    <fieldset class="group">
+      <legend class="group__legend">
+        <span class="group__n mono">02</span> Your operation
+      </legend>
+      <div class="fields">
+        {operation.map((f) => {
+          if (f.type === 'select') {
+            return (
+              <div class={f.half ? 'field field--half' : 'field'}>
+                <label class="field__label" for={fieldId(f.name)}>{f.label}</label>
+                <div class="select-wrap">
+                  <select class="input" id={fieldId(f.name)} name={f.name} required={f.required}>
+                    <option value="">Choose one</option>
+                    {f.options?.map((o) => <option value={o}>{o}</option>)}
+                  </select>
+                  <span class="select-wrap__arrow" aria-hidden="true"></span>
+                </div>
+              </div>
+            );
+          }
+          if (f.type === 'radio') {
+            return (
+              <fieldset class={f.half ? 'field field--half radio' : 'field radio'}>
+                <legend class="field__label">{f.label}</legend>
+                <div class="radio__row">
+                  {f.options?.map((o, i) => (
+                    <label class="chip">
+                      <input
+                        type="radio"
+                        name={f.name}
+                        value={o}
+                        required={f.required && i === 0}
+                      />
+                      <span class="chip__face">{o}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            );
+          }
+          return (
+            <div class="field">
+              <label class="field__label" for={fieldId(f.name)}>{f.label}</label>
+              <textarea
+                class="input textarea"
+                id={fieldId(f.name)}
+                name={f.name}
+                rows="4"
+                required={f.required}
+                placeholder={f.placeholder}
+              />
+              {f.help && <p class="field__help">{f.help}</p>}
+            </div>
+          );
+        })}
+      </div>
+    </fieldset>
+
+    <!-- Genuine progressive disclosure: <details> works with no script. -->
+    {extras.map((f) => (
+      <details class="extras">
+        <summary>
+          <span>Add anything else</span>
+          <span class="extras__mark" aria-hidden="true"></span>
+        </summary>
+        <div class="field extras__field">
+          <label class="field__label" for={fieldId(f.name)}>{f.label}</label>
+          <textarea class="input textarea" id={fieldId(f.name)} name={f.name} rows="3" />
+        </div>
+      </details>
+    ))}
+
+    <div class="actions">
+      <button class="btn btn--primary btn--lg" type="submit" data-lead-submit>
+        Request my walkthrough
+      </button>
+      <p class="actions__note mono">
+        No obligation. We reply within one business day.
+      </p>
+    </div>
+
+    <p class="error" data-lead-error hidden role="alert"></p>
+  </form>
+
+  <!-- Rendered on the server, hidden until a scripted submission succeeds. -->
+  <div class="done" data-lead-success hidden>
+    <span class="done__tick" aria-hidden="true"></span>
+    <h2 class="done__title">That’s in. Thank you.</h2>
+    <p class="done__body">
+      We read every one of these ourselves. Expect a reply within one business
+      day, on whichever method you chose.
+    </p>
+    <p class="done__body done__body--muted">
+      If something is urgent before then, email
+      <a class="link" href={`mailto:${brand.email}`}>{brand.email}</a>.
+    </p>
+  </div>
+</div>
+
+<script>
+  import { submitLead } from '../../lib/leads';
+  import { track, EVENTS } from '../../lib/analytics';
+
+  const root = document.querySelector<HTMLElement>('[data-lead]');
+  const form = root?.querySelector('form');
+  const success = root?.querySelector<HTMLElement>('[data-lead-success]');
+  const errorEl = root?.querySelector<HTMLElement>('[data-lead-error]');
+  const submit = root?.querySelector<HTMLButtonElement>('[data-lead-submit]');
+
+  if (root && form && success && errorEl && submit) {
+    // One "form started" event, on the first interaction only.
+    let started = false;
+    form.addEventListener(
+      'input',
+      () => {
+        if (started) return;
+        started = true;
+        track(EVENTS.walkthroughStart);
+      },
+      { once: false }
+    );
+
+    form.addEventListener('submit', async (event) => {
+      // Let the browser show its own messages, then take over.
+      if (!form.checkValidity()) return;
+      event.preventDefault();
+
+      submit.disabled = true;
+      submit.textContent = 'Sending…';
+      errorEl.hidden = true;
+
+      const result = await submitLead(new FormData(form));
+
+      if (result.ok) {
+        track(EVENTS.walkthroughSubmit);
+        form.hidden = true;
+        success.hidden = false;
+        success.setAttribute('tabindex', '-1');
+        success.focus();
+        success.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        return;
+      }
+
+      track(EVENTS.walkthroughError);
+      errorEl.textContent = result.error ?? 'Something went wrong.';
+      errorEl.hidden = false;
+      submit.disabled = false;
+      submit.textContent = 'Request my walkthrough';
+    });
+  }
+</script>
+
+<style>
+  .lead {
+    background: var(--surface-raised);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-card);
+    padding: var(--space-m);
+  }
+
+  /* Off-screen rather than display:none — a bot that only fills visible
+     fields is still caught, and nothing is announced to a screen reader. */
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .group {
+    border: 0;
+    padding: 0;
+    margin: 0 0 var(--space-l);
+  }
+
+  .group__legend {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    inline-size: 100%;
+    padding-bottom: var(--space-xs);
+    margin-bottom: var(--space-m);
+    border-bottom: 1px solid var(--rule);
+    font-size: var(--step-1);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .group__n {
+    color: var(--accent);
+    font-size: var(--step--2);
+    letter-spacing: 0.14em;
+  }
+
+  .fields {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-inline-size: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  .field__label {
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--ink);
+    padding: 0;
+  }
+
+  .field__opt {
+    margin-left: 0.5em;
+    font-size: var(--step--2);
+    font-weight: 400;
+    color: var(--ink-3);
+  }
+
+  .field__help {
+    font-size: var(--step--2);
+    color: var(--ink-3);
+  }
+
+  .input {
+    inline-size: 100%;
+    min-height: 3rem;
+    padding: 0.7rem 0.9rem;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius);
+    font-size: var(--step-0);
+    transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+  }
+
+  .input::placeholder {
+    color: var(--ink-3);
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-wash-2);
+  }
+
+  .textarea {
+    min-height: 6rem;
+    resize: vertical;
+    line-height: 1.55;
+  }
+
+  .select-wrap {
+    position: relative;
+  }
+
+  .select-wrap select {
+    appearance: none;
+    padding-right: 2.5rem;
+  }
+
+  .select-wrap__arrow {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-right: 2px solid var(--ink-3);
+    border-bottom: 2px solid var(--ink-3);
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+  }
+
+  /* Radio groups as chips — a bigger target than a 16px circle. */
+  .radio__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .chip input {
+    position: absolute;
+    opacity: 0;
+    inline-size: 1px;
+    block-size: 1px;
+  }
+
+  .chip__face {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0 1.1rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    font-size: var(--step--1);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
+  }
+
+  .chip input:checked + .chip__face {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+  }
+
+  .chip input:focus-visible + .chip__face {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .extras {
+    margin-bottom: var(--space-l);
+    border: 1px dashed var(--rule-strong);
+    border-radius: var(--radius);
+  }
+
+  .extras summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    min-height: 3rem;
+    padding: 0.7rem var(--space-s);
+    cursor: pointer;
+    list-style: none;
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+
+  .extras summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .extras__mark {
+    position: relative;
+    flex: none;
+    inline-size: 0.9rem;
+    block-size: 0.9rem;
+  }
+
+  .extras__mark::before,
+  .extras__mark::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    inline-size: 100%;
+    block-size: 2px;
+    background: var(--accent);
+    transform: translateY(-50%);
+  }
+
+  .extras__mark::after {
+    transform: translateY(-50%) rotate(90deg);
+  }
+
+  .extras[open] .extras__mark::after {
+    transform: translateY(-50%) rotate(0deg);
+  }
+
+  .extras__field {
+    padding: 0 var(--space-s) var(--space-s);
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    align-items: flex-start;
+  }
+
+  .actions__note {
+    font-size: var(--step--2);
+    color: var(--ink-3);
+  }
+
+  .error {
+    margin-top: var(--space-s);
+    padding: var(--space-xs) var(--space-s);
+    border-left: 3px solid var(--clay);
+    background: var(--clay-wash);
+    color: var(--clay);
+    font-size: var(--step--1);
+  }
+
+  /* ---- Success ---- */
+
+  .done {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-s);
+    padding: var(--space-l) 0;
+  }
+
+  .done:focus {
+    outline: none;
+  }
+
+  .done__tick {
+    position: relative;
+    inline-size: 3rem;
+    block-size: 3rem;
+    border-radius: 50%;
+    background: var(--accent-wash-2);
+    flex: none;
+  }
+
+  .done__tick::after {
+    content: '';
+    position: absolute;
+    left: 1.15rem;
+    top: 0.75rem;
+    inline-size: 0.7rem;
+    block-size: 1.3rem;
+    border: solid var(--accent);
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+  }
+
+  .done__title {
+    font-size: var(--step-3);
+  }
+
+  .done__body {
+    color: var(--ink-2);
+    max-width: 46ch;
+  }
+
+  .done__body--muted {
+    font-size: var(--step--1);
+    color: var(--ink-3);
+  }
+
+  @media (min-width: 40rem) {
+    .lead {
+      padding: var(--space-l);
+    }
+    .fields {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .field:not(.field--half) {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

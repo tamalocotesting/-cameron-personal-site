@@ -1,0 +1,193 @@
+---
+import { pricing, cta } from '../../config/brand';
+import { sprintScope, careScope } from '../../data/offers';
+
+---
+
+<section class="section section--ruled section--steel" id="engagements">
+  <div class="shell shell--wide">
+    <div class="section-head" data-reveal>
+      <span class="tape">Working together</span>
+      <h2>A build, then upkeep.</h2>
+      <p>
+        One scoped engagement to get the system in place, and an optional monthly
+        arrangement to keep it true.
+      </p>
+    </div>
+
+    <div class="offers">
+      <!-- Sprint -->
+      <article class="offer offer--lead" data-reveal id="sprint">
+        <header class="offer__head">
+          <h3 class="offer__name">{pricing.sprint.name}</h3>
+          <p class="offer__price">
+            <span class="offer__qualifier mono">{pricing.sprint.qualifier}</span>
+            <span class="offer__figure">{pricing.sprint.from}</span>
+            <span class="offer__unit mono">{pricing.sprint.unit}</span>
+          </p>
+        </header>
+
+        <p class="offer__pitch">
+          The build. We capture how your restaurant actually runs, turn it into procedures
+          your team can follow, verify every one of them with you, and put it on the floor.
+        </p>
+
+        <h4 class="offer__sub mono-caps">A Sprint can include</h4>
+        <ul class="checklist offer__list">
+          {sprintScope.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+
+        <p class="offer__scope">
+          Scope is agreed before we start, and priced against it. A restaurant with fifteen
+          procedures and one with ninety are not the same job, and we would rather say so
+          than discover it halfway through.
+        </p>
+
+        <a
+          class="btn btn--primary btn--block"
+          href={cta.primary.href}
+          data-track="cta_click"
+          data-track-props='{"location":"sprint"}'
+        >
+          {cta.primary.label}
+        </a>
+      </article>
+
+      <!-- Care -->
+      <article class="offer" data-reveal id="care">
+        <header class="offer__head">
+          <h3 class="offer__name">{pricing.care.name}</h3>
+          <p class="offer__price">
+            <span class="offer__qualifier mono">{pricing.care.qualifier}</span>
+            <span class="offer__figure">{pricing.care.from}</span>
+            <span class="offer__unit mono">{pricing.care.unit}</span>
+          </p>
+        </header>
+
+        <p class="offer__pitch">
+          Restaurants change. Menus change, equipment gets replaced, people leave. A system
+          that stops matching the restaurant stops being trusted — and once it is not
+          trusted, it is a binder again.
+        </p>
+
+        <h4 class="offer__sub mono-caps">Care covers</h4>
+        <ul class="checklist offer__list">
+          {careScope.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+
+        <p class="offer__scope">
+          A defined amount of change each month, not unlimited work. If a season brings a
+          full menu rewrite, we scope that separately rather than pretending it fits.
+        </p>
+
+        <p class="offer__foot mono">Optional. You own what we built either way.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .offers {
+    display: grid;
+    gap: var(--space-m);
+    align-items: start;
+  }
+
+  .offer {
+    background: var(--surface-raised);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-card);
+    padding: var(--space-l) var(--space-m) var(--space-m);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+  }
+
+  .offer--lead {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .offer__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding-bottom: var(--space-s);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .offer__name {
+    font-size: var(--step-2);
+  }
+
+  .offer__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .offer__qualifier {
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    flex-basis: 100%;
+  }
+
+  .offer__figure {
+    font-size: var(--step-4);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .offer__unit {
+    font-size: var(--step--1);
+    color: var(--ink-3);
+  }
+
+  .offer__pitch {
+    color: var(--ink-2);
+  }
+
+  .offer__sub {
+    margin-top: var(--space-2xs);
+  }
+
+  .offer__list {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+
+  .offer__scope {
+    margin-top: auto;
+    padding-top: var(--space-s);
+    border-top: 1px dashed var(--rule-strong);
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    line-height: 1.6;
+  }
+
+  .offer__foot {
+    font-size: var(--step--2);
+    color: var(--ink-3);
+  }
+
+  .offer .btn {
+    margin-top: var(--space-2xs);
+  }
+
+  @media (min-width: 54rem) {
+    .offers {
+      grid-template-columns: 1.08fr 1fr;
+      gap: var(--space-l);
+    }
+  }
+</style>

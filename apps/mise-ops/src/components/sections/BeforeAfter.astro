@@ -1,0 +1,661 @@
+---
+import { demoRestaurant, before, after } from '../../data/demo';
+
+/**
+ * The transformation, on something concrete.
+ *
+ * The toggle is two radio inputs and sibling selectors — no JavaScript. Both
+ * panels are rendered on the server, so the section is complete and readable
+ * before any script runs, and with script blocked entirely. The only thing JS
+ * adds is the analytics event.
+ *
+ * The inputs are direct children of `.ba` on purpose: the `~` combinator needs
+ * them to be siblings of what they control, and `:has()` is below our browser
+ * floor.
+ */
+---
+
+<section class="section section--ruled" id="before-after">
+  <div class="shell shell--wide">
+    <div class="section-head" data-reveal>
+      <span class="tape">Before &amp; after</span>
+      <h2>The same knowledge, twice.</h2>
+      <p>
+        Below is one recipe as it usually exists, and as it exists once it is a system.
+        Nothing here is new information — it is the same knowledge, made findable.
+      </p>
+    </div>
+
+    <div class="ba">
+      <input type="radio" name="ba-state" id="ba-before" class="sr-only" checked />
+      <input type="radio" name="ba-state" id="ba-after" class="sr-only" />
+
+      <div class="ba__head">
+        <div class="ba__switch">
+          <label for="ba-before">Before</label>
+          <label for="ba-after">After</label>
+        </div>
+        <p class="ba__subject mono">
+          <span class="ba__demo">Demonstration</span>
+          {demoRestaurant.name} · {demoRestaurant.subject}
+        </p>
+      </div>
+
+      <div class="ba__stage">
+        <!-- ---------------- BEFORE ---------------- -->
+        <div class="panel panel--before">
+          <ul class="scatter">
+            {before.map((a) => (
+              <li class={`note note--${a.kind}`}>
+                <span class="note__label mono-caps">{a.label}</span>
+                <div class="note__content">
+                  {a.lines.map((line) => (
+                    <p>{line}</p>
+                  ))}
+                </div>
+                <p class="note__problem">{a.problem}</p>
+              </li>
+            ))}
+          </ul>
+          <p class="verdict verdict--before">
+            Five sources. None of them complete, none of them dated, and the most reliable
+            one is a person who is allowed to have a day off.
+          </p>
+        </div>
+
+        <!-- ---------------- AFTER ---------------- -->
+        <div class="panel panel--after">
+          <div class="after">
+            <input type="radio" name="ba-lang" id="ba-en" class="sr-only" checked />
+            <input type="radio" name="ba-lang" id="ba-es" class="sr-only" />
+
+            <!-- The phone: what a cook actually opens. -->
+            <div class="phone">
+              <div class="phone__bar">
+                <span class="mono-caps">{after.recipe.station}</span>
+                <div class="lang">
+                  <label for="ba-en">EN</label>
+                  <label for="ba-es">ES</label>
+                </div>
+              </div>
+              <div class="phone__body">
+                <h3 class="phone__title">{after.recipe.title}</h3>
+                <p class="phone__meta mono">
+                  Yield {after.recipe.yield} · {after.recipe.time} · Allergens:{' '}
+                  {after.recipe.allergens.join(', ')}
+                </p>
+
+                <table class="ing">
+                  <caption class="sr-only">Ingredients for {after.recipe.title}</caption>
+                  <tbody>
+                    {after.recipe.ingredients.map((row) => (
+                      <tr>
+                        <td class="ing__qty mono">{row.qty}</td>
+                        <td class="ing__item">
+                          {row.item}
+                          {row.note && <span class="ing__note"> — {row.note}</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <h4 class="sub">Method</h4>
+                <ol class="steps">
+                  {after.procedure.map((step, i) => (
+                    <li>
+                      <span class="steps__n mono">{i + 1}</span>
+                      <span class={i === 1 ? 'steps__text steps__text--swap' : 'steps__text'}>
+                        {i === 1 ? (
+                          <>
+                            <span class="lang-en">{after.bilingual.en}</span>
+                            <span class="lang-es" lang="es">{after.bilingual.es}</span>
+                          </>
+                        ) : (
+                          step
+                        )}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+
+            <!-- Everything else the system carries, beside the phone. -->
+            <div class="beside">
+              <div class="card">
+                <div class="card__head">
+                  <span class="mono-caps">Visual standard</span>
+                </div>
+                <div class="card__body">
+                  <p class="std std--good"><strong>Right.</strong> {after.standard.good}</p>
+                  <p class="std std--bad"><strong>Wrong.</strong> {after.standard.bad}</p>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card__head">
+                  <span class="mono-caps">{after.checklist.title}</span>
+                </div>
+                <div class="card__body">
+                  <ul class="checklist">
+                    {after.checklist.items.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div class="card equip">
+                <div class="card__head">
+                  <span class="mono-caps">{after.equipment.label}</span>
+                  <span class="qr" aria-hidden="true"></span>
+                </div>
+                <div class="card__body">
+                  <h4 class="equip__name">{after.equipment.name}</h4>
+                  <ol class="equip__steps">
+                    {after.equipment.steps.map((s) => (
+                      <li>{s}</li>
+                    ))}
+                  </ol>
+                  <p class="equip__foot mono">Posted on the machine.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="verdict verdict--after">
+            One source. Dated, approved, in both languages where the team needs it, and
+            posted at the station it belongs to.
+          </p>
+        </div>
+      </div>
+
+      <p class="disclaimer">{demoRestaurant.disclaimer}</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { track, EVENTS } from '../../lib/analytics';
+
+  // The toggle works without this. This only reports that it was used.
+  document.querySelectorAll<HTMLInputElement>('input[name="ba-state"]').forEach((input) => {
+    input.addEventListener('change', () => {
+      if (input.checked) track(EVENTS.beforeAfterInteract, { state: input.id.replace('ba-', '') });
+    });
+  });
+
+  document.querySelectorAll<HTMLInputElement>('input[name="ba-lang"]').forEach((input) => {
+    input.addEventListener('change', () => {
+      if (input.checked) track(EVENTS.beforeAfterInteract, { language: input.id.replace('ba-', '') });
+    });
+  });
+</script>
+
+<style>
+  .ba {
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-l);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+
+  .ba__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding: var(--space-s) var(--space-m);
+    border-bottom: 1px solid var(--rule);
+    background: var(--steel-2);
+  }
+
+  .ba__switch {
+    display: inline-flex;
+    padding: 3px;
+    background: var(--surface-sunken);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-pill);
+  }
+
+  .ba__switch label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    min-width: 6.5rem;
+    padding: 0 1.1rem;
+    border-radius: var(--radius-pill);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--ink-3);
+    cursor: pointer;
+    transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+  }
+
+  .ba__subject {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: var(--step--2);
+    color: var(--ink-3);
+  }
+
+  .ba__demo {
+    background: var(--tape);
+    color: var(--tape-ink);
+    padding: 0.25em 0.6em;
+    border-radius: var(--radius-xs);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .ba__stage {
+    padding: var(--space-m);
+  }
+
+  /* ---- Toggle wiring. The inputs are siblings of the head and the stage. ---- */
+
+  #ba-before:checked ~ .ba__head .ba__switch label[for='ba-before'],
+  #ba-after:checked ~ .ba__head .ba__switch label[for='ba-after'] {
+    background: var(--ink);
+    color: var(--ink-inverse);
+  }
+
+  #ba-before:focus-visible ~ .ba__head .ba__switch label[for='ba-before'],
+  #ba-after:focus-visible ~ .ba__head .ba__switch label[for='ba-after'] {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  #ba-before:checked ~ .ba__stage .panel--after,
+  #ba-after:checked ~ .ba__stage .panel--before {
+    display: none;
+  }
+
+  /* ---- BEFORE: a counter covered in partial answers ---- */
+
+  .scatter {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .note {
+    position: relative;
+    padding: var(--space-s) var(--space-m) var(--space-m);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    background: var(--surface-raised);
+    border: 1px solid var(--rule);
+    box-shadow: var(--shadow-card);
+  }
+
+  .note__label {
+    color: var(--ink-3);
+  }
+
+  .note__content p {
+    font-size: var(--step--1);
+    line-height: 1.55;
+  }
+
+  .note__problem {
+    margin-top: var(--space-2xs);
+    padding-top: var(--space-xs);
+    border-top: 1px dashed var(--rule-strong);
+    font-size: var(--step--2);
+    color: var(--clay);
+    line-height: 1.5;
+  }
+
+  /* Handwritten card — ruled paper, sloped. */
+  .note--recipe-card {
+    transform: rotate(-1deg);
+    background-image: repeating-linear-gradient(
+      var(--surface-raised) 0 1.55rem,
+      var(--rule) 1.55rem 1.6rem
+    );
+  }
+
+  .note--recipe-card .note__content p {
+    font-family: var(--font-mono);
+    font-weight: 300;
+  }
+
+  /* Text message — a bubble. */
+  .note--text {
+    transform: rotate(0.6deg);
+    background: var(--surface-sunken);
+  }
+
+  .note--text .note__content {
+    background: var(--surface-raised);
+    border-radius: var(--radius-m) var(--radius-m) var(--radius-m) 2px;
+    padding: var(--space-xs) var(--space-s);
+    border: 1px solid var(--rule);
+  }
+
+  /* Sticky note — square, kraft, tilted. */
+  .note--sticky {
+    transform: rotate(-2deg);
+    background: var(--tape-2);
+    border-color: var(--tape-edge);
+  }
+
+  .note--sticky .note__content p {
+    color: var(--tape-ink);
+    font-weight: 700;
+  }
+
+  /* Laminated sheet — cold and glossy. */
+  .note--laminate {
+    transform: rotate(0.8deg);
+    background-image: linear-gradient(
+      108deg,
+      rgb(255 255 255 / 0.55) 0 18%,
+      rgb(255 255 255 / 0) 42%
+    );
+    background-color: var(--steel-2);
+  }
+
+  /* A person is not a document. */
+  .note--memory {
+    transform: rotate(-0.4deg);
+    border-style: dashed;
+    border-color: var(--clay);
+    background: var(--clay-wash);
+  }
+
+  .verdict {
+    margin-top: var(--space-l);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--rule);
+    font-size: var(--step-1);
+    font-weight: 600;
+    line-height: 1.45;
+    text-wrap: pretty;
+    max-width: 60ch;
+  }
+
+  .verdict--before {
+    color: var(--clay);
+  }
+
+  .verdict--after {
+    color: var(--accent);
+  }
+
+  /* ---- AFTER ---- */
+
+  .after {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .phone {
+    inline-size: 100%;
+    max-inline-size: 22rem;
+    justify-self: center;
+    background: var(--surface-raised);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-lift);
+    overflow: hidden;
+    align-self: start;
+  }
+
+  .phone__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding: 0.6rem var(--space-s);
+    background: var(--steel-2);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .lang {
+    display: inline-flex;
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+
+  .lang label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    min-width: 3rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+    cursor: pointer;
+  }
+
+  .phone__body {
+    padding: var(--space-m);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .phone__title {
+    font-size: var(--step-2);
+  }
+
+  .phone__meta {
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    line-height: 1.5;
+  }
+
+  .ing {
+    inline-size: 100%;
+    border-collapse: collapse;
+    margin-top: var(--space-2xs);
+  }
+
+  .ing td {
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: var(--step--1);
+    vertical-align: baseline;
+  }
+
+  .ing__qty {
+    inline-size: 5rem;
+    color: var(--accent);
+    font-weight: 600;
+    white-space: nowrap;
+    padding-right: var(--space-xs);
+  }
+
+  .ing__note {
+    color: var(--ink-3);
+  }
+
+  .sub {
+    margin-top: var(--space-xs);
+    font-size: var(--step--2);
+    font-family: var(--font-mono);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .steps li {
+    display: flex;
+    gap: 0.65rem;
+    font-size: var(--step--1);
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+
+  .steps__n {
+    flex: none;
+    inline-size: 1.35rem;
+    block-size: 1.35rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--accent-wash-2);
+    color: var(--accent);
+    font-size: var(--step--2);
+    font-weight: 700;
+    margin-top: 0.1rem;
+  }
+
+  /* ---- Language toggle. Same sibling technique, scoped to .after ---- */
+
+  .lang-es {
+    display: none;
+  }
+
+  #ba-en:checked ~ .phone .lang label[for='ba-en'],
+  #ba-es:checked ~ .phone .lang label[for='ba-es'] {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  #ba-en:focus-visible ~ .phone .lang label[for='ba-en'],
+  #ba-es:focus-visible ~ .phone .lang label[for='ba-es'] {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  #ba-es:checked ~ .phone .lang-en {
+    display: none;
+  }
+
+  #ba-es:checked ~ .phone .lang-es {
+    display: inline;
+  }
+
+  .steps__text--swap {
+    border-left: 2px solid var(--accent);
+    padding-left: 0.6rem;
+    margin-left: -0.1rem;
+  }
+
+  /* ---- Beside the phone ---- */
+
+  .beside {
+    display: grid;
+    gap: var(--space-m);
+    align-content: start;
+  }
+
+  .std {
+    font-size: var(--step--1);
+    line-height: 1.5;
+    color: var(--ink-2);
+    padding-left: 0.85rem;
+    border-left: 3px solid var(--rule-strong);
+  }
+
+  .std--good {
+    border-left-color: var(--accent);
+  }
+
+  .std--bad {
+    border-left-color: var(--clay);
+  }
+
+  .equip__name {
+    font-size: var(--step-0);
+  }
+
+  .equip__steps {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+
+  .equip__foot {
+    margin-top: var(--space-2xs);
+    font-size: var(--step--2);
+    color: var(--ink-3);
+  }
+
+  .qr {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    flex: none;
+    border-radius: 2px;
+    background-color: var(--ink);
+    background-image:
+      linear-gradient(var(--steel-2) 0 0),
+      linear-gradient(var(--steel-2) 0 0),
+      linear-gradient(var(--steel-2) 0 0),
+      linear-gradient(var(--steel-2) 0 0);
+    background-repeat: no-repeat;
+    background-size: 0.28rem 0.28rem, 0.28rem 0.28rem, 0.28rem 0.28rem, 0.22rem 0.22rem;
+    background-position: 0.22rem 0.22rem, 1rem 0.22rem, 0.22rem 1rem, 0.92rem 0.95rem;
+  }
+
+  .disclaimer {
+    padding: var(--space-s) var(--space-m) var(--space-m);
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    border-top: 1px solid var(--rule);
+    background: var(--steel-2);
+  }
+
+  /* ---- Wider ---- */
+
+  @media (min-width: 46rem) {
+    .scatter {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .note--memory {
+      grid-column: span 2;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .ba__stage {
+      padding: var(--space-l);
+    }
+    .scatter {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .note--memory {
+      grid-column: auto;
+    }
+    .after {
+      grid-template-columns: 22rem 1fr;
+      gap: var(--space-l);
+    }
+    .phone {
+      justify-self: start;
+    }
+  }
+</style>

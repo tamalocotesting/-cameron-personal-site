@@ -1,0 +1,248 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import CtaBand from '../components/sections/CtaBand.astro';
+import { pricing, cta } from '../config/brand';
+import { sprintScope, sprintExclusions, sprintStages } from '../data/offers';
+---
+
+<Base
+  title="MISE OPS Sprint"
+  description="The MISE OPS Sprint: a scoped engagement that captures how your restaurant runs, turns it into procedures your team can follow, verifies every one with you, and puts it on the floor. Starting around $2,500 for one location."
+>
+  <PageHeader
+    eyebrow={pricing.sprint.name}
+    title="The build. One location, scoped before we start."
+    lede="We capture how your restaurant actually runs, turn it into procedures your team can follow, verify every one of them with you, and put it on the floor."
+  >
+    <p class="price">
+      <span class="price__q mono">{pricing.sprint.qualifier}</span>
+      <span class="price__f">{pricing.sprint.from}</span>
+      <span class="price__u mono">{pricing.sprint.unit}</span>
+    </p>
+    <a
+      class="btn btn--primary btn--lg"
+      href={cta.primary.href}
+      data-track="cta_click"
+      data-track-props='{"location":"sprint_page_header"}'
+    >
+      {cta.primary.label}
+    </a>
+  </PageHeader>
+
+  <section class="section">
+    <div class="shell shell--wide">
+      <div class="section-head" data-reveal>
+        <span class="tape">What happens</span>
+        <h2>Who does what, stage by stage.</h2>
+      </div>
+
+      <div class="table" data-reveal>
+        <div class="table__head" aria-hidden="true">
+          <span class="mono-caps">Stage</span>
+          <span class="mono-caps">We do</span>
+          <span class="mono-caps">You do</span>
+        </div>
+        {sprintStages.map((s) => (
+          <div class="table__row">
+            <h3 class="table__stage">{s.stage}</h3>
+            <p class="table__cell">
+              <span class="table__k mono-caps">We do</span>
+              {s.ours}
+            </p>
+            <p class="table__cell">
+              <span class="table__k mono-caps">You do</span>
+              {s.yours}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ruled section--steel">
+    <div class="shell shell--wide">
+      <div class="cols">
+        <div class="col" data-reveal>
+          <h2 class="col__h">What a Sprint can include</h2>
+          <ul class="checklist">
+            {sprintScope.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="col" data-reveal>
+          <h2 class="col__h">What it does not include</h2>
+          <ul class="nots">
+            {sprintExclusions.map((item) => <li>{item}</li>)}
+          </ul>
+          <p class="col__note">
+            Scope is agreed before we start and priced against it. A restaurant with fifteen
+            procedures and one with ninety are not the same job, and we would rather say so
+            now than discover it halfway through.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Find out what your Sprint would actually cover."
+    body="The walkthrough is where scope gets real: what you have, what is missing, and what the priority list would be. It costs nothing and there is no obligation."
+  />
+</Base>
+
+<style>
+  .price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+
+  .price__q {
+    flex-basis: 100%;
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+  }
+
+  .price__f {
+    font-size: var(--step-5);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .price__u {
+    color: var(--ink-3);
+  }
+
+  /* A table that becomes stacked cards on a phone, without a scroll bar. */
+  .table {
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    background: var(--surface-raised);
+  }
+
+  .table__head {
+    display: none;
+  }
+
+  .table__row {
+    display: grid;
+    gap: var(--space-xs);
+    padding: var(--space-m);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .table__row:last-child {
+    border-bottom: 0;
+  }
+
+  .table__stage {
+    font-size: var(--step-1);
+    text-transform: uppercase;
+    letter-spacing: -0.015em;
+  }
+
+  .table__cell {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+
+  .table__k {
+    display: block;
+    margin-bottom: 0.15rem;
+    color: var(--accent);
+  }
+
+  .cols {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .col__h {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-m);
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .col .checklist {
+    color: var(--ink-2);
+  }
+
+  .nots {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+  }
+
+  .nots li {
+    position: relative;
+    padding-left: 1.85rem;
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+
+  /* A struck-through circle: the visual opposite of the checklist tick. */
+  .nots li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.24em;
+    inline-size: 1.15rem;
+    block-size: 1.15rem;
+    border: 1.5px solid var(--clay);
+    border-radius: 50%;
+    background: var(--clay-wash);
+  }
+
+  .nots li::after {
+    content: '';
+    position: absolute;
+    left: 0.3rem;
+    top: 0.72em;
+    inline-size: 0.55rem;
+    block-size: 2px;
+    background: var(--clay);
+  }
+
+  .col__note {
+    margin-top: var(--space-m);
+    padding-top: var(--space-s);
+    border-top: 1px dashed var(--rule-strong);
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    line-height: 1.6;
+  }
+
+  @media (min-width: 56rem) {
+    .table__head,
+    .table__row {
+      grid-template-columns: 10rem 1fr 1fr;
+      gap: var(--space-m);
+      align-items: start;
+    }
+    .table__head {
+      display: grid;
+      padding: var(--space-s) var(--space-m);
+      background: var(--steel-2);
+      border-bottom: 1px solid var(--rule);
+    }
+    .table__k {
+      display: none;
+    }
+    .cols {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2xl);
+    }
+  }
+</style>

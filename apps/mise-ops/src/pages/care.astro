@@ -1,0 +1,243 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import CtaBand from '../components/sections/CtaBand.astro';
+import { pricing, cta } from '../config/brand';
+import { careScope, careExclusions } from '../data/offers';
+
+const drift = [
+  { when: 'The menu changes', then: 'Three recipes are now wrong, and the team finds out one guest at a time.' },
+  { when: 'A machine is replaced', then: 'The cleaning procedure on the wall is for equipment that left the building.' },
+  { when: 'A manager leaves', then: 'The decisions only they made are undocumented again within a month.' },
+  { when: 'You add a station', then: 'Nothing covers it, so it runs the old way: by whoever was shown first.' },
+];
+---
+
+<Base
+  title="MISE OPS Care"
+  description="MISE OPS Care keeps your operating system matching your restaurant as menus, equipment and people change. Starting around $349 per month. A defined amount of change, not unlimited work."
+>
+  <PageHeader
+    eyebrow={pricing.care.name}
+    title="A system nobody maintains becomes a binder again."
+    lede="Restaurants change. Menus change, equipment gets replaced, people leave. Care is what keeps the system true — and therefore trusted."
+  >
+    <p class="price">
+      <span class="price__q mono">{pricing.care.qualifier}</span>
+      <span class="price__f">{pricing.care.from}</span>
+      <span class="price__u mono">{pricing.care.unit}</span>
+    </p>
+    <a
+      class="btn btn--primary btn--lg"
+      href={cta.primary.href}
+      data-track="cta_click"
+      data-track-props='{"location":"care_page_header"}'
+    >
+      {cta.primary.label}
+    </a>
+  </PageHeader>
+
+  <section class="section">
+    <div class="shell shell--wide">
+      <div class="section-head" data-reveal>
+        <span class="tape">Why it exists</span>
+        <h2>Documentation does not fail loudly. It drifts.</h2>
+        <p>
+          Nobody announces that the system is out of date. It just stops matching the
+          restaurant, one change at a time, until the day somebody checks it, finds it
+          wrong, and never checks again.
+        </p>
+      </div>
+
+      <ul class="drift">
+        {drift.map((d) => (
+          <li class="drift__row" data-reveal>
+            <h3 class="drift__when">{d.when}</h3>
+            <span class="drift__arrow" aria-hidden="true"></span>
+            <p class="drift__then">{d.then}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--ruled section--steel">
+    <div class="shell shell--wide">
+      <div class="cols">
+        <div class="col" data-reveal>
+          <h2 class="col__h">What Care covers</h2>
+          <ul class="checklist">
+            {careScope.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="col" data-reveal>
+          <h2 class="col__h">What it does not</h2>
+          <ul class="nots">
+            {careExclusions.map((item) => <li>{item}</li>)}
+          </ul>
+          <p class="col__note">
+            Care is optional, and you own what we built either way. If you would rather
+            maintain it in-house, we would rather show your GM how than sell you something
+            you do not need.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Talk it through before you commit to anything."
+    body="Care only makes sense on top of a system that exists. The walkthrough is the place to work out whether you need the build first, and what maintaining it would actually involve."
+  />
+</Base>
+
+<style>
+  .price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+
+  .price__q {
+    flex-basis: 100%;
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+  }
+
+  .price__f {
+    font-size: var(--step-5);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .price__u {
+    color: var(--ink-3);
+  }
+
+  .drift {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .drift__row {
+    display: grid;
+    gap: var(--space-2xs);
+    padding: var(--space-m) 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: center;
+  }
+
+  .drift__when {
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+  }
+
+  .drift__arrow {
+    inline-size: 1.5rem;
+    block-size: 2px;
+    background: var(--clay);
+    position: relative;
+  }
+
+  .drift__arrow::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    inline-size: 0.45rem;
+    block-size: 0.45rem;
+    border-top: 2px solid var(--clay);
+    border-right: 2px solid var(--clay);
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  .drift__then {
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+
+  .cols {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .col__h {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-m);
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .col .checklist {
+    color: var(--ink-2);
+  }
+
+  .nots {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+  }
+
+  .nots li {
+    position: relative;
+    padding-left: 1.85rem;
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+
+  .nots li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.24em;
+    inline-size: 1.15rem;
+    block-size: 1.15rem;
+    border: 1.5px solid var(--clay);
+    border-radius: 50%;
+    background: var(--clay-wash);
+  }
+
+  .nots li::after {
+    content: '';
+    position: absolute;
+    left: 0.3rem;
+    top: 0.72em;
+    inline-size: 0.55rem;
+    block-size: 2px;
+    background: var(--clay);
+  }
+
+  .col__note {
+    margin-top: var(--space-m);
+    padding-top: var(--space-s);
+    border-top: 1px dashed var(--rule-strong);
+    font-size: var(--step--2);
+    color: var(--ink-3);
+    line-height: 1.6;
+  }
+
+  @media (min-width: 46rem) {
+    .drift__row {
+      grid-template-columns: 16rem auto 1fr;
+      gap: var(--space-m);
+    }
+  }
+
+  @media (min-width: 56rem) {
+    .cols {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2xl);
+    }
+  }
+</style>

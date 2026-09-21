@@ -1,0 +1,264 @@
+---
+/**
+ * Section 7 — the employee experience.
+ *
+ * Deliberately narrow: the Before/After demo already shows what a procedure
+ * looks like, so this shows only the thing that matters to a cook, which is
+ * how few moves it takes to get there.
+ */
+const steps = [
+  {
+    n: '01',
+    name: 'Scan or search',
+    caption: 'Camera at the station label, or one word in the search box.',
+    screen: { kind: 'search', query: 'ranch', results: ['House Ranch — PREP 01', 'Ranch par levels', 'Ranch — allergens'] },
+  },
+  {
+    n: '02',
+    name: 'The answer opens',
+    caption: 'The top result, already open. Reading a list is not getting an answer.',
+    screen: { kind: 'answer', title: 'House Ranch', lines: ['2 qt mayonnaise', '1 qt buttermilk, cold', '1 cup sour cream'] },
+  },
+  {
+    n: '03',
+    name: 'Back to work',
+    caption: 'Big type, one hand, gloves on, a line forming behind them.',
+    screen: { kind: 'done', title: 'Prep close', lines: ['Ranch dated and labelled', 'Pars checked', 'Walk-in logged'] },
+  },
+];
+---
+
+<section class="section section--ruled" id="on-the-floor">
+  <div class="shell shell--wide">
+    <div class="section-head" data-reveal>
+      <span class="tape">On the floor</span>
+      <h2>Three moves, not three minutes.</h2>
+      <p>
+        Built for the phone already in their pocket, mid-shift, with one hand free. If
+        finding the answer takes longer than asking someone, they will ask someone.
+      </p>
+    </div>
+
+    <ol class="flow">
+      {steps.map((step) => (
+        <li class="step" data-reveal>
+          <div class="screen">
+            <div class="screen__bar" aria-hidden="true">
+              <span class="screen__dot"></span>
+              <span class="screen__dot"></span>
+            </div>
+
+            {step.screen.kind === 'search' && (
+              <div class="screen__body">
+                <div class="search">
+                  <span class="search__glyph" aria-hidden="true"></span>
+                  <span class="search__q mono">{step.screen.query}</span>
+                </div>
+                <ul class="hits">
+                  {step.screen.results?.map((r, i) => (
+                    <li class={i === 0 ? 'hit hit--top' : 'hit'}>{r}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {step.screen.kind === 'answer' && (
+              <div class="screen__body">
+                <p class="screen__title">{step.screen.title}</p>
+                <ul class="lines">
+                  {step.screen.lines?.map((l) => (
+                    <li class="mono">{l}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {step.screen.kind === 'done' && (
+              <div class="screen__body">
+                <p class="screen__title">{step.screen.title}</p>
+                <ul class="checklist small">
+                  {step.screen.lines?.map((l) => (
+                    <li>{l}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          <div class="step__copy">
+            <span class="mono step__n">{step.n}</span>
+            <h3 class="step__name">{step.name}</h3>
+            <p class="step__caption">{step.caption}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .flow {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+  }
+
+  .screen {
+    inline-size: 100%;
+    max-inline-size: 17rem;
+    background: var(--surface-raised);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+
+  .screen__bar {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.55rem var(--space-s);
+    background: var(--steel-2);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .screen__dot {
+    inline-size: 0.4rem;
+    block-size: 0.4rem;
+    border-radius: 50%;
+    background: var(--rule-strong);
+  }
+
+  .screen__body {
+    padding: var(--space-s) var(--space-m) var(--space-m);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    min-block-size: 10rem;
+  }
+
+  .screen__title {
+    font-size: var(--step-1);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .search__glyph {
+    inline-size: 0.85rem;
+    block-size: 0.85rem;
+    flex: none;
+    border: 2px solid var(--ink-3);
+    border-radius: 50%;
+    position: relative;
+  }
+
+  .search__glyph::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    bottom: -3px;
+    inline-size: 5px;
+    block-size: 2px;
+    background: var(--ink-3);
+    transform: rotate(45deg);
+  }
+
+  .search__q {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .hits {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .hit {
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    padding: 0.45rem 0.6rem;
+    border-radius: var(--radius-xs);
+  }
+
+  .hit--top {
+    background: var(--accent-wash);
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .lines {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .lines li {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .checklist.small li {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+
+  .step__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    max-width: 34ch;
+  }
+
+  .step__n {
+    color: var(--accent);
+    font-size: var(--step--2);
+    letter-spacing: 0.16em;
+  }
+
+  .step__name {
+    font-size: var(--step-1);
+  }
+
+  .step__caption {
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    line-height: 1.55;
+  }
+
+  @media (min-width: 58rem) {
+    .flow {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-l);
+    }
+    .screen {
+      max-inline-size: none;
+    }
+  }
+</style>

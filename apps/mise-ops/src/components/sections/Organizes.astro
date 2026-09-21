@@ -1,0 +1,86 @@
+---
+import { organizes } from '../../data/home';
+---
+
+<section class="section section--ruled" id="what-we-organize">
+  <div class="shell shell--wide">
+    <div class="section-head" data-reveal>
+      <span class="tape">What MISE OPS organizes</span>
+      <h2>Everything your team has to know, in one place they can reach.</h2>
+      <p>
+        Not a document dump. Each of these is built so somebody can act on it mid-shift,
+        with one hand free.
+      </p>
+    </div>
+
+    <ul class="items" data-reveal>
+      {organizes.map((item) => (
+        <li class="item">
+          <h3 class="item__name">{item.name}</h3>
+          <p class="item__note">{item.note}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+  }
+
+  .item {
+    background: var(--surface-raised);
+    padding: var(--space-m);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .item__name {
+    font-size: var(--step-0);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .item__name::before {
+    content: '';
+    display: block;
+    inline-size: 1.75rem;
+    block-size: 2px;
+    background: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+
+  .item__note {
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+
+  @media (min-width: 38rem) {
+    .items {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 58rem) {
+    .items {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 76rem) {
+    .items {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

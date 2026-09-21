@@ -1,0 +1,107 @@
+---
+import Legal from '../layouts/Legal.astro';
+import { brand } from '../config/brand';
+
+/**
+ * Written from what this site actually does, not from a template. If the site
+ * gains analytics, a CRM, embedded video or any third-party script, this page
+ * has to change in the same commit.
+ */
+---
+
+<Legal
+  title="Privacy"
+  eyebrow="Privacy"
+  updated="21 September 2026"
+  description="What MISE OPS does with the information you send through this site. No cookies, no advertising trackers, no mailing list."
+>
+  <h2>The short version</h2>
+  <p>
+    This site sets <strong>no cookies</strong>, loads <strong>no advertising or social
+    trackers</strong>, and has <strong>no mailing list</strong> to add you to. The only
+    personal information we hold is what you type into the walkthrough form and send us
+    deliberately.
+  </p>
+
+  <h2>What you send us</h2>
+  <p>
+    The Operations Walkthrough form asks for your name, restaurant name, email, phone,
+    city, rough size of your operation, how you would like to be contacted, and a
+    description of what is frustrating you operationally. You choose what to put in it.
+  </p>
+  <p>
+    We use it for one thing: to reply to you and to prepare for a walkthrough. We do not
+    sell it, rent it, share it with advertisers, or use it to market anything other than
+    the conversation you asked for.
+  </p>
+
+  <h3>Where it goes</h3>
+  <p>
+    Form submissions are handled by <strong>Netlify Forms</strong>, the service that also
+    hosts this site. Your submission is stored in our Netlify account and emailed to us.
+    Netlify processes it on our behalf under their own privacy terms.
+  </p>
+
+  <h3>How long we keep it</h3>
+  <p>
+    As long as the conversation is live, and for a reasonable period afterwards in case
+    you come back. Ask us to delete it and we will, and we will confirm when it is done.
+  </p>
+
+  <h2>What the site collects automatically</h2>
+  <p>
+    Netlify keeps standard server logs for every site it hosts — IP address, the page
+    requested, timestamp, browser user-agent. That is infrastructure logging, not
+    something we analyse, and we do not build profiles from it.
+  </p>
+
+  <h3>Cookies and browser storage</h3>
+  <p>
+    None. This site does not set cookies, does not use local storage or session storage,
+    and does not fingerprint your browser. There is no cookie banner because there is
+    nothing to consent to.
+  </p>
+
+  <h3>Fonts and third-party requests</h3>
+  <p>
+    The typefaces are served from this site’s own domain rather than from Google Fonts or
+    any other CDN, so loading a page does not tell a third party that you visited.
+  </p>
+
+  <h3>Analytics</h3>
+  <p>
+    The site is built so that a privacy-preserving, cookie-free analytics tool could be
+    switched on later — the kind that counts page views without identifying anyone.
+    <strong>Nothing is currently loaded.</strong> If that changes, this page changes with
+    it, and it will never be a tool that tracks you across other websites.
+  </p>
+
+  <h2>Your choices</h2>
+  <ul>
+    <li>Ask what we hold about you, and we will tell you.</li>
+    <li>Ask us to correct it or delete it, and we will.</li>
+    <li>Ask us to stop contacting you, and we will stop.</li>
+  </ul>
+  <p>
+    One email is enough for any of these:
+    <a class="link" href={`mailto:${brand.email}`}>{brand.email}</a>. No form to fill in.
+  </p>
+
+  <h2>Children</h2>
+  <p>
+    This site is for restaurant owners and operators. It is not directed at children, and
+    we do not knowingly collect information from anyone under 16.
+  </p>
+
+  <h2>Changes</h2>
+  <p>
+    If this page changes, the date at the top changes. We will not quietly broaden what we
+    do with your information and leave the date alone.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    Questions about any of this go to
+    <a class="link" href={`mailto:${brand.email}`}>{brand.email}</a>.
+  </p>
+</Legal>

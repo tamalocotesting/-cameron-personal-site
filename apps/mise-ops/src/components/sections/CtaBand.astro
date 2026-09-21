@@ -1,0 +1,72 @@
+---
+import { brand, cta } from '../../config/brand';
+
+interface Props {
+  title?: string;
+  body?: string;
+}
+const {
+  title = 'Book an Operations Walkthrough.',
+  body = 'A conversation about how your restaurant runs right now — what lives in your head, what lives in a binder, and what would break if the wrong person quit.',
+} = Astro.props;
+---
+
+<section class="section section--ruled band">
+  <div class="shell shell--wide">
+    <div class="inner" data-reveal>
+      <div class="copy">
+        <span class="tape tape--flat">Next step</span>
+        <h2>{title}</h2>
+        <p>{body}</p>
+      </div>
+      <div class="btn-row">
+        <a
+          class="btn btn--primary btn--lg"
+          href={cta.primary.href}
+          data-track="cta_click"
+          data-track-props='{"location":"cta_band"}'
+        >
+          {cta.primary.label}
+        </a>
+        <a class="btn btn--ghost btn--lg" href={`mailto:${brand.email}`}>Email us instead</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .inner {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+    padding: var(--space-xl) var(--space-m);
+    background: var(--surface-raised);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-card);
+  }
+
+  .copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-s);
+  }
+
+  .copy h2 {
+    font-size: var(--step-3);
+    max-width: 20ch;
+  }
+
+  .copy p {
+    color: var(--ink-2);
+    max-width: 52ch;
+  }
+
+  @media (min-width: 56rem) {
+    .inner {
+      grid-template-columns: 1.4fr auto;
+      padding: var(--space-xl);
+    }
+  }
+</style>

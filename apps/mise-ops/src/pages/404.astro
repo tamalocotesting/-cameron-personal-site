@@ -1,0 +1,91 @@
+---
+import Base from '../layouts/Base.astro';
+import { nav, cta } from '../config/brand';
+---
+
+<Base title="Page not found" description="That page does not exist on the MISE OPS site.">
+  <section class="section nf">
+    <div class="shell shell--wide">
+      <div class="inner">
+        <span class="tape tape--flat">Error 404</span>
+        <p class="code mono">86</p>
+        <h1>We’re out of that one.</h1>
+        <p class="lede">
+          <strong>86</strong> is kitchen shorthand for <em>we have run out, stop selling
+          it</em>. That page either moved or never existed. Here is what is on.
+        </p>
+
+        <ul class="menu">
+          <li><a href="/">Home</a></li>
+          {nav.map((item) => (
+            <li><a href={item.href}>{item.label}</a></li>
+          ))}
+          <li><a href={cta.primary.href}>{cta.primary.label}</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    padding-block: clamp(3rem, 2rem + 5vw, 6rem);
+  }
+
+  .inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-m);
+    max-width: 44rem;
+  }
+
+  .code {
+    font-size: clamp(5rem, 2rem + 14vw, 11rem);
+    font-weight: 800;
+    line-height: 0.85;
+    letter-spacing: -0.06em;
+    color: var(--clay);
+  }
+
+  h1 {
+    font-size: var(--step-4);
+  }
+
+  .menu {
+    list-style: none;
+    margin: var(--space-s) 0 0;
+    padding: 0;
+    inline-size: 100%;
+    border-top: 1px solid var(--rule);
+  }
+
+  .menu li {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .menu a {
+    display: flex;
+    align-items: center;
+    min-height: 3.25rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  .menu a::before {
+    content: '';
+    inline-size: 0.45rem;
+    block-size: 0.45rem;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-right: 0.85rem;
+    flex: none;
+  }
+
+  @media (hover: hover) {
+    .menu a:hover {
+      color: var(--accent);
+    }
+  }
+</style>

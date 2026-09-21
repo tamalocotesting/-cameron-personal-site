@@ -1,0 +1,130 @@
+---
+import Base from '../layouts/Base.astro';
+import { brand } from '../config/brand';
+
+/**
+ * Where a submission lands when script did not run. With script the form swaps
+ * to its own success panel in place and never navigates here — but a visitor
+ * with JS blocked deserves the same finished experience, not Netlify's default
+ * page.
+ */
+---
+
+<Base
+  title="Request received"
+  description="Your Operations Walkthrough request reached us. We reply within one business day."
+  noindex
+>
+  <section class="section thanks">
+    <div class="shell shell--wide">
+      <div class="panel">
+        <span class="tick" aria-hidden="true"></span>
+        <span class="tape tape--flat">Request received</span>
+        <h1>That’s in. Thank you.</h1>
+        <p class="lede">
+          We read every one of these ourselves. Expect a reply within one business day, on
+          whichever method you chose.
+        </p>
+
+        <ol class="next">
+          <li><span class="mono">01</span> We reply and find a time that does not wreck your service.</li>
+          <li><span class="mono">02</span> We walk your operation with you, in person where we can.</li>
+          <li><span class="mono">03</span> You get a written read on where the knowledge gaps are.</li>
+        </ol>
+
+        <div class="btn-row">
+          <a class="btn btn--secondary" href="/">Back to the homepage</a>
+          <a class="btn btn--ghost" href="/how-it-works">Read how it works</a>
+        </div>
+
+        <p class="urgent mono">
+          Something urgent before then?
+          <a class="link" href={`mailto:${brand.email}`}>{brand.email}</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .thanks {
+    padding-block: clamp(3rem, 2rem + 5vw, 6rem);
+  }
+
+  .panel {
+    max-width: 44rem;
+    background: var(--surface-raised);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-card);
+    padding: var(--space-xl) var(--space-m);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-m);
+  }
+
+  .tick {
+    position: relative;
+    inline-size: 3.5rem;
+    block-size: 3.5rem;
+    border-radius: 50%;
+    background: var(--accent-wash-2);
+    flex: none;
+  }
+
+  .tick::after {
+    content: '';
+    position: absolute;
+    left: 1.35rem;
+    top: 0.85rem;
+    inline-size: 0.8rem;
+    block-size: 1.5rem;
+    border: solid var(--accent);
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+  }
+
+  h1 {
+    font-size: var(--step-4);
+  }
+
+  .next {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    border-top: 1px solid var(--rule);
+    padding-top: var(--space-m);
+    inline-size: 100%;
+  }
+
+  .next li {
+    display: flex;
+    gap: 0.9rem;
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+
+  .next .mono {
+    color: var(--accent);
+    font-size: var(--step--2);
+    letter-spacing: 0.14em;
+    flex: none;
+    padding-top: 0.15rem;
+  }
+
+  .urgent {
+    font-size: var(--step--2);
+    color: var(--ink-3);
+  }
+
+  @media (min-width: 46rem) {
+    .panel {
+      padding: var(--space-2xl) var(--space-xl);
+    }
+  }
+</style>

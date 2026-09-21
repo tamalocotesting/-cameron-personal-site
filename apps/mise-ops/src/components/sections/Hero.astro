@@ -1,0 +1,189 @@
+---
+import { cta, brand } from '../../config/brand';
+import { areaSentence } from '../../data/service-areas';
+---
+
+<section class="hero">
+  <div class="shell shell--wide inner">
+    <div class="copy">
+      <span class="tape">Restaurant operations · {brand.region}</span>
+      <h1 class="display">Your restaurant shouldn’t live in your head.</h1>
+      <p class="lede">
+        MISE OPS turns your recipes, procedures, training, checklists and day-to-day knowledge
+        into a simple operating system your team can actually use.
+      </p>
+      <div class="btn-row">
+        <a
+          class="btn btn--primary btn--lg"
+          href={cta.primary.href}
+          data-track="cta_click"
+          data-track-props='{"location":"hero","cta":"primary"}'
+        >
+          {cta.primary.label}
+        </a>
+        <a
+          class="btn btn--ghost btn--lg"
+          href={cta.secondary.href}
+          data-track="cta_click"
+          data-track-props='{"location":"hero","cta":"secondary"}'
+        >
+          {cta.secondary.label}
+        </a>
+      </div>
+      <p class="areas mono">{areaSentence}</p>
+    </div>
+
+    <!-- The product, stated as an object: a stainless surface, a label, and
+         the answer posted at the station it belongs to. -->
+    <div class="plate steel-panel" aria-hidden="true">
+      <span class="plate__tape">Prep · 01</span>
+
+      <div class="device">
+        <div class="device__bar">
+          <span class="mono-caps">Prep standards</span>
+          <span class="qr" aria-hidden="true"></span>
+        </div>
+        <div class="device__body">
+          <p class="device__title">Cold station — open</p>
+          <ul class="checklist device__list">
+            <li>Pull pars from today’s prep list</li>
+            <li>Temp walk-in, log it</li>
+            <li>Date and label every batch</li>
+          </ul>
+          <p class="device__foot mono">Approved by chef · v4</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 5rem) var(--section-y);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .inner {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: center;
+  }
+
+  .copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-m);
+  }
+
+  /* Sized so the headline, the lede AND the primary call to action all land
+     above the fold on a 1280x800 laptop. The display step alone was tall
+     enough to push the button off-screen, which is the one thing this
+     section exists to show. */
+  .copy h1 {
+    font-size: clamp(2.35rem, 1.35rem + 4.1vw, 4rem);
+    max-width: 15ch;
+  }
+
+  .areas {
+    color: var(--ink-3);
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+  }
+
+  /* ---- The station plate ---- */
+
+  .plate {
+    position: relative;
+    padding: var(--space-l) var(--space-m) var(--space-m);
+    display: flex;
+    justify-content: center;
+  }
+
+  .plate__tape {
+    position: absolute;
+    top: -0.65rem;
+    left: var(--space-m);
+    background: var(--tape);
+    color: var(--tape-ink);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.35em 0.85em;
+    border-radius: var(--radius-xs);
+    box-shadow: 0 1px 0 var(--tape-edge);
+    transform: rotate(-1.2deg);
+  }
+
+  .device {
+    inline-size: min(20rem, 100%);
+    background: var(--surface-raised);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-lift);
+    overflow: hidden;
+  }
+
+  .device__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding: 0.7rem var(--space-s);
+    background: var(--steel-2);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* A QR glyph drawn with gradients — three finder squares and some noise.
+     Cheaper and sharper than an image, and it is decoration, not a real code. */
+  .qr {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    flex: none;
+    border-radius: 2px;
+    background-color: var(--ink);
+    background-image:
+      linear-gradient(var(--surface-raised) 0 0),
+      linear-gradient(var(--surface-raised) 0 0),
+      linear-gradient(var(--surface-raised) 0 0),
+      linear-gradient(var(--surface-raised) 0 0);
+    background-repeat: no-repeat;
+    background-size: 0.28rem 0.28rem, 0.28rem 0.28rem, 0.28rem 0.28rem, 0.22rem 0.22rem;
+    background-position: 0.22rem 0.22rem, 1rem 0.22rem, 0.22rem 1rem, 0.92rem 0.95rem;
+  }
+
+  .device__body {
+    padding: var(--space-s) var(--space-m) var(--space-m);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .device__title {
+    font-weight: 700;
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+  }
+
+  .device__list {
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+
+  .device__foot {
+    margin-top: var(--space-2xs);
+    padding-top: var(--space-xs);
+    border-top: 1px solid var(--rule);
+    color: var(--ink-3);
+    font-size: var(--step--2);
+  }
+
+  @media (min-width: 60rem) {
+    .inner {
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: var(--space-2xl);
+    }
+  }
+</style>

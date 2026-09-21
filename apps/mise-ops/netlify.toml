@@ -1,0 +1,43 @@
+# MISE OPS — deploy configuration.
+#
+# This file governs the MISE OPS site ONLY. The repository root has its own
+# netlify.toml for cameronmacek.com; the two never interact.
+#
+# Netlify reads the netlify.toml inside the site's base directory, so the
+# MISE OPS site must be created with:
+#
+#   Base directory:      apps/mise-ops
+#   Build command:       npm run build:fast     (inherited from below)
+#   Publish directory:   apps/mise-ops/dist     (inherited from below)
+#
+# Static build. No serverless functions, no database, no runtime backend.
+# Lead capture is Netlify Forms, which needs no configuration here.
+
+[build]
+  command = "npm run build:fast"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NPM_FLAGS = "--no-audit --no-fund"
+
+# Astro fingerprints these, so they can be cached forever.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Font filenames are versioned by hand in scripts/sync-fonts.mjs — see the
+# note there before changing a file's contents.
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), interest-cohort=()"

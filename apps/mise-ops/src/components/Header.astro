@@ -1,0 +1,245 @@
+---
+import Logo from './Logo.astro';
+import { brand, nav, cta } from '../config/brand';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => path === href;
+---
+
+<header class="site-header">
+  <div class="shell shell--wide bar">
+    <a class="wordmark" href="/" aria-label={`${brand.name} — home`}>
+      <Logo size={22} />
+      <span class="wordmark__text">MISE <span class="wordmark__ops">OPS</span></span>
+    </a>
+
+    <nav class="desk-nav" aria-label="Primary">
+      <ul>
+        {nav.map((item) => (
+          <li>
+            <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <a
+      class="btn btn--primary desk-cta"
+      href={cta.primary.href}
+      data-track="cta_click"
+      data-track-props='{"location":"header"}'
+    >
+      Book a walkthrough
+    </a>
+
+    <!-- A <details> menu works with the script blocked, which a button and a
+         class toggle would not. -->
+    <details class="menu">
+      <summary aria-label="Menu">
+        <span class="menu__bars" aria-hidden="true"></span>
+        <span class="menu__label mono-caps">Menu</span>
+      </summary>
+      <div class="menu__panel">
+        <ul>
+          {nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <a
+          class="btn btn--primary btn--block"
+          href={cta.primary.href}
+          data-track="cta_click"
+          data-track-props='{"location":"mobile_menu"}'
+        >
+          {cta.primary.label}
+        </a>
+      </div>
+    </details>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    min-height: 4.25rem;
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 2.75rem;
+    text-decoration: none;
+    color: var(--ink);
+    margin-right: auto;
+    padding-block: 0.5rem;
+  }
+
+  .wordmark__text {
+    font-weight: 800;
+    font-size: var(--step-0);
+    letter-spacing: 0.06em;
+  }
+
+  .wordmark__ops {
+    color: var(--accent);
+  }
+
+  .desk-nav {
+    display: none;
+  }
+
+  .desk-nav ul {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .desk-nav a {
+    display: inline-block;
+    padding: 0.6rem 0;
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--ink-2);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+  }
+
+  .desk-nav a[aria-current='page'] {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+  }
+
+  @media (hover: hover) {
+    .desk-nav a:hover {
+      color: var(--ink);
+    }
+  }
+
+  .desk-cta {
+    display: none;
+    min-height: 2.75rem;
+    padding: 0.55rem 1.1rem;
+    font-size: var(--step--1);
+  }
+
+  /* ---- Mobile menu ---- */
+
+  .menu {
+    position: relative;
+  }
+
+  .menu summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius);
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .menu summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .menu__bars,
+  .menu__bars::before,
+  .menu__bars::after {
+    display: block;
+    inline-size: 1rem;
+    block-size: 2px;
+    background: var(--ink);
+    border-radius: 2px;
+  }
+
+  .menu__bars {
+    position: relative;
+  }
+
+  .menu__bars::before,
+  .menu__bars::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .menu__bars::before {
+    top: -5px;
+  }
+  .menu__bars::after {
+    top: 5px;
+  }
+
+  .menu[open] .menu__bars {
+    background: transparent;
+  }
+
+  .menu__panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.6rem);
+    inline-size: min(17rem, calc(100vw - 2 * var(--gutter)));
+    background: var(--surface-raised);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-lift);
+    padding: var(--space-s);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .menu__panel ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menu__panel a:not(.btn) {
+    display: block;
+    padding: 0.8rem 0.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .menu__panel a[aria-current='page'] {
+    color: var(--accent);
+  }
+
+  @media (min-width: 62rem) {
+    .desk-nav,
+    .desk-cta {
+      display: flex;
+    }
+    .menu {
+      display: none;
+    }
+  }
+</style>

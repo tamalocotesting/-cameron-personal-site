@@ -1,0 +1,52 @@
+---
+import { problems } from '../../data/home';
+---
+
+<section class="section section--ruled" id="the-problem">
+  <div class="shell shell--wide">
+    <div class="section-head" data-reveal>
+      <span class="tape">The problem</span>
+      <h2>Most of how your restaurant runs was never written down.</h2>
+      <p>
+        It is not that nobody knows. It is that what they know lives in six places, none of
+        which a new hire can open on a Tuesday night.
+      </p>
+    </div>
+
+    <ul class="grid grid--3 list">
+      {problems.map((item) => (
+        <li class="quote card" data-reveal>
+          <p class="quote__said">“{item.said}”</p>
+          <p class="quote__means">{item.means}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .quote {
+    padding: var(--space-m);
+    gap: var(--space-xs);
+  }
+
+  .quote__said {
+    font-size: var(--step-2);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  .quote__means {
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    line-height: 1.55;
+  }
+</style>

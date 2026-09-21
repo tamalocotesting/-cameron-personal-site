@@ -1,0 +1,168 @@
+---
+import Logo from './Logo.astro';
+import { brand, footerNav, cta } from '../config/brand';
+import { allAreas } from '../data/service-areas';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="shell shell--wide">
+    <div class="top">
+      <div class="brandcol">
+        <a class="wordmark" href="/" aria-label={`${brand.name} — home`}>
+          <Logo size={26} />
+          <span>MISE <span class="ops">OPS</span></span>
+        </a>
+        <p class="tagline">{brand.tagline}</p>
+        <a class="btn btn--primary" href={cta.primary.href} data-track="cta_click" data-track-props='{"location":"footer"}'>
+          {cta.primary.label}
+        </a>
+      </div>
+
+      <nav class="links" aria-label="Service">
+        <h2 class="mono-caps">Service</h2>
+        <ul>
+          {footerNav.service.map((item) => (
+            <li><a href={item.href}>{item.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <nav class="links" aria-label="Company">
+        <h2 class="mono-caps">Company</h2>
+        <ul>
+          {footerNav.company.map((item) => (
+            <li><a href={item.href}>{item.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="links">
+        <h2 class="mono-caps">Serving</h2>
+        <ul>
+          {allAreas.map((area) => (
+            <li>{area.city}, Indiana</li>
+          ))}
+        </ul>
+        <h2 class="mono-caps links__second">Contact</h2>
+        <ul>
+          <li><a href={`mailto:${brand.email}`}>{brand.email}</a></li>
+          {brand.phone && <li><a href={`tel:${brand.phone.replace(/[^+\d]/g, '')}`}>{brand.phone}</a></li>}
+        </ul>
+      </div>
+    </div>
+
+    <div class="bottom">
+      <p class="mono">© {year} {brand.name}</p>
+      <p class="mono muted">Everything in its place.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--rule);
+    background: var(--surface-sunken);
+    padding-block: var(--space-2xl) var(--space-l);
+    margin-top: var(--space-2xl);
+  }
+
+  .top {
+    display: grid;
+    gap: var(--space-xl);
+    grid-template-columns: 1fr;
+  }
+
+  .brandcol {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-s);
+    max-width: 26rem;
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--ink);
+    font-weight: 800;
+    font-size: var(--step-1);
+    letter-spacing: 0.06em;
+  }
+
+  .ops {
+    color: var(--accent);
+  }
+
+  .tagline {
+    color: var(--ink-2);
+    text-wrap: pretty;
+  }
+
+  .links h2 {
+    font-size: var(--step--2);
+    margin-bottom: var(--space-xs);
+  }
+
+  .links__second {
+    margin-top: var(--space-m);
+  }
+
+  .links ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .links li {
+    display: flex;
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+
+  /* The whole row is the target, not just the word. A short link like
+     "About" is otherwise 37px wide on a phone, and the miss lands on the
+     link above or below it. */
+  .links a {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  @media (hover: hover) {
+    .links a:hover {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+
+  .bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-s);
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--rule);
+    color: var(--ink-3);
+  }
+
+  @media (min-width: 46rem) {
+    .top {
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: var(--space-l);
+    }
+  }
+</style>
