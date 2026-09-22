@@ -23,6 +23,7 @@
     "seed:reset": "tsx --tsconfig tsconfig.scripts.json prisma/seed.ts --reset",
     "bootstrap:org": "tsx --tsconfig tsconfig.scripts.json scripts/bootstrap-organization.ts",
     "config:check": "tsx --tsconfig tsconfig.scripts.json scripts/check-production-config.ts",
+    "dev:setup": "tsx --tsconfig tsconfig.scripts.json scripts/setup.ts",
     "setup": "tsx --tsconfig tsconfig.scripts.json scripts/setup.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",

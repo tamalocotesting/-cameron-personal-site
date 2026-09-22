@@ -54,12 +54,12 @@ Needs Node 22 (see `.nvmrc`), pnpm 10 and a PostgreSQL 16 you can reach.
 
 ```bash
 pnpm install
-pnpm setup                    # .env, prisma generate, migrate deploy, seed
+pnpm dev:setup                # .env, prisma generate, migrate deploy, seed
 pnpm dev                      # terminal 1 — the application
 pnpm dev:worker               # terminal 2 — the durable worker
 ```
 
-`pnpm setup` creates `.env` from `.env.example` if it is missing. It leaves an
+`pnpm dev:setup` creates `.env` from `.env.example` if it is missing. It leaves an
 existing `.env` alone.
 
 Without the worker, scheduled sends, reminders, brief preparation and outbox
@@ -176,7 +176,7 @@ Every command below exists and does what it says.
 
 | Command | What it does |
 | --- | --- |
-| `pnpm setup` | `.env`, `prisma generate`, `migrate deploy`, seed |
+| `pnpm dev:setup` | `.env`, `prisma generate`, `migrate deploy`, seed |
 | `pnpm dev` | The application in development on :3000 |
 | `pnpm dev:worker` | The durable worker, watched |
 | `pnpm build` | `prisma generate` then a production Next build |

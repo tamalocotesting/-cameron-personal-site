@@ -6,7 +6,12 @@ import path from 'node:path';
 /**
  * Local setup, in one command.
  *
- *   pnpm setup
+ *   pnpm dev:setup
+ *
+ * Deliberately NOT named `setup`: `pnpm setup` is a built-in pnpm command
+ * that configures pnpm's own global bin directory, and it silently shadows a
+ * script of the same name — so `pnpm setup` looked like it succeeded while
+ * doing nothing at all. `pnpm run setup` still works if you prefer it.
  *
  * It creates .env from the example if it is missing, applies the committed
  * migrations, generates the client and seeds the fictional demo workspace. It
