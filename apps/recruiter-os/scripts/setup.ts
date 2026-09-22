@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { execFileSync } from 'node:child_process';
 import { existsSync, copyFileSync } from 'node:fs';
 import path from 'node:path';
+import { resolveDatabaseUrl } from './resolve-database';
 
 /**
  * Local setup, in one command.
@@ -21,12 +22,12 @@ import path from 'node:path';
 
 const root = process.cwd();
 
-function run(command: string, args: string[]) {
+function run(command: string, args: string[], extraEnv: Record<string, string> = {}) {
   console.log(`\n$ ${command} ${args.join(' ')}`);
-  execFileSync(command, args, { stdio: 'inherit', env: process.env });
+  execFileSync(command, args, { stdio: 'inherit', env: { ...process.env, ...extraEnv } });
 }
 
-function main() {
+async function main() {
   const envPath = path.join(root, '.env');
   if (!existsSync(envPath)) {
     copyFileSync(path.join(root, '.env.example'), envPath);
@@ -37,9 +38,14 @@ function main() {
     console.log('.env already exists; leaving it alone.');
   }
 
+  // Check the database BEFORE prisma touches it, and repair the URL if some
+  // other Postgres has the port. A failure here is a clear sentence rather
+  // than a P1000 stack trace three commands later.
+  const url = await resolveDatabaseUrl(root);
+
   run('pnpm', ['exec', 'prisma', 'generate']);
-  run('pnpm', ['exec', 'prisma', 'migrate', 'deploy']);
-  run('pnpm', ['run', 'seed']);
+  run('pnpm', ['exec', 'prisma', 'migrate', 'deploy'], { DATABASE_URL: url });
+  run('pnpm', ['run', 'seed'], { DATABASE_URL: url });
 
   console.log('\nSetup finished. Start the two processes in separate terminals:');
   console.log('  pnpm dev          # the application on http://localhost:3000');
@@ -48,4 +54,8 @@ function main() {
   console.log('workspace says so in the mode strip rather than pretending otherwise.');
 }
 
-main();
+main().catch((error: unknown) => {
+  // One readable problem, not a stack trace.
+  console.error(`\n${error instanceof Error ? error.message : String(error)}\n`);
+  process.exit(1);
+});
