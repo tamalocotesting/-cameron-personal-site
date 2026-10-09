@@ -6,6 +6,10 @@ Static Astro site. No database, no backend, no client framework. Ships ~113 kB
 on first load (almost all of it type) and zero JavaScript that the content
 depends on.
 
+> **`stationops/`** is a separate app (StationOps, a restaurant checklist pilot:
+> Next.js + PostgreSQL). It has its own `package.json`, README and deploy
+> steps, and is excluded from this site's build and type-check.
+
 ---
 
 ## Running it
