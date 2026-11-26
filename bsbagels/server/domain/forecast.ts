@@ -23,7 +23,8 @@ export interface Series {
 
 export interface ModelParams { weeks: number; trim: number; holidayShrink: number; seasonWeight: number; seasonWindow: number }
 export const DEFAULT_PARAMS: ModelParams = { weeks: 8, trim: 1, holidayShrink: 0.8, seasonWeight: 0.5, seasonWindow: 14 };
-export const MODEL_ID = 'rail-v1';
+export const MODEL_ID = 'rail-v1.1';
+const FIXED_DATE_HOLIDAYS = new Set(['new_years_day', 'valentines', 'st_patricks', 'july_4', 'halloween', 'christmas_eve', 'christmas', 'nye']);
 
 export function makeSeries(rows: { date: string; flavor: string; units: number }[], recordedDays?: Set<string>): Series {
   const total = new Map<string, number>();
@@ -73,13 +74,22 @@ function meanAround(s: Series, center: string, half: number, excludeHolidays = t
   return n ? sum / n : NaN;
 }
 
+/**
+ * Seasonal drift compares SAME-WEEKDAY values only, so partial windows can't skew the weekday mix:
+ *   last year's target weekday (±2 weeks)  ÷  last year's equivalents of the baseline days.
+ * Requires ≥3 target values and ≥60% of baseline equivalents; otherwise no adjustment.
+ */
 export function seasonFactor(s: Series, target: string, baselineDays: string[], p: ModelParams) {
   if (!baselineDays.length || p.seasonWeight === 0) return { value: 1, ratio: null as number | null };
-  const lyTarget = meanAround(s, addDays(target, -364), p.seasonWindow);
-  // last-year level across the span of the baseline days (each shifted back 364 days, ±3 days)
-  const vals = baselineDays.map((d) => meanAround(s, addDays(d, -364), 3)).filter((v) => !Number.isNaN(v));
-  const lyBase = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : NaN;
-  if (Number.isNaN(lyTarget) || Number.isNaN(lyBase) || lyBase <= 0) return { value: 1, ratio: null };
+  const val = (d: string) => (s.total.has(d) && !isHoliday(d) ? s.total.get(d)! : null);
+  const halfWeeks = Math.max(1, Math.round(p.seasonWindow / 7));
+  const tv: number[] = [];
+  for (let k = -halfWeeks; k <= halfWeeks; k++) { const v = val(addDays(target, -364 + 7 * k)); if (v !== null) tv.push(v); }
+  const bv = baselineDays.map((d) => val(addDays(d, -364))).filter((v): v is number => v !== null);
+  if (tv.length < 3 || bv.length < Math.ceil(0.6 * baselineDays.length)) return { value: 1, ratio: null };
+  const lyTarget = tv.reduce((a, b) => a + b, 0) / tv.length;
+  const lyBase = bv.reduce((a, b) => a + b, 0) / bv.length;
+  if (lyBase <= 0) return { value: 1, ratio: null };
   const ratio = lyTarget / lyBase;
   return { value: 1 + p.seasonWeight * (ratio - 1), ratio };
 }
@@ -88,7 +98,11 @@ export function holidayFactor(s: Series, target: string, p: ModelParams) {
   const h = holidayOn(target);
   if (!h) return { value: 1, holiday: null as string | null, observations: [] as { date: string; ratio: number }[] };
   const obs: { date: string; ratio: number }[] = [];
+  // Fixed-date holidays move across weekdays and their effect depends on it (e.g. July 4 on a Friday
+  // vs a Saturday). Learn only from prior occurrences in the same weekday class (weekday vs weekend).
+  const fixedDate = FIXED_DATE_HOLIDAYS.has(h.key);
   for (const d of priorOccurrences(h.key, target)) {
+    if (fixedDate && isWeekend(d) !== isWeekend(target)) continue;
     if (d >= s.first && s.total.has(d)) {
       const b = baseline(s, d, d, p).value;
       if (b > 0) obs.push({ date: d, ratio: s.total.get(d)! / b });
