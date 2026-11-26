@@ -64,8 +64,8 @@ The UI renders `kind` with the four provenance marks. The assistant receives the
 
 | Capability | crew | lead | manager | owner |
 |---|---|---|---|---|
-| View rail, cards, checklists; tick tickets; log waste; write handoff | ✔ | ✔ | ✔ | ✔ |
-| Adjust ticket quantities, enter catering, record inventory counts | | ✔ | ✔ | ✔ |
+| View rail, cards, checklists; tick tickets; log waste; record inventory counts; write handoff | ✔ | ✔ | ✔ | ✔ |
+| Adjust ticket quantities (with reason), enter catering, training sign-off, remove waste entries | | ✔ | ✔ | ✔ |
 | See sales dollars, history explorer, accuracy | | | ✔ | ✔ |
 | Edit assumptions, recipes, checklists; run imports | | | ✔ | ✔ |
 | Manage users, backups/restore, view full audit log | | | | ✔ |

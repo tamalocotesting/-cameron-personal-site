@@ -430,6 +430,18 @@ export function createApp() {
     } catch (e) { next(e); }
   });
 
+  // ── B's photos (signed-in users only): assets/photos/<recipe_id>.jpg|png|webp ──
+  app.get('/photos/:file', (req: Req, res, next) => {
+    const t = cookie(req, COOKIE);
+    if (!t || !sessionUser(db(), t)) return next(httpError(401, 'Sign in required'));
+    const f = String(req.params.file);
+    if (!/^[a-z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(f)) return next(httpError(404, 'Not found'));
+    const p = join(ROOT, 'assets', 'photos', f);
+    if (!existsSync(p)) return next(httpError(404, 'Not found'));
+    res.setHeader('Cache-Control', 'private, max-age=3600');
+    res.sendFile(p);
+  });
+
   // ── static web app ──
   const dist = join(ROOT, 'web', 'dist');
   if (existsSync(dist)) {

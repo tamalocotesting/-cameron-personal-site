@@ -32,3 +32,9 @@ bsbagels/private/
 bsbagels/data/
 *.sqlite
 *.sqlite-*
+
+# B's photos (confidential)
+bsbagels/assets/photos/*.jpg
+bsbagels/assets/photos/*.jpeg
+bsbagels/assets/photos/*.png
+bsbagels/assets/photos/*.webp

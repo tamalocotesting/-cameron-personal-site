@@ -1,0 +1,19 @@
+[Unit]
+Description=The Rail — B's Bagels kitchen platform
+After=network.target
+
+[Service]
+User=rail
+WorkingDirectory=/opt/the-rail/bsbagels
+Environment=PORT=8787 HOST=127.0.0.1
+# Secrets: put ANTHROPIC_API_KEY in /etc/the-rail.env (chmod 600), never in this file or the repo.
+EnvironmentFile=-/etc/the-rail.env
+ExecStart=/usr/bin/node --disable-warning=ExperimentalWarning server/index.ts
+Restart=on-failure
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/the-rail/bsbagels/data
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

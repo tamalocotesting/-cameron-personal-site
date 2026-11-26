@@ -32,6 +32,14 @@ export function Cards({ ctx: _ctx }: { ctx: AppCtx }) {
   );
 }
 
+function Photo({ id, name }: { id: string; name: string }) {
+  const [ext, setExt] = useState(0);
+  const exts = ['jpg', 'png', 'webp'];
+  return <div className="photo-slot">{ext < exts.length
+    ? <img src={`/photos/${id}.${exts[ext]}`} alt={`${name} — B’s photo`} onError={() => setExt(ext + 1)} />
+    : <span>B’s photo goes here<br /><span className="xs">Save it as assets/photos/{id}.jpg on the server (photos were not included in the data kit).</span></span>}</div>;
+}
+
 export function BuildCard({ r, onBack }: { r: any; onBack?: () => void }) {
   const lang = useLang();
   const es = lang === 'es';
@@ -47,7 +55,7 @@ export function BuildCard({ r, onBack }: { r: any; onBack?: () => void }) {
           {r.headline_es && <div className="small" style={{ opacity: .75 }}>{r.headline_es}</div>}
         </div>
         <div style={{ padding: 16 }}>
-          <div className="photo-slot">{r.photo ? <img src={r.photo} alt={r.name} /> : <span>B’s photo goes here<br /><span className="xs">Add the original card photo in Ledger › Recipes (not included in the data kit).</span></span>}</div>
+          <Photo id={r.id} name={r.name} />
           {r.status === 'needs_confirmation' && <div className="alert watch" style={{ marginTop: 12 }}><b>Needs confirmation · Por confirmar</b><span className="small">{r.status_note}</span></div>}
           <div style={{ marginTop: 8 }}>
             {r.steps.map((s: any) => (
