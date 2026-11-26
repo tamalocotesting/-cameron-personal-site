@@ -26,3 +26,9 @@ pnpm-debug.log*
 
 # netlify
 .netlify/
+
+# B's Bagels confidential business data — never commit
+bsbagels/private/
+bsbagels/data/
+*.sqlite
+*.sqlite-*

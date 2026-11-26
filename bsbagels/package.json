@@ -1,0 +1,38 @@
+{
+  "name": "bsbagels-rail",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The Rail — kitchen operations platform for B's Bagels",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "seed": "node --disable-warning=ExperimentalWarning server/seed/run.ts",
+    "dev:server": "node --disable-warning=ExperimentalWarning --watch server/index.ts",
+    "dev:web": "vite --config web/vite.config.ts",
+    "build": "vite build --config web/vite.config.ts",
+    "start": "node --disable-warning=ExperimentalWarning server/index.ts",
+    "test": "node --disable-warning=ExperimentalWarning --test tests/*.test.ts",
+    "backtest": "node --disable-warning=ExperimentalWarning scripts/backtest.ts",
+    "scorecard": "node --disable-warning=ExperimentalWarning scripts/scorecard.ts",
+    "screens": "node --disable-warning=ExperimentalWarning scripts/screens.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.14.0",
+    "express": "^5.3.0",
+    "fflate": "^0.8.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.11",
+    "@types/react": "^19.3.3",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8"
+  }
+}
