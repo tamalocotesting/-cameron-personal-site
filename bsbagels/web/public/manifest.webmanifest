@@ -1,0 +1,1 @@
+{ "name": "The Rail · B's Bagels", "short_name": "The Rail", "start_url": "/", "display": "standalone", "background_color": "#F4EDE1", "theme_color": "#1F1B17", "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }] }

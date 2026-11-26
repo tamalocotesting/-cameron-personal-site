@@ -53,7 +53,7 @@ export function bagelForecast(c: Ctx, date: string) {
   const pt = allocate(f.point, shares), los = allocate(lo, shares), his = allocate(hi, shares);
   const flavors: Record<string, Figure> = {};
   for (const k of Object.keys(pt).sort((a, z) => (FLAVOR_META[a]?.sort ?? 99) - (FLAVOR_META[z]?.sort ?? 99))) {
-    flavors[k] = { value: pt[k], lo: los[k], hi: his[k], kind: 'forecast', unit: 'bagels', basis: `${(shares[k] * 100).toFixed(1)}% of the ${DOW_NAMES[dow(date)]} mix over the same 8 baseline days` };
+    flavors[k] = { value: pt[k], lo: los[k], hi: his[k], kind: 'forecast', unit: 'bagels', basis: `${(shares[k] * 100).toFixed(1)}% of the day’s ${Math.round(f.point)} bagels (this flavor’s share of the ${DOW_NAMES[dow(date)]} mix over the same baseline days).` };
   }
   const parts = [`${r0(f.base)} = trimmed mean of the last ${f.baseDays.length} ${DOW_NAMES[dow(date)]}s (${f.baseDays.at(-1)} → ${f.baseDays[0]}, high & low dropped)`];
   if (f.holiday.holiday) parts.push(f.holiday.observations.length
@@ -63,7 +63,7 @@ export function bagelForecast(c: Ctx, date: string) {
   return {
     date, closedLikely: false, holiday: h, origin, horizon: daysBetween(c.histEnd, date),
     total: { value: r0(f.point), lo: r0(lo), hi: r0(hi), kind: 'forecast', unit: 'bagels', basis: parts.join(' ') + `. Range = P20–P80 of walk-forward errors on ${isWeekend(date) ? 'weekends' : 'weekdays'} (n=${b.n}).` } as Figure,
-    flavors, raw: f,
+    flavors: Object.fromEntries(Object.entries(flavors).map(([k, v]) => [k, { ...v, basis: v.basis + ' Day total: ' + parts.join(' ') }])), raw: f,
   };
 }
 
