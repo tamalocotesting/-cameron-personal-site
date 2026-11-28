@@ -30,6 +30,18 @@ Each day is forecast using only data from before it. The metric is WAPE: Σ|actu
 
 **Known weakness:** in January and February the weekends are worse than avg-of-8, because there was no prior-December history to learn the January drop.
 
+## Correction (Nov 28, 2026): realistic data lag
+
+The figures above assume each day is forecast with data through the previous day. At B's, Toast data has typically been 20 or more days old. I re-ran the prior Management Dashboard system's protocol: weekly folds, data 20 days old, holdout Sep 6–Oct 31 2026.
+
+| Method | Flavor-level WAPE | Daily-total WAPE |
+|---|---|---|
+| Prior 12-week same-weekday mean (reproduced exactly) | 30.7% | 18.5% |
+| The Rail rail-v1.1 | 30.7% | 17.1% |
+| Statistical noise floor (perfect mean forecast) | 13.5% | 4.5% |
+
+The Rail is better on the daily total and **tied on per-flavor accuracy**. Per-flavor accuracy is what drives stockouts. Further gains come from capturing known orders, separating walk-in demand from bulk orders, and buffers set by service level, not from model complexity. See the private OS master plan.
+
 ## Double counting (summary)
 
 - **Unit rule:** physical bagels on a day = Toast flavor-modifier units. Sandwiches and singles carry one bagel modifier each. Dozen and half-dozen modifiers are already expanded to individual bagels.
